@@ -28,7 +28,22 @@
       }
 
       // Call the function to update the dropdowns
-      updateCurrencyDropdowns();
+    updateCurrencyDropdowns();
+
+      function switchCurrencies() {
+        var fromDropdown = document.getElementById('fromCurrency');
+        var toDropdown = document.getElementById('toCurrency');
+        // Swapping the values of the dropdowns
+        var temp = fromDropdown.value;
+        fromDropdown.value = toDropdown.value;
+        toDropdown.value = temp;
+      }
+
+      function convert() {
+        var fromCurrency = document.getElementById('fromCurrency').value;
+        var toCurrency = document.getElementById('toCurrency').value;
+        google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency);
+      }
     </script>
   </head>
   <body>
@@ -39,5 +54,7 @@
     <select id="toCurrency">
       <!-- Dropdown for "to currency" -->
     </select>
+    <button onclick="convert()">Convert</button> <!-- Added button here -->
+    <button onclick="switchCurrencies()">Switch</button> <!-- Added Switch button here -->
   </body>
 </html>
