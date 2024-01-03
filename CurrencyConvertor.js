@@ -1,18 +1,3 @@
-function myFunction() {
-  let thisSS = SpreadsheetApp.getActiveSpreadsheet();
-  let thisSheet = SpreadsheetApp.getActiveSheet();
-  let thisRange = thisSheet.getRange(1, 1);
-  let thisValue = thisRange.getValue();
-  console.log(thisValue);
-
-  var fromCurrency = 'USD';
-  var toCurrency = 'EUR';
-  var amount = thisValue;
-  var convertedAmount = convertCurrency(fromCurrency, toCurrency, amount);
-  Logger.log('Converted Amount: ' + convertedAmount);
-
-}
-
 function convertCurrency(fromCurrency, toCurrency, amount) {
     var url = 'https://api.frankfurter.app/latest?from=' + fromCurrency + '&to=' + toCurrency;
   
