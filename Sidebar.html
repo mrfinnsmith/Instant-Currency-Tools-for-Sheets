@@ -1,25 +1,43 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <!-- Add any CSS styles here -->
-</head>
-<body>
-    <div>
-        <h2>Select Currencies</h2>
-        <label for="fromCurrency">From Currency:</label>
-        <select id="fromCurrency">
-            <!-- Options will be populated by JavaScript -->
-        </select>
-
-        <label for="toCurrency">To Currency:</label>
-        <select id="toCurrency">
-            <!-- Options will be populated by JavaScript -->
-        </select>
-    </div>
-
+  <head>
+    <base target="_top">
     <script>
-      // Call a function to populate dropdowns after the sidebar has loaded
-      google.script.run.withSuccessHandler(populateCurrencies).getCurrencies();
+      // Function to fetch available currencies from Frankfurter API and update dropdowns alphabetically
+      function updateCurrencyDropdowns() {
+        google.script.run.withSuccessHandler(function(currencies) {
+          var fromDropdown = document.getElementById('fromCurrency');
+          var toDropdown = document.getElementById('toCurrency');
+
+          // Clear existing options
+          fromDropdown.innerHTML = '';
+          toDropdown.innerHTML = '';
+
+          // Get the currency codes and sort them alphabetically
+          var currencyCodes = Object.keys(currencies).sort();
+
+          // Populate the dropdowns with the currencies in alphabetical order
+          currencyCodes.forEach(function(code) {
+            var option = document.createElement('option');
+            option.value = code;
+            option.text = currencies[code] + ' (' + code + ')';
+            fromDropdown.appendChild(option.cloneNode(true));
+            toDropdown.appendChild(option);
+          });
+        }).getCurrencies();
+      }
+
+      // Call the function to update the dropdowns
+      updateCurrencyDropdowns();
     </script>
-</body>
+  </head>
+  <body>
+    <p>Select currencies:</p>
+    <select id="fromCurrency">
+      <!-- Dropdown for "from currency" -->
+    </select>
+    <select id="toCurrency">
+      <!-- Dropdown for "to currency" -->
+    </select>
+  </body>
 </html>
