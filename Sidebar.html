@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <style>
-      /* Add your CSS styles here */
-    </style>
-  </head>
-  <body>
-    <h2>Choose your target currency</h2>
-    <select id="currency-dropdown">
-      <!-- Options will be populated here -->
-    </select>
+<head>
+    <!-- Add any CSS styles here -->
+</head>
+<body>
+    <div>
+        <h2>Select Currencies</h2>
+        <label for="fromCurrency">From Currency:</label>
+        <select id="fromCurrency">
+            <!-- Options will be populated by JavaScript -->
+        </select>
+
+        <label for="toCurrency">To Currency:</label>
+        <select id="toCurrency">
+            <!-- Options will be populated by JavaScript -->
+        </select>
+    </div>
+
     <script>
-      // JavaScript to interact with Google Apps Script functions
+      // Call a function to populate dropdowns after the sidebar has loaded
+      google.script.run.withSuccessHandler(populateCurrencies).getCurrencies();
     </script>
-  </body>
+</body>
 </html>
