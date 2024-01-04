@@ -16,11 +16,14 @@
           // Get the currency codes and sort them alphabetically
           var currencyCodes = Object.keys(currencies).sort();
 
+          let defaultCurrency = 'USD';
+
           // Populate the dropdowns with the currencies in alphabetical order
           currencyCodes.forEach(function(code) {
             var option = document.createElement('option');
             option.value = code;
             option.text = currencies[code] + ' (' + code + ')';
+            if (code == defaultCurrency) option.selected = "selected";
             fromDropdown.appendChild(option.cloneNode(true));
             toDropdown.appendChild(option);
           });
