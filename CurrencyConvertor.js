@@ -1,7 +1,8 @@
-function convertCurrencyInSelectedRange(fromCurrency, toCurrency) {
+function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet) {
     
     // Retrieve the user-selected range
-    var selectedRange = SpreadsheetApp.getActiveSpreadsheet().getActiveRange();
+    let activeSheet = SpreadsheetApp.getActiveSheet();
+    var selectedRange = convertEntireSheet? activeSheet.getDataRange() : activeSheet.getActiveRange();
     var values = selectedRange.getValues();
 
     // Fetch conversion rate

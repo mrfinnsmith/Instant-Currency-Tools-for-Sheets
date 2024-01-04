@@ -45,7 +45,8 @@
       function convert() {
         var fromCurrency = document.getElementById('fromCurrency').value;
         var toCurrency = document.getElementById('toCurrency').value;
-        google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency);
+        var convertEntireSheet = document.getElementById('convertEntireSheet').checked;        
+        google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet);
       }
     </script>
   </head>
@@ -59,5 +60,9 @@
     </select>
     <button onclick="convert()">Convert</button> <!-- Added button here -->
     <button onclick="switchCurrencies()">Switch</button> <!-- Added Switch button here -->
+    <div>
+      <input type="checkbox" id="convertEntireSheet">
+      <label for="convertEntireSheet">Convert entire sheet</label>
+    </div>
   </body>
 </html>
