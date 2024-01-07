@@ -1,47 +1,314 @@
 <script>
-      // Function to fetch available currencies from Frankfurter API and update dropdowns alphabetically
-      function updateCurrencyDropdowns() {
-        google.script.run.withSuccessHandler(function(currencies) {
-          var fromDropdown = document.getElementById('fromCurrency');
-          var toDropdown = document.getElementById('toCurrency');
+  // Function to fetch available currencies from Frankfurter API and update dropdowns alphabetically
+  function updateCurrencyDropdowns() {
+    google.script.run.withSuccessHandler(function (currencies) {
+      var fromDropdown = document.getElementById('fromCurrency');
+      var toDropdown = document.getElementById('toCurrency');
 
-          // Clear existing options
-          fromDropdown.innerHTML = '';
-          toDropdown.innerHTML = '';
+      // Clear existing options
+      fromDropdown.innerHTML = '';
+      toDropdown.innerHTML = '';
 
-          // Get the currency codes and sort them alphabetically
-          var currencyCodes = Object.keys(currencies).sort();
+      // Get the currency codes and sort them alphabetically
+      var currencyCodes = Object.keys(currencies).sort();
 
-          let defaultCurrency = 'USD';
+      let defaultCurrency = 'USD';
 
-          // Populate the dropdowns with the currencies in alphabetical order
-          currencyCodes.forEach(function(code) {
-            var option = document.createElement('option');
-            option.value = code;
-            option.text = currencies[code] + ' (' + code + ')';
-            if (code == defaultCurrency) option.selected = "selected";
-            fromDropdown.appendChild(option.cloneNode(true));
-            toDropdown.appendChild(option);
-          });
-        }).getCurrencies();
-      }
+      // Populate the dropdowns with the currencies in alphabetical order
+      currencyCodes.forEach(function (code) {
+        var flagEmoji = currencyFlags[code] ? currencyFlags[code] + ' ' : '';
+        var option = document.createElement('option');
+        option.value = code;
+        option.text = flagEmoji + currencies[code] + ' (' + code + ')';
+        if (code == defaultCurrency) option.selected = "selected";
+        fromDropdown.appendChild(option.cloneNode(true));
+        toDropdown.appendChild(option);
+      });
+    }).getCurrencies();
+  }
 
-      // Call the function to update the dropdowns
-    updateCurrencyDropdowns();
+  // Call the function to update the dropdowns
+  updateCurrencyDropdowns();
 
-      function switchCurrencies() {
-        var fromDropdown = document.getElementById('fromCurrency');
-        var toDropdown = document.getElementById('toCurrency');
-        // Swapping the values of the dropdowns
-        var temp = fromDropdown.value;
-        fromDropdown.value = toDropdown.value;
-        toDropdown.value = temp;
-      }
+  function switchCurrencies() {
+    var fromDropdown = document.getElementById('fromCurrency');
+    var toDropdown = document.getElementById('toCurrency');
+    // Swapping the values of the dropdowns
+    var temp = fromDropdown.value;
+    fromDropdown.value = toDropdown.value;
+    toDropdown.value = temp;
+  }
 
-      function convert() {
-        var fromCurrency = document.getElementById('fromCurrency').value;
-        var toCurrency = document.getElementById('toCurrency').value;
-        var convertEntireSheet = document.getElementById('convertEntireSheet').checked;        
-        google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet);
-      }
-    </script>
+  function convert() {
+    var fromCurrency = document.getElementById('fromCurrency').value;
+    var toCurrency = document.getElementById('toCurrency').value;
+    var convertEntireSheet = document.getElementById('convertEntireSheet').checked;
+    google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet);
+  }
+
+  const currencyFlags = {
+    "'AFN': '🇦🇫', 
+    'ALL': '🇦🇱',
+    'DZD': '🇩🇿',
+    'ANG': '🇨🇼',
+    'ANG': '🇸🇽',
+    'AOA': '🇦🇴',
+    'AUD': '🇦🇺',
+    'AUD': '🇨🇽',
+    'ARS': '🇦🇷',
+    'AMD': '🇦🇲',
+    'AWG': '🇦🇼',
+    'AUD': '🇨🇨',
+    'AUD': '🇭🇲',
+    'AZN': '🇦🇿',
+    'BSD': '🇧🇸',
+    'BHD': '🇧🇭',
+    'BDT': '🇧🇩',
+    'BBD': '🇧🇧',
+    'BYN': '🇧🇾',
+    'AUD': '🇰🇮',
+    'BZD': '🇧🇿',
+    'AUD': '🇳🇷',
+    'BMD': '🇧🇲',
+    'BTN': '🇧🇹',
+    'AUD': '🇳🇫',
+    'BOB': '🇧🇴',
+    'BOV': '🇧🇴',
+    'AUD': '🇹🇻',
+    'BAM': '🇧🇦',
+    'BWP': '🇧🇼',
+    'CHF': '🇱🇮',
+    'BRL': '🇧🇷',
+    'CHF': '🇨🇭',
+    'BND': '🇧🇳',
+    'BGN': '🇧🇬',
+    'DKK': '🇩🇰',
+    'BIF': '🇧🇮',
+    'CVE': '🇨🇻',
+    'KHR': '🇰🇭',
+    'DKK': '🇫🇴',
+    'CAD': '🇨🇦',
+    'KYD': '🇰🇾',
+    'DKK': '🇬🇱',
+    'EUR': '🇦🇩',
+    'CLF': '🇨🇱',
+    'CLP': '🇨🇱',
+    'CNY': '🇨🇳',
+    'EUR': '🇦🇹',
+    'EUR': '🇧🇪',
+    'COP': '🇨🇴',
+    'COU': '🇨🇴',
+    'KMF': '🇰🇲',
+    'CDF': '🇨🇩',
+    'EUR': '🇭🇷',
+    'EUR': '🇨🇾',
+    'CRC': '🇨🇷',
+    'EUR': '🇪🇪',
+    'CUC': '🇨🇺',
+    'CUP': '🇨🇺',
+    'EUR': '🇪🇺',
+    'EUR': '🇫🇮',
+    'CZK': '🇨🇿',
+    'EUR': '🇫🇷',
+    'EUR': '🇬🇫',
+    'DJF': '🇩🇯',
+    'EUR': '🇹🇫',
+    'DOP': '🇩🇴',
+    'EUR': '🇩🇪',
+    'EGP': '🇪🇬',
+    'SVC': '🇸🇻',
+    'EUR': '🇬🇷',
+    'EUR': '🇬🇵',
+    'ERN': '🇪🇷',
+    'EUR': '🇻🇦',
+    'ETB': '🇪🇹',
+    'EUR': '🇮🇪',
+    'FKP': '🇫🇰',
+    'EUR': '🇮🇹',
+    'FJD': '🇫🇯',
+    'EUR': '🇱🇻',
+    'EUR': '🇱🇹',
+    'EUR': '🇱🇺',
+    'EUR': '🇲🇹',
+    'EUR': '🇲🇶',
+    'EUR': '🇾🇹',
+    'GMD': '🇬🇲',
+    'GEL': '🇬🇪',
+    'EUR': '🇲🇨',
+    'GHS': '🇬🇭',
+    'GIP': '🇬🇮',
+    'EUR': '🇲🇪',
+    'EUR': '🇳🇱',
+    'EUR': '🇵🇹',
+    'EUR': '🇷🇪',
+    'EUR': '🇧🇱',
+    'GTQ': '🇬🇹',
+    'EUR': '🇲🇫',
+    'GNF': '🇬🇳',
+    'EUR': '🇵🇲',
+    'GYD': '🇬🇾',
+    'HTG': '🇭🇹',
+    'EUR': '🇸🇲',
+    'EUR': '🇸🇰',
+    'EUR': '🇸🇮',
+    'HNL': '🇭🇳',
+    'HKD': '🇭🇰',
+    'HUF': '🇭🇺',
+    'ISK': '🇮🇸',
+    'EUR': '🇪🇸',
+    'IDR': '🇮🇩',
+    'IRR': '🇮🇷',
+    'IQD': '🇮🇶',
+    'EUR': '🇦🇽',
+    'GBP': '🇬🇬',
+    'ILS': '🇮🇱',
+    'GBP': '🇮🇲',
+    'JMD': '🇯🇲',
+    'JPY': '🇯🇵',
+    'GBP': '🇯🇪',
+    'JOD': '🇯🇴',
+    'KZT': '🇰🇿',
+    'KES': '🇰🇪',
+    'GBP': '🇬🇧',
+    'KPW': '🇰🇵',
+    'KRW': '🇰🇷',
+    'KWD': '🇰🇼',
+    'KGS': '🇰🇬',
+    'LAK': '🇱🇦',
+    'INR': '🇧🇹',
+    'LBP': '🇱🇧',
+    'LSL': '🇱🇸',
+    'INR': '🇮🇳',
+    'LRD': '🇱🇷',
+    'LYD': '🇱🇾',
+    'MAD': '🇲🇦',
+    'MAD': '🇪🇭',
+    'NOK': '🇧🇻',
+    'MOP': '🇲🇴',
+    'MGA': '🇲🇬',
+    'MWK': '🇲🇼',
+    'MYR': '🇲🇾',
+    'MVR': '🇲🇻',
+    'NOK': '🇳🇴',
+    'NOK': '🇸🇯',
+    'NZD': '🇨🇰',
+    'NZD': '🇳🇿',
+    'MRU': '🇲🇷',
+    'MUR': '🇲🇺',
+    'NZD': '🇳🇺',
+    'MXN': '🇲🇽',
+    'MXV': '🇲🇽',
+    'NZD': '🇵🇳',
+    'MDL': '🇲🇩',
+    'NZD': '🇹🇰',
+    'MNT': '🇲🇳',
+    'USD': '🇦🇸',
+    'USD': '🇧🇶',
+    'USD': '🇮🇴',
+    'MZN': '🇲🇿',
+    'MMK': '🇲🇲',
+    'NAD': '🇳🇦',
+    'USD': '🇪🇨',
+    'USD': '🇸🇻',
+    'NPR': '🇳🇵',
+    'USD': '🇬🇺',
+    'USD': '🇭🇹',
+    'USD': '🇲🇭',
+    'NIO': '🇳🇮',
+    'USD': '🇫🇲',
+    'NGN': '🇳🇬',
+    'USD': '🇲🇵',
+    'USD': '🇵🇼',
+    'USD': '🇵🇦',
+    'USD': '🇵🇷',
+    'OMR': '🇴🇲',
+    'PKR': '🇵🇰',
+    'USD': '🇹🇱',
+    'PAB': '🇵🇦',
+    'USD': '🇹🇨',
+    'PGK': '🇵🇬',
+    'PYG': '🇵🇾',
+    'PEN': '🇵🇪',
+    'PHP': '🇵🇭',
+    'USD': '🇺🇲',
+    'PLN': '🇵🇱',
+    'USD': '🇺🇸',
+    'USD': '🇻🇬',
+    'QAR': '🇶🇦',
+    'MKD': '🇲🇰',
+    'RON': '🇷🇴',
+    'RUB': '🇷🇺',
+    'RWF': '🇷🇼',
+    'USD': '🇻🇮',
+    'XAF': '🇨🇲',
+    'SHP': '🇸🇭',
+    'XAF': '🇨🇫',
+    'XAF': '🇹🇩',
+    'XAF': '🇨🇩',
+    'XAF': '🇬🇶',
+    'XAF': '🇬🇦',
+    'WST': '🇼🇸',
+    'XCD': '🇦🇮',
+    'STN': '🇸🇹',
+    'SAR': '🇸🇦',
+    'XCD': '🇦🇬',
+    'RSD': '🇷🇸',
+    'SCR': '🇸🇨',
+    'SLE': '🇸🇱',
+    'SGD': '🇸🇬',
+    'XCD': '🇩🇲',
+    'XCD': '🇬🇩',
+    'XCD': '🇲🇸',
+    'SBD': '🇸🇧',
+    'SOS': '🇸🇴',
+    'XCD': '🇰🇳',
+    'SSP': '🇸🇸',
+    'XCD': '🇱🇨',
+    'LKR': '🇱🇰',
+    'SDG': '🇸🇩',
+    'SRD': '🇸🇷',
+    'XCD': '🇻🇨',
+    'SZL': '🇸🇿',
+    'SEK': '🇸🇪',
+    'CHE': '🇨🇭',
+    'XOF': '🇧🇯',
+    'CHW': '🇨🇭',
+    'SYP': '🇸🇾',
+    'TWD': '🇹🇼',
+    'TJS': '🇹🇯',
+    'TZS': '🇹🇿',
+    'THB': '🇹🇭',
+    'XOF': '🇧🇫',
+    'XOF': '🇨🇮',
+    'XOF': '🇬🇼',
+    'TOP': '🇹🇴',
+    'TTD': '🇹🇹',
+    'TND': '🇹🇳',
+    'TRY': '🇹🇷',
+    'TMT': '🇹🇲',
+    'XOF': '🇲🇱',
+    'XOF': '🇳🇪',
+    'UGX': '🇺🇬',
+    'UAH': '🇺🇦',
+    'AED': '🇦🇪',
+    'XOF': '🇸🇳',
+    'XOF': '🇹🇬',
+    'XPF': '🇵🇫',
+    'USN': '🇺🇸',
+    'UYI': '🇺🇾',
+    'UYU': '🇺🇾',
+    'UZS': '🇺🇿',
+    'VUV': '🇻🇺',
+    'VEF': '🇻🇪',
+    'VED': '🇻🇪',
+    'VND': '🇻🇳',
+    'XPF': '🇳🇨',
+    'XPF': '🇼🇫',
+    'ZAR': '🇱🇸',
+    'ZAR': '🇳🇦',
+    'YER': '🇾🇪',
+    'ZMW': '🇿🇲',
+    'ZWL': '🇿🇼',
+    'ZAR': '🇿🇦'"
+        };
+</script>

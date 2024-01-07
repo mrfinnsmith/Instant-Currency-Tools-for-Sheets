@@ -1,7 +1,7 @@
 function openCurrencySidebar() {
     var html = HtmlService.createTemplateFromFile('Sidebar')
       .evaluate()
-      .setTitle('My Custom Sidebar')
+      .setTitle('Currency Convertor')
       .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   SpreadsheetApp.getUi().showSidebar(html);
 }
