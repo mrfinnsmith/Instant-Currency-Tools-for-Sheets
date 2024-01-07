@@ -19,7 +19,7 @@
         var flagEmoji = currencyFlags[code] ? currencyFlags[code] + ' ' : '';
         var option = document.createElement('option');
         option.value = code;
-        option.text = flagEmoji + currencies[code] + ' (' + code + ')';
+        option.text =  currencies[code] + ' (' + code + ') ' + flagEmoji;
         if (code == defaultCurrency) option.selected = "selected";
         fromDropdown.appendChild(option.cloneNode(true));
         toDropdown.appendChild(option);
