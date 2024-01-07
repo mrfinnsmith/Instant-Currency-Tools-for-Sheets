@@ -1,0 +1,47 @@
+<script>
+      // Function to fetch available currencies from Frankfurter API and update dropdowns alphabetically
+      function updateCurrencyDropdowns() {
+        google.script.run.withSuccessHandler(function(currencies) {
+          var fromDropdown = document.getElementById('fromCurrency');
+          var toDropdown = document.getElementById('toCurrency');
+
+          // Clear existing options
+          fromDropdown.innerHTML = '';
+          toDropdown.innerHTML = '';
+
+          // Get the currency codes and sort them alphabetically
+          var currencyCodes = Object.keys(currencies).sort();
+
+          let defaultCurrency = 'USD';
+
+          // Populate the dropdowns with the currencies in alphabetical order
+          currencyCodes.forEach(function(code) {
+            var option = document.createElement('option');
+            option.value = code;
+            option.text = currencies[code] + ' (' + code + ')';
+            if (code == defaultCurrency) option.selected = "selected";
+            fromDropdown.appendChild(option.cloneNode(true));
+            toDropdown.appendChild(option);
+          });
+        }).getCurrencies();
+      }
+
+      // Call the function to update the dropdowns
+    updateCurrencyDropdowns();
+
+      function switchCurrencies() {
+        var fromDropdown = document.getElementById('fromCurrency');
+        var toDropdown = document.getElementById('toCurrency');
+        // Swapping the values of the dropdowns
+        var temp = fromDropdown.value;
+        fromDropdown.value = toDropdown.value;
+        toDropdown.value = temp;
+      }
+
+      function convert() {
+        var fromCurrency = document.getElementById('fromCurrency').value;
+        var toCurrency = document.getElementById('toCurrency').value;
+        var convertEntireSheet = document.getElementById('convertEntireSheet').checked;        
+        google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet);
+      }
+    </script>
