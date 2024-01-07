@@ -1,8 +1,13 @@
 function openCurrencySidebar() {
-  var html = HtmlService.createHtmlOutputFromFile('Sidebar')
-      .setTitle('Currency Converter')
-      .setWidth(300);
+    var html = HtmlService.createTemplateFromFile('Sidebar')
+      .evaluate()
+      .setTitle('My Custom Sidebar')
+      .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   SpreadsheetApp.getUi().showSidebar(html);
+}
+
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
 
 // Function to fetch available currencies from Frankfurter API and return as JSON string
