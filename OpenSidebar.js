@@ -1,3 +1,7 @@
+function onOpen() {
+  openCurrencySidebar();
+}
+
 function openCurrencySidebar() {
     var html = HtmlService.createTemplateFromFile('Sidebar')
       .evaluate()
