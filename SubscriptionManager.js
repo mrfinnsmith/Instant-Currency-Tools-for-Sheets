@@ -1,27 +1,38 @@
-// SubscriptionManager.js
+// Assumes addition of Google Apps Script CacheService for efficient subscription status management
 
-// Description: Manages user subscription states using Google Apps Script's Script Properties.
+// Globals
+var cache = CacheService.getScriptCache();
 
-// Function to update the subscription status of a user
+// Updates the subscription status of a user and caches it
 function updateSubscriptionStatus(email, status) {
-    // Description: Updates the subscription status (e.g., 'active', 'cancelled') of a user identified by email
-    // Code: Logic to store the status in Script Properties keyed by user email
+    var statusKey = email + "_status";
+    cache.put(statusKey, status, 21600); // Cache for 6 hours
+    PropertiesService.getScriptProperties().setProperty(statusKey, status);
 }
 
-// Function to check the subscription status of a user
+// Checks and returns the current subscription status of a user from cache or properties
 function checkSubscriptionStatus(email) {
-    // Description: Checks and returns the current subscription status of a user identified by email
-    // Code: Logic to retrieve the subscription status from Script Properties
+    var statusKey = email + "_status";
+    var cachedStatus = cache.get(statusKey);
+
+    if (cachedStatus) {
+        return cachedStatus;
+    } else {
+        var storedStatus = PropertiesService.getScriptProperties().getProperty(statusKey);
+        if (storedStatus) {
+            cache.put(statusKey, storedStatus, 21600); // Refresh cache for 6 hours
+        }
+        return storedStatus || "none"; // Default to "none" if no status is found
+    }
 }
 
-// Function to process a new subscription event from Stripe
+// Processes a new subscription event, updates status, and caches it
 function handleNewSubscription(email, customerId, isTrial) {
-    // Description: Processes a new subscription event, updating status as 'trial' or 'active'
-    // Code: Logic to update the subscription status in Script Properties
+    var newStatus = isTrial ? "trial" : "active";
+    updateSubscriptionStatus(email, newStatus);
 }
 
-// Function to process a subscription cancellation event from Stripe
+// Processes a subscription cancellation event, updates status, and caches it
 function handleSubscriptionCancellation(email, customerId) {
-    // Description: Processes a subscription cancellation event, updating status as 'cancelled'
-    // Code: Logic to update the subscription status in Script Properties
+    updateSubscriptionStatus(email, "cancelled");
 }
