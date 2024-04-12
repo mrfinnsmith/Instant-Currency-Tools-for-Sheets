@@ -6,13 +6,14 @@ function getFirebaseProjectId() {
     return scriptProperties.getProperty('FIREBASE_PROJECT_ID');
 }
 
-// Example function to update the subscription status in Firebase
-function updateSubscriptionStatus(email, status) {
+// Function to update the subscription status in Firebase
+function updateSubscriptionStatus(email, customerId, status) {
     var firebaseProjectId = getFirebaseProjectId();
     var url = 'https://firestore.googleapis.com/v1/projects/' + firebaseProjectId + '/databases/(default)/documents/subscriptions/' + encodeURIComponent(email);
     
     var data = {
         fields: {
+            customerId: { stringValue: customerId },
             status: { stringValue: status },
             lastUpdated: { timestampValue: new Date().toISOString() }
         }
@@ -32,7 +33,7 @@ function updateSubscriptionStatus(email, status) {
     console.log(response.getContentText());
 }
 
-// Function to check the subscription status from Firebase
+// Function to check the subscription status from Firebase using email
 function checkSubscriptionStatus(email) {
     var firebaseProjectId = getFirebaseProjectId();
     var url = 'https://firestore.googleapis.com/v1/projects/' + firebaseProjectId + '/databases/(default)/documents/subscriptions/' + encodeURIComponent(email);
@@ -49,8 +50,8 @@ function checkSubscriptionStatus(email) {
     var response = UrlFetchApp.fetch(url, options);
     var doc = JSON.parse(response.getContentText());
     if (doc.fields && doc.fields.status && doc.fields.status.stringValue) {
-        return doc.fields.status.stringValue;
+        return { customerId: doc.fields.customerId.stringValue, status: doc.fields.status.stringValue };
     } else {
-        return "none"; // Default status if not found
+        return { customerId: null, status: "none" }; // Default if not found
     }
 }
