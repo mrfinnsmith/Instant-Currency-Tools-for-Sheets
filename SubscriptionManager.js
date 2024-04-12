@@ -1,38 +1,56 @@
-// Assumes addition of Google Apps Script CacheService for efficient subscription status management
-
-// Globals
 var cache = CacheService.getScriptCache();
 
-// Updates the subscription status of a user and caches it
+// Function to retrieve the Firebase Project ID from script properties
+function getFirebaseProjectId() {
+    var scriptProperties = PropertiesService.getScriptProperties();
+    return scriptProperties.getProperty('FIREBASE_PROJECT_ID');
+}
+
+// Example function to update the subscription status in Firebase
 function updateSubscriptionStatus(email, status) {
-    var statusKey = email + "_status";
-    cache.put(statusKey, status, 21600); // Cache for 6 hours
-    PropertiesService.getScriptProperties().setProperty(statusKey, status);
-}
-
-// Checks and returns the current subscription status of a user from cache or properties
-function checkSubscriptionStatus(email) {
-    var statusKey = email + "_status";
-    var cachedStatus = cache.get(statusKey);
-
-    if (cachedStatus) {
-        return cachedStatus;
-    } else {
-        var storedStatus = PropertiesService.getScriptProperties().getProperty(statusKey);
-        if (storedStatus) {
-            cache.put(statusKey, storedStatus, 21600); // Refresh cache for 6 hours
+    var firebaseProjectId = getFirebaseProjectId();
+    var url = 'https://firestore.googleapis.com/v1/projects/' + firebaseProjectId + '/databases/(default)/documents/subscriptions/' + encodeURIComponent(email);
+    
+    var data = {
+        fields: {
+            status: { stringValue: status },
+            lastUpdated: { timestampValue: new Date().toISOString() }
         }
-        return storedStatus || "none"; // Default to "none" if no status is found
+    };
+
+    var options = {
+        method: 'PATCH',
+        contentType: 'application/json',
+        headers: {
+            'Authorization': 'Bearer ' + ScriptApp.getOAuthToken()
+        },
+        payload: JSON.stringify({fields: data.fields}),
+        muteHttpExceptions: true
+    };
+
+    var response = UrlFetchApp.fetch(url, options);
+    console.log(response.getContentText());
+}
+
+// Function to check the subscription status from Firebase
+function checkSubscriptionStatus(email) {
+    var firebaseProjectId = getFirebaseProjectId();
+    var url = 'https://firestore.googleapis.com/v1/projects/' + firebaseProjectId + '/databases/(default)/documents/subscriptions/' + encodeURIComponent(email);
+
+    var options = {
+        method: 'GET',
+        contentType: 'application/json',
+        headers: {
+            'Authorization': 'Bearer ' + ScriptApp.getOAuthToken()
+        },
+        muteHttpExceptions: true
+    };
+
+    var response = UrlFetchApp.fetch(url, options);
+    var doc = JSON.parse(response.getContentText());
+    if (doc.fields && doc.fields.status && doc.fields.status.stringValue) {
+        return doc.fields.status.stringValue;
+    } else {
+        return "none"; // Default status if not found
     }
-}
-
-// Processes a new subscription event, updates status, and caches it
-function handleNewSubscription(email, customerId, isTrial) {
-    var newStatus = isTrial ? "trial" : "active";
-    updateSubscriptionStatus(email, newStatus);
-}
-
-// Processes a subscription cancellation event, updates status, and caches it
-function handleSubscriptionCancellation(email, customerId) {
-    updateSubscriptionStatus(email, "cancelled");
 }
