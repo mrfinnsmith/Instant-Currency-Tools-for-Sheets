@@ -18,24 +18,27 @@ function doPost(e) {
           break;
   }
 
-  return ContentService.createTextOutput(JSON.stringify({ success: true }))
+  return ContentService.createTextOutput(JSON.stringify({success: true}))
                        .setMimeType(ContentService.MimeType.JSON);
 }
 
 function handleSubscriptionCreated(subscriptionData) {
-  var customerId = subscriptionData.customer; // Extract the customer ID from the subscription data
+  var email = subscriptionData.metadata.email; // Retrieve email from subscription metadata
+  var customerId = subscriptionData.customer;
   var status = 'active'; // Default status for new subscriptions
-  SubscriptionManager.updateSubscriptionStatus(customerId, status);
+  SubscriptionManager.updateSubscriptionStatus(email, customerId, status);
 }
 
 function handleSubscriptionUpdated(subscriptionData) {
-  var customerId = subscriptionData.customer; // Extract the customer ID
-  var status = subscriptionData.status; // Status directly from the subscription update data
-  SubscriptionManager.updateSubscriptionStatus(customerId, status);
+  var email = subscriptionData.metadata.email; // Retrieve email from subscription metadata
+  var customerId = subscriptionData.customer;
+  var status = subscriptionData.status; // Status from the subscription update data
+  SubscriptionManager.updateSubscriptionStatus(email, customerId, status);
 }
 
 function handleSubscriptionDeleted(subscriptionData) {
-  var customerId = subscriptionData.customer; // Extract the customer ID
+  var email = subscriptionData.metadata.email; // Retrieve email from subscription metadata
+  var customerId = subscriptionData.customer;
   var status = 'cancelled'; // Set status for cancelled subscriptions
-  SubscriptionManager.updateSubscriptionStatus(customerId, status);
+  SubscriptionManager.updateSubscriptionStatus(email, customerId, status);
 }
