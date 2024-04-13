@@ -13,6 +13,10 @@
       <!-- Dropdown for "to currency" -->
     </select>
     <button onclick="switchCurrencies()">Switch</button>
+    <div id="historicalRatePicker" class="premium-feature">
+      <label for="datePicker">Pick a Date:</label>
+      <input type="date" id="datePicker" disabled>
+    </div>
     <div>
       <input type="radio" id="hardcode" name="conversionType" value="hardcode" checked>
       <label for="hardcode">Replace with new values</label><br>
