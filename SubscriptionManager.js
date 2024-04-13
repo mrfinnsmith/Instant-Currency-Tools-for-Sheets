@@ -6,7 +6,7 @@ function getFirebaseProjectId() {
     return scriptProperties.getProperty('FIREBASE_PROJECT_ID');
 }
 
-// Function to update the subscription status in Firebase
+// Function to update the subscription status in Firebase and Cache
 function updateSubscriptionStatus(email, customerId, status) {
     var firebaseProjectId = getFirebaseProjectId();
     var url = 'https://firestore.googleapis.com/v1/projects/' + firebaseProjectId + '/databases/(default)/documents/subscriptions/' + encodeURIComponent(email);
@@ -31,10 +31,20 @@ function updateSubscriptionStatus(email, customerId, status) {
 
     var response = UrlFetchApp.fetch(url, options);
     console.log(response.getContentText());
+
+    // Update cache with the new status
+    cache.put(email, status, 21600); // Cache for 6 hours
 }
 
-// Function to check the subscription status from Firebase using email
+// Function to check the subscription status from Firebase using email, with cache check
 function checkSubscriptionStatus(email) {
+    // First try to get the status from cache
+    var cachedStatus = cache.get(email);
+    if (cachedStatus) {
+        return { email: email, status: cachedStatus };
+    }
+
+    // If not in cache, fetch from Firebase
     var firebaseProjectId = getFirebaseProjectId();
     var url = 'https://firestore.googleapis.com/v1/projects/' + firebaseProjectId + '/databases/(default)/documents/subscriptions/' + encodeURIComponent(email);
 
@@ -50,8 +60,10 @@ function checkSubscriptionStatus(email) {
     var response = UrlFetchApp.fetch(url, options);
     var doc = JSON.parse(response.getContentText());
     if (doc.fields && doc.fields.status && doc.fields.status.stringValue) {
-        return { customerId: doc.fields.customerId.stringValue, status: doc.fields.status.stringValue };
+        var status = doc.fields.status.stringValue;
+        cache.put(email, status, 21600); // Cache for 6 hours
+        return { email: email, status: status };
     } else {
-        return { customerId: null, status: "none" }; // Default if not found
+        return { email: email, status: "none" }; // Default if not found
     }
 }
