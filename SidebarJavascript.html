@@ -48,6 +48,36 @@ updateCurrencyDropdowns();
     google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType);
   }
 
+  function addTooltipListeners() {
+    const premiumFeatures = document.querySelectorAll('.premium-feature');
+    premiumFeatures.forEach(feature => {
+      const tooltip = document.createElement('span');
+      tooltip.className = 'tooltip';
+      tooltip.textContent = 'This feature requires a premium subscription.';
+      tooltip.style.visibility = 'hidden';
+      tooltip.style.position = 'absolute';
+      tooltip.style.backgroundColor = 'black';
+      tooltip.style.color = 'white';
+      tooltip.style.borderRadius = '5px';
+      tooltip.style.padding = '5px';
+      tooltip.style.marginTop = '20px';
+      feature.appendChild(tooltip);
+
+      feature.addEventListener('mouseover', () => {
+        tooltip.style.visibility = 'visible';
+      });
+      feature.addEventListener('mouseout', () => {
+        tooltip.style.visibility = 'hidden';
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    updateCurrencyDropdowns();
+    addTooltipListeners();
+  });
+
+
 const currencyFlags = {
   'AFN': '🇦🇫',
   'ALL': '🇦🇱',
