@@ -3,22 +3,6 @@
 <head>
   <base target="_top">
   <?!= include('css'); ?>
-  <style>
-    .subscription-status {
-      padding: 10px;
-      margin-top: 20px;
-      text-align: center;
-      border-radius: 5px;
-    }
-    .active {
-      background-color: #D4EDDA;
-      color: #155724;
-    }
-    .inactive {
-      background-color: #F8D7DA;
-      color: #721C24;
-    }
-  </style>
 </head>
 <body>
   <div class="conversion-tool">
@@ -28,7 +12,7 @@
     <select id="toCurrency">
       <!-- Dropdown for "to currency" -->
     </select>
-    <button onclick="switchCurrencies()">Switch</button> <!-- Added Switch button here -->
+    <button onclick="switchCurrencies()">Switch</button>
     <div>
       <input type="radio" id="hardcode" name="conversionType" value="hardcode" checked>
       <label for="hardcode">Replace with new values</label><br>
@@ -39,27 +23,8 @@
       <input type="checkbox" id="convertEntireSheet">
       <label for="convertEntireSheet">Convert entire sheet</label>
     </div>
-    <button onclick="convert()">Convert</button> <!-- Added button here -->
-  </div>
-  <!-- Subscription Status Display -->
-  <div id="subscriptionStatus" class="subscription-status inactive">
-    Subscription status: Checking...
+    <button onclick="convert()">Convert</button>
   </div>
   <?!= include('SidebarJavascript'); ?>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      google.script.run.withSuccessHandler(function(status) {
-        // Update subscription status display based on the server response
-        var statusDiv = document.getElementById('subscriptionStatus');
-        if (status === 'active') {
-          statusDiv.className = 'subscription-status active';
-          statusDiv.textContent = 'Subscription Status: Active';
-        } else {
-          statusDiv.className = 'subscription-status inactive';
-          statusDiv.textContent = 'Subscription Status: Inactive - Upgrade for premium features!';
-        }
-      }).checkSubscriptionStatus();
-    });
-  </script>
 </body>
 </html>
