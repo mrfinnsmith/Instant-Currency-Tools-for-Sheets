@@ -1,53 +1,61 @@
 function updateECBRates() {
   const currentOffsetData = getCurrentUtcOffset("Europe/Berlin");
-  
   if (currentOffsetData.error) {
     console.error('Error fetching UTC offset:', currentOffsetData.error);
     return;
   }
 
   const cetTime = new Date(new Date().getTime() + parseInt(currentOffsetData.utcOffset) * 3600 * 1000);
-  const targetTime = new Date(cetTime.toISOString().split('T')[0] + 'T4:45:00Z');
+  const targetTime = new Date(cetTime.toISOString().split('T')[0] + 'T16:45:00Z');
 
   if (cetTime < targetTime) {
     console.log('It is not yet 16:45 CET/CEST. Exiting.');
     return;
   }
 
-// Script property to keep track of whether we've already updated done our daily update of currencies. If we have, exit.
-
   const scriptProperties = PropertiesService.getScriptProperties();
   let lastDailyUpdate = scriptProperties.getProperty('firebaseLastDailyUpdate');
-
   const todayDate = Utilities.formatDate(new Date(), "GMT", "yyyy-MM-dd");
 
-  if (lastDailyUpdate == todayDate) {
-    console.log('Checking at ' + new Date() + ', but according to firebaseLastDailyUpdate, we have already completed our daily currency rate update.');
+  if (lastDailyUpdate === todayDate) {
+    console.log('Daily update already completed for today.');
     return;
   }
 
-// Originally got all currencies from Frankfurter app, now getting top 5 currencies.
-// const currencies = fetchAllCurrencies();
-  const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'AUD'];
-
   let updatedSuccessfully = true;
+
+  const currencies = ['CAD','MXN','USD', 'EUR', 'GBP', 'JPY', 'AUD'];
+  let allRateData = {};
+
+  const cache = CacheService.getScriptCache();
 
   currencies.forEach(baseCurrency => {
     currencies.forEach(targetCurrency => {
       if (baseCurrency !== targetCurrency) {
         const rateData = fetchRate(baseCurrency, targetCurrency);
         if (rateData && !rateData.error) {
-          updateCacheAndFirestore(baseCurrency, targetCurrency, rateData);
+          let currencyPairKey = `${baseCurrency}_${targetCurrency}`;
+          allRateData[currencyPairKey] = {
+            [rateData.rateDate]: {
+              rate: rateData.rate,
+              lastUpdated: rateData.lastChecked
+            }
+          };
+
+          let cacheKey = `${baseCurrency}_${targetCurrency}`;
+          cache.put(cacheKey, JSON.stringify(allRateData[currencyPairKey][rateData.rateDate]), 90000); // Cache for 25 hours
+
         } else {
-          updatedSuccessfully = false;
           console.error(`Failed to fetch rate from ${baseCurrency} to ${targetCurrency}: ${rateData.error}`);
+          updatedSuccessfully = false;
         }
       }
     });
   });
 
-  if (updatedSuccessfully) {
-    scriptProperties.setProperty('lastDailyUpdate', todayDate);
+  if (Object.keys(allRateData).length > 0) {
+    updateFirebaseDatabase(allRateData);
+    if (updatedSuccessfully) scriptProperties.setProperty('firebaseLastDailyUpdate', todayDate);
   }
 }
 
@@ -91,34 +99,20 @@ function fetchRate(baseCurrency, targetCurrency) {
   }
 }
 
-function updateCacheAndFirestore(baseCurrency, targetCurrency, data) {
+function updateFirebaseDatabase(allRateData) {
 
   var service = getOAuthService();
 
   if (service.hasAccess()) {
 
-    const cacheKey = `${baseCurrency}_${targetCurrency}`;
-    const cache = CacheService.getScriptCache();
-    cache.put(cacheKey, JSON.stringify(data), 90000); // Cache for 25 hours
-
     const scriptProperties = PropertiesService.getScriptProperties();
 
     const firebaseDatabaseUrl = scriptProperties.getProperty('firebaseDatabaseUrl') + '/rates/ECB.json';
 
-    let payloadData = {};
-    let currencyPairKey = data.fromCurrency + '_' + data.toCurrency;
-    
-    payloadData[currencyPairKey] = {
-      [data.rateDate]: {
-        rate: data.rate,
-        lastUpdated: data.lastChecked
-      }
-    };
-
     const options = {
       method: 'PATCH',  // Use PUT to overwrite the specific date node or PATCH to update parts of it
       contentType: 'application/json',
-      payload: JSON.stringify(payloadData),  // Ensuring the payload is correctly formatted as JSON
+      payload: JSON.stringify(allRateData),
       headers: {
         Authorization: 'Bearer ' + service.getAccessToken(),
       },
@@ -126,7 +120,7 @@ function updateCacheAndFirestore(baseCurrency, targetCurrency, data) {
     };
 
     try {
-      let response = UrlFetchApp.fetch('https://instant-currency-tools-sheets-default-rtdb.firebaseio.com/rates/ECB.json', options);
+      let response = UrlFetchApp.fetch(firebaseDatabaseUrl, options);
       console.log('Updated Firebase DB. Response Content:', response.getContentText());    
     } catch (error) {
       console.log('Failed to update Firebase:', error.toString());
