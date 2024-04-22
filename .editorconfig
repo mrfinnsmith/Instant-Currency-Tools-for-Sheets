@@ -3,14 +3,18 @@
 # top-most EditorConfig file
 root = true
 
-# Unix-style newlines with a newline ending every file
+# Universal settings, applied to all files
 [*]
+charset = utf-8
 end_of_line = lf
 insert_final_newline = true
+trim_trailing_whitespace = true
 
-# Matches multiple files with brace expansion notation
-[*.{js,py,css,html}]
-charset = utf-8
+# JavaScript and HTML files
+[*.{js,html}]
 indent_style = space
-indent_size = 4
+indent_size = 2
 
+# Specific settings for HTML
+[*.html]
+max_line_length = 120
