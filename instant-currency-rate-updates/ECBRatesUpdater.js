@@ -6,7 +6,14 @@ function addDataToMongoDB(dataToInsert) {
   var collectionName = scriptProperties.getProperty('mongoDbCollectionName'); // Replace with your actual collection name
 
   var url = baseUrl + '/action/insertOne';
-
+  /*var dataToInsert = {
+    'AUD_EUR': {
+      '2019-03-12': {
+        'rate': 1.2,
+        'lastUpdated': new Date().toISOString()
+      }
+    }
+  };*/
   var payload = JSON.stringify({
     dataSource: scriptProperties.getProperty('mongoDbClusterName'), // Replace with your actual cluster name
     database: dbName,
