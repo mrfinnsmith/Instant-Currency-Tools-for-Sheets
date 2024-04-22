@@ -47,7 +47,7 @@ function updateECBRates() {
    }
 
    const cetTime = new Date(new Date().getTime() + parseInt(currentOffsetData.utcOffset) * 3600 * 1000);
-   const targetTime = new Date(cetTime.toISOString().split('T')[0] + 'T1:45:00Z');
+   const targetTime = new Date(cetTime.toISOString().split('T')[0] + 'T16:45:00Z');
 
    if (cetTime < targetTime) {
       console.log('It is not yet 16:45 CET/CEST. Exiting.');
