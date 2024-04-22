@@ -48,7 +48,7 @@ function updateECBRates() {
    }
 
    const scriptProperties = PropertiesService.getScriptProperties();
-   let lastDailyUpdate = scriptProperties.getProperty('firebaseLastDailyUpdate');
+   let lastDailyUpdate = scriptProperties.getProperty('mongoDbLastDailyUpdate');
    const todayDate = Utilities.formatDate(new Date(), "GMT", "yyyy-MM-dd");
 
    if (lastDailyUpdate === todayDate) {
@@ -89,7 +89,7 @@ function updateECBRates() {
 
    if (Object.keys(allRateData).length > 0 && updatedSuccessfully) {
       addDataToMongoDB(allRateData);
-      //scriptProperties.setProperty('firebaseLastDailyUpdate', todayDate);
+      scriptProperties.setProperty('mongoDbLastDailyUpdate', todayDate);
    }
 }
 
