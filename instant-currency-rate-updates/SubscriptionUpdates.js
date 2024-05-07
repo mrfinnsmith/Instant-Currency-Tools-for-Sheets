@@ -122,12 +122,3 @@ function fetchExpandedCheckoutSession(sessionId) {
     return null;
   }
 }
-
-function testApi(){
-  const sessionId = 'cs_test_a1StAHzmr1qpHtYiFFNRk3TD8Eo7omg67RiCUYnyIzD9iXDKyODCeNVaAh';
-  let expandedSession = fetchExpandedCheckoutSession(sessionId);
-
-  if (expandedSession && expandedSession.line_items) {
-    console.log('expandedSession.line_items: ' + JSON.stringify(expandedSession.line_items))
-  }
-}
