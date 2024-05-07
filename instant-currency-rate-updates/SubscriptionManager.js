@@ -7,52 +7,52 @@ function updateMongoDBSubscription(extractedData) {
   const collectionName = scriptProperties.getProperty('mongoDbSubcriptionCollectionName');
   const updateUrl = baseUrl + "/action/updateOne";
 
-  var updatePayload = {
-    dataSource: clusterName,
-    database: dbName,
-    collection: collectionName,
-    filter: { "email": extractedData.email },
-    update: {
-      $set: {
-        "email": extractedData.email,
-        ["products." + extractedData.product + ".stripeCustomerId"]: extractedData.customerId,
-        ["products." + extractedData.product + ".status"]: "active",
-        ["products." + extractedData.product + ".lastUpdated"]: new Date().toISOString()
+  // Iterate over each product in the extracted data
+  extractedData.products.forEach(product => {
+    let updatePayload = {
+      dataSource: clusterName,
+      database: dbName,
+      collection: collectionName,
+      filter: { "email": extractedData.email },
+      update: {
+        $set: {
+          ["products." + product.productId + ".productName"]: product.productName,
+          ["products." + product.productId + ".stripeCustomerId"]: extractedData.customerId,
+          ["products." + product.productId + ".status"]: "active",
+          ["products." + product.productId + ".lastUpdated"]: new Date().toISOString()
+        },
+        $setOnInsert: {
+          "email": extractedData.email  // Set email only on document creation
+        }
       },
-      $setOnInsert: {
-        ["products." + extractedData.product + ".comments"]: "Initial setup."
+      upsert: true  // Ensure that if the document doesn't exist, it's created
+    };
+
+    let options = {
+      method: 'post',
+      contentType: 'application/json',
+      headers: {
+        'api-key': apiKey
+      },
+      payload: JSON.stringify(updatePayload),
+      muteHttpExceptions: true
+    };
+
+    try {
+      let response = UrlFetchApp.fetch(updateUrl, options);
+      let responseData = JSON.parse(response.getContentText());
+      if (responseData.ok && responseData.upsertedId) {
+        console.log('New document created with ID:', responseData.upsertedId);
+      } else if (responseData.ok) {
+        console.log('Document updated successfully');
+      } else {
+        console.log('No documents were modified, check filter and data correctness.');
       }
-    },
-    upsert: true
-  };
-
-  var options = {
-    method: 'post',
-    contentType: 'application/json',
-    headers: {
-      'api-key': apiKey
-    },
-    payload: JSON.stringify(updatePayload),
-    muteHttpExceptions: true
-  };
-
-  try {
-    var response = UrlFetchApp.fetch(updateUrl, options);
-    var responseData = JSON.parse(response.getContentText());
-    if (responseData.ok && responseData.upsertedId) {
-      console.log('New document created with ID:', responseData.upsertedId);
-    } else if (responseData.ok) {
-      console.log('Document updated successfully');
-    } else {
-      console.log('No documents were modified, check filter and data correctness.');
+    } catch (error) {
+      console.error('Failed to add/update subscription:', error.toString());
     }
-  } catch (error) {
-    console.error('Failed to add/update subscription:', error.toString());
-  }
-  console.log('Request payload:', JSON.stringify(updatePayload));
-  console.log('MongoDB Response:', response.getContentText());
+  });
 }
-
 
 function testUpdateMongoDBSubscription() {
   // Create dummy data for testing based on the structure of extractedData
