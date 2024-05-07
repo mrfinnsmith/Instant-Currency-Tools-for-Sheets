@@ -28,7 +28,7 @@ function doPost(e) {
 
     // Continue with existing logic only if data was successfully extracted
     if (extractedData) {
-      logEventDataToSheet(extractedData);
+      logCheckoutEventToSheet(extractedData);
       updateMongoDBSubscription(extractedData);
     } else {
       console.log('No data extracted for logging or database update due to previous errors.');
@@ -114,7 +114,7 @@ function parseCheckoutEventData(event, lineItemsData) {
   return productsData;
 }
 
-function logEventDataToSheet(productsData) {
+function logCheckoutEventToSheet(productsData) {
   const logSsId = scriptProperties.getProperty('LOG_SPREADSHEET_ID');
   const logSpreadsheet = SpreadsheetApp.openById(logSsId);
   const logSheetId = scriptProperties.getProperty('LOG_SHEET_ID');
