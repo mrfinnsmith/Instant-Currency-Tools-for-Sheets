@@ -6,11 +6,11 @@ function main() {
   */
 
   const scriptProperties = PropertiesService.getScriptProperties();
-  const mongoDbLastDailyUpdate = scriptProperties.getProperty('mongoDbLastDailyUpdate');
+  const mongoDbLastDailyUpdate = scriptProperties.getProperty('MONGO-LAST-DAILY-UPDATE');
 
   // If we've already udpated everything today, stop.
-  if (mongoDbLastDailyUpdate === todayDate) {
-    console.log('mongoDbLastDailyUpdate is ' + mongoDbLastDailyUpdate + '. todayDate is ' + todayDate + '. Top exchange rates have already been updated today.');
+  if (mongoDbLastDailyUpdate === todaysDate) {
+    console.log('MONGO-LAST-DAILY-UPDATE is ' + mongoDbLastDailyUpdate + '. Today (todaysDate) is ' + todaysDate + '. Top exchange rates have already been updated today.');
     return;
   }
 
