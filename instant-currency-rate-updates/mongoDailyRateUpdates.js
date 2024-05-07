@@ -1,4 +1,4 @@
-const todayDate = new Date().toISOString().split('T')[0];
+const todaysDate = new Date().toISOString().split('T')[0];
 
 function main() {
   /* 
@@ -55,7 +55,7 @@ function main() {
     let updatedSuccessfully = updateTopECBCurrencies();
 
     if (true /*updatedSuccessfully*/) {
-      scriptProperties.setProperty('mongoDbLastDailyUpdate', todayDate);
+      scriptProperties.setProperty('MONGO-LAST-DAILY-UPDATE', todaysDate);
     }
   } else {
     console.log('It is not yet 4:45 PM in CET');
@@ -92,8 +92,8 @@ function updateTopECBCurrencies() {
         let newRate = fetchedRateData.rate;
         let lastUpdated = fetchedRateData.lastChecked;
         
-        if (newDate < todayDate) {
-          console.log('newDate for ' + baseCurrency + ' and ' + targetCurrency + ' is ' + newDate + '. todayDate is ' + todayDate + ', so the "new" currency information is old. Moving to the next currency pair.');
+        if (newDate < todaysDate) {
+          console.log('newDate for ' + baseCurrency + ' and ' + targetCurrency + ' is ' + newDate + '. todaysDate is ' + todaysDate + ', so the "new" currency information is old. Moving to the next currency pair.');
           noIssuesUpdating = false;
         } else {
           const currencyPairKey = `${baseCurrency}_${targetCurrency}`;
