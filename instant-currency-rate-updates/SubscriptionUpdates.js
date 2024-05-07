@@ -72,7 +72,7 @@ function logEventDataToSheet(productsData) {
   });
 
   if (!logSheet) {
-    console.log("Log sheet not found.");
+    console.error("Log sheet not found.");
     return;
   }
 
