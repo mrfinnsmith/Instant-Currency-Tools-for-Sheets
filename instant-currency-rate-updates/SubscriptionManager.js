@@ -6,6 +6,7 @@ function updateMongoDBSubscription(extractedData) {
   const dbName = scriptProperties.getProperty('mongoDbDatabaseName');
   const collectionName = scriptProperties.getProperty('mongoDbSubcriptionCollectionName');
   const updateUrl = baseUrl + "/action/updateOne";
+console.log("Extracted Data for MongoDB:", JSON.stringify(extractedData));
 
   // Iterate over each product in the extracted data
   extractedData.products.forEach(product => {
