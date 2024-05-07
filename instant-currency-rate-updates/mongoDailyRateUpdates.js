@@ -54,7 +54,7 @@ function main() {
     // Should return true or false
     let updatedSuccessfully = updateTopECBCurrencies();
 
-    if (true /*updatedSuccessfully*/) {
+    if (updatedSuccessfully) {
       scriptProperties.setProperty('MONGO-LAST-DAILY-UPDATE', todaysDate);
     }
   } else {
