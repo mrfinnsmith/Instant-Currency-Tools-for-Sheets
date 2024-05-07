@@ -76,19 +76,58 @@ function logEventDataToSheet(productsData) {
     return;
   }
 
-  let lastRow = logSheet.getLastRow() + 1;
-  let time = Utilities.formatDate(new Date(), "GMT+08:00", "MM/dd/yy, h:mm a");
+  // Append a row for each product in the productsData array
+  productsData.forEach(product => {
+    let time = Utilities.formatDate(new Date(), "GMT+08:00", "MM/dd/yy, h:mm a");
+    logSheet.appendRow([
+      time,
+      product.eventType,
+      product.productId, 
+      product.productName,
+      product.email,
+      product.customerId,
+      product.amount,
+      product.currency,
+      product.transactionDate,
+      product.paymentMethod,
+      product.data
+    ]);
+  });
+}
 
-  logSheet.appendRow([
-    time,
-    extractedData.eventType,
-    extractedData.product,
-    extractedData.email,
-    extractedData.customerId,
-    extractedData.amount,
-    extractedData.currency,
-    extractedData.transactionDate,
-    extractedData.paymentMethod,
-    extractedData.data
-  ]);
+function fetchExpandedCheckoutSession(sessionId) {
+  const stripeApiKey = scriptProperties.getProperty('STRIPE_API_KEY');
+  const url = `https://api.stripe.com/v1/checkout/sessions/${sessionId}?expand[]=line_items`;
+    
+  const options = {
+    method: 'get',
+    headers: {
+      'Authorization': `Bearer ${stripeApiKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    muteHttpExceptions: true
+  };
+
+  try {
+    const response = UrlFetchApp.fetch(url, options);
+    if (response.getResponseCode() === 200) {
+      const responseData = JSON.parse(response.getContentText());
+      return responseData;
+    } else {
+      console.error('Failed to fetch session data:', response.getContentText());
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching session data:', error.toString());
+    return null;
+  }
+}
+
+function testApi(){
+  const sessionId = 'cs_test_a1StAHzmr1qpHtYiFFNRk3TD8Eo7omg67RiCUYnyIzD9iXDKyODCeNVaAh';
+  let expandedSession = fetchExpandedCheckoutSession(sessionId);
+
+  if (expandedSession && expandedSession.line_items) {
+    console.log('expandedSession.line_items: ' + JSON.stringify(expandedSession.line_items))
+  }
 }
