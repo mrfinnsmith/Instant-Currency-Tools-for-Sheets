@@ -19,7 +19,7 @@ function doPost(e) {
     let extractedData;
 
     if (expandedSession && expandedSession.line_items) {
-      extractedData = extractEventData(event, expandedSession.line_items.data);
+      extractedData = parseCheckoutEventData(event, expandedSession.line_items.data);
       // Log details about the extracted data for verification
       console.log('Extracted line items data:', JSON.stringify(extractedData));
     } else {
@@ -94,7 +94,7 @@ function updateMongoDBSubscription(extractedData) {
   });
 }
 
-function extractEventData(event, lineItemsData) {
+function parseCheckoutEventData(event, lineItemsData) {
   const eventData = event.data.object;
 
   // Extract an array of objects, each containing data about a product
