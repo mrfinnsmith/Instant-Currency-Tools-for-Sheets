@@ -1,48 +1,55 @@
 var cache = CacheService.getScriptCache();
 
-// Function to retrieve the Firebase Project ID from script properties
-function getFirebaseProjectId() {
+// Function to retrieve MongoDB API properties from script properties
+function getMongoDBProperties() {
     var scriptProperties = PropertiesService.getScriptProperties();
-    return scriptProperties.getProperty('FIREBASE_PROJECT_ID');
-}
-
+    return {
+        apiKey: scriptProperties.getProperty('mongoDbApiKey'),
+        baseUrl: scriptProperties.getProperty('mongoDbBaseUrl'),
+        dbName: scriptProperties.getProperty('mongoDbDatabaseName'),
+        collectionName: 'subscriptions', // Collection name for subscriptions
+        clusterName: scriptProperties.getProperty('mongoDbClusterName') // Assuming similar property is set
     };
-
-    var response = UrlFetchApp.fetch(url, options);
-    console.log(response.getContentText());
-
-    // Update cache with the new status
-    cache.put(email, status, 21600); // Cache for 6 hours
 }
 
-// Function to check the subscription status from Firebase using email, with cache check
-function checkSubscriptionStatus(email) {
-    // First try to get the status from cache
-    var cachedStatus = cache.get(email);
-    if (cachedStatus) {
-        return { email: email, status: cachedStatus };
+// Function to check the subscription status from MongoDB using email, with cache check
+function checkMongoDBSubscriptionStatus(email) {
+    var props = getMongoDBProperties();
+    var cachedData = cache.get(email);
+    if (cachedData) {
+        return { email: email, data: JSON.parse(cachedData) };
     }
 
-    // If not in cache, fetch from Firebase
-    var firebaseProjectId = getFirebaseProjectId();
-    var url = 'https://firestore.googleapis.com/v1/projects/' + firebaseProjectId + '/databases/(default)/documents/subscriptions/' + encodeURIComponent(email);
+    var url = props.baseUrl + '/find';
+    var query = {
+        dataSource: props.clusterName,
+        database: props.dbName,
+        collection: props.collectionName,
+        filter: { "email": email }
+    };
 
     var options = {
-        method: 'GET',
+        method: 'post',
         contentType: 'application/json',
         headers: {
-            'Authorization': 'Bearer ' + ScriptApp.getOAuthToken()
+            'api-key': props.apiKey
         },
+        payload: JSON.stringify(query),
         muteHttpExceptions: true
     };
 
-    var response = UrlFetchApp.fetch(url, options);
-    var doc = JSON.parse(response.getContentText());
-    if (doc.fields && doc.fields.status && doc.fields.status.stringValue) {
-        var status = doc.fields.status.stringValue;
-        cache.put(email, status, 21600); // Cache for 6 hours
-        return { email: email, status: status };
-    } else {
-        return { email: email, status: "none" }; // Default if not found
+    try {
+        var response = UrlFetchApp.fetch(url, options);
+        var result = JSON.parse(response.getContentText());
+
+        if (result.documents.length > 0) {
+            var data = result.documents[0];
+            cache.put(email, JSON.stringify(data), 21600); // Cache for 6 hours
+            return { email: email, data: data };
+        } else {
+            return { email: email, data: "none" }; // Default if not found
+        }
+    } catch (error) {
+        console.error("Failed to fetch MongoDB document:", error.toString());
     }
 }
