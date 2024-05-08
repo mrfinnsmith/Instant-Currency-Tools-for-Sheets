@@ -6,27 +6,6 @@ function getFirebaseProjectId() {
     return scriptProperties.getProperty('FIREBASE_PROJECT_ID');
 }
 
-// Function to update the subscription status in Firebase and Cache
-function updateSubscriptionStatus(email, customerId, status) {
-    var firebaseProjectId = getFirebaseProjectId();
-    var url = 'https://firestore.googleapis.com/v1/projects/' + firebaseProjectId + '/databases/(default)/documents/subscriptions/' + encodeURIComponent(email);
-    
-    var data = {
-        fields: {
-            customerId: { stringValue: customerId },
-            status: { stringValue: status },
-            lastUpdated: { timestampValue: new Date().toISOString() }
-        }
-    };
-
-    var options = {
-        method: 'PATCH',
-        contentType: 'application/json',
-        headers: {
-            'Authorization': 'Bearer ' + ScriptApp.getOAuthToken()
-        },
-        payload: JSON.stringify({fields: data.fields}),
-        muteHttpExceptions: true
     };
 
     var response = UrlFetchApp.fetch(url, options);
