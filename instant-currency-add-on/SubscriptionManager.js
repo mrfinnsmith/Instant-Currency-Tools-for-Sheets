@@ -1,6 +1,5 @@
 var cache = CacheService.getScriptCache();
 
-// Function to retrieve MongoDB API properties from script properties
 function getMongoDBProperties() {
     var scriptProperties = PropertiesService.getScriptProperties();
     return {
@@ -12,20 +11,23 @@ function getMongoDBProperties() {
     };
 }
 
-// Function to check the subscription status from MongoDB using email, with cache check
-function checkMongoDBSubscriptionStatus(email) {
+function checkMongoDBSubscriptionStatus(email, productId) {
     var props = getMongoDBProperties();
-    var cachedData = cache.get(email);
+    var cacheKey = email + "-" + productId;
+    var cachedData = cache.get(cacheKey);
     if (cachedData) {
-        return { email: email, data: JSON.parse(cachedData) };
+        return { email: email, productId: productId, status: JSON.parse(cachedData).status };
     }
 
-    var url = props.baseUrl + '/find';
+    var url = props.baseUrl + '/action/findOne';
     var query = {
         dataSource: props.clusterName,
         database: props.dbName,
         collection: props.collectionName,
-        filter: { "email": email }
+        filter: {
+            "email": email,
+            ["products." + productId]: { "$exists": true }
+        }
     };
 
     var options = {
@@ -41,15 +43,16 @@ function checkMongoDBSubscriptionStatus(email) {
     try {
         var response = UrlFetchApp.fetch(url, options);
         var result = JSON.parse(response.getContentText());
-
-        if (result.documents.length > 0) {
-            var data = result.documents[0];
-            cache.put(email, JSON.stringify(data), 21600); // Cache for 6 hours
-            return { email: email, data: data };
+        if (result.document) {
+            var productData = result.document.products[productId];
+            cache.put(cacheKey, JSON.stringify(productData), 21600); // Cache for 6 hours
+            return { email: email, productId: productId, status: productData.status };
         } else {
-            return { email: email, data: "none" }; // Default if not found
+            return { email: email, productId: productId, status: "none" };
         }
     } catch (error) {
         console.error("Failed to fetch MongoDB document:", error.toString());
+        return { email: email, productId: productId, status: "error", error: error.toString() };
     }
+}
 }
