@@ -24,16 +24,14 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
 }
 
 function getConversionRate(fromCurrencyCode, toCurrencyCode) {
-  // Construct the API URL
   var apiUrl = `https://api.frankfurter.app/latest?from=${fromCurrencyCode}&to=${toCurrencyCode}`;
-
-  // Fetch and parse the API response
   var response = UrlFetchApp.fetch(apiUrl);
-
   var json = JSON.parse(response.getContentText());
+  var rate = json.rates[toCurrencyCode];
+  var rateDate = json.date;
 
-  // Return the conversion rate
-  return json.rates[toCurrencyCode];
+  storeRateInMongoDB(fromCurrencyCode, toCurrencyCode, rate, rateDate);
+  return rate;
 }
 
 function getCurrencyFormat(currencyString) {
