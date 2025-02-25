@@ -6,9 +6,10 @@ function main() {
   */
 
   const scriptProperties = PropertiesService.getScriptProperties();
+
   const mongoDbLastDailyUpdate = scriptProperties.getProperty('MONGO-LAST-DAILY-UPDATE');
 
-  // If we've already udpated everything today, stop.
+  // If we've already updated everything today, stop.
   if (mongoDbLastDailyUpdate === todaysDate) {
     console.log('MONGO-LAST-DAILY-UPDATE is ' + mongoDbLastDailyUpdate + '. Today (todaysDate) is ' + todaysDate + '. Top exchange rates have already been updated today.');
     return;
@@ -72,7 +73,7 @@ function updateTopECBCurrencies() {
   const collectionName = scriptProperties.getProperty('mongoDbCollectionName');
   const ecbDocumentId = scriptProperties.getProperty('ecbDocumentId');
 
-  // Default noIssuesUpdating to true, the flip to false if any fail.
+  // Default noIssuesUpdating to true, then flip to false if any fail.
   let noIssuesUpdating = true;
 
   // Most traded currencies plus Canada and Mexico
@@ -81,8 +82,11 @@ function updateTopECBCurrencies() {
   // Specific MongoDB endpoint for updating a record.
   const updateUrl = baseUrl + "/action/updateOne";
   
-  // Loop through top currencies and get rates and latest date (may be yesterday) for all pairs.
+  // New structure: rates > date > currency_pair > { rate, lastUpdated }
   const updateOperations = {};
+  let rateDate = null;
+
+  // Loop through top currencies and get rates for all pairs.
   topCurrencies.forEach(baseCurrency => {
     topCurrencies.forEach(targetCurrency => {
       if (baseCurrency !== targetCurrency) {
@@ -96,42 +100,54 @@ function updateTopECBCurrencies() {
           console.log('newDate for ' + baseCurrency + ' and ' + targetCurrency + ' is ' + newDate + '. todaysDate is ' + todaysDate + ', so the "new" currency information is old. Moving to the next currency pair.');
           noIssuesUpdating = false;
         } else {
+          // Store the rate date for later use - all rates should have the same date
+          rateDate = newDate;
+          
           const currencyPairKey = `${baseCurrency}_${targetCurrency}`;
-          updateOperations[`rates.${currencyPairKey}.${newDate}`] = { rate: newRate, lastUpdated: lastUpdated };
+          // Instead of nesting by currency pair first, we nest by date first
+          updateOperations[`rates.${newDate}.${currencyPairKey}.rate`] = newRate;
+          updateOperations[`rates.${newDate}.${currencyPairKey}.lastUpdated`] = lastUpdated;
         }
       }
     });
   });
 
-  const updatePayload = {
-    dataSource: clusterName,
-    database: dbName,
-    collection: collectionName,
-    filter: { "_id": { "$oid": ecbDocumentId } },
-    update: {
-      $set: updateOperations
-    },
-    upsert: false
-  };
-  
-  const updateOptions = {
-    method: "post",
-    contentType: "application/json",
-    headers: {
-      "api-key": apiKey
-    },
-    payload: JSON.stringify(updatePayload),
-    muteHttpExceptions: true
-  };
+  // If we have rates, update the MongoDB document
+  if (rateDate) {
+    const updatePayload = {
+      dataSource: clusterName,
+      database: dbName,
+      collection: collectionName,
+      filter: { "_id": { "$oid": ecbDocumentId } },
+      update: {
+        $set: updateOperations
+      },
+      upsert: false
+    };
+    
+    const updateOptions = {
+      method: "post",
+      contentType: "application/json",
+      headers: {
+        "api-key": apiKey
+      },
+      payload: JSON.stringify(updatePayload),
+      muteHttpExceptions: true
+    };
 
-  try {
-    const updateResponse = UrlFetchApp.fetch(updateUrl, updateOptions);
-    const updateResponseData = JSON.parse(updateResponse.getContentText());
-    console.log('Update Response:', updateResponseData);
-  } catch (error) {
-    console.error('Error updating document:', error.toString());
+    try {
+      const updateResponse = UrlFetchApp.fetch(updateUrl, updateOptions);
+      const updateResponseData = JSON.parse(updateResponse.getContentText());
+      console.log('Update Response:', updateResponseData);
+    } catch (error) {
+      console.error('Error updating document:', error.toString());
+      noIssuesUpdating = false;
+    }
+  } else {
+    console.log('No valid rates found to update.');
     noIssuesUpdating = false;
   }
+
   return noIssuesUpdating;
 }
 
