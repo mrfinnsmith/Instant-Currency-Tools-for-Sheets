@@ -84,9 +84,9 @@ function getRateFromMongoDB(fromCurrency, toCurrency, date) {
     collection: props.collectionName,
     filter: {
       "_id": "exchange_rates",
-      [`rates.${fromCurrency}_${toCurrency}.${date}`]: { $exists: true }
+      [`rates.${date}.${fromCurrency}_${toCurrency}`]: { $exists: true }
     },
-    projection: { [`rates.${fromCurrency}_${toCurrency}.${date}.rate`]: 1 }
+    projection: { [`rates.${date}.${fromCurrency}_${toCurrency}.rate`]: 1 }
   };
 
   var options = {
@@ -102,10 +102,10 @@ function getRateFromMongoDB(fromCurrency, toCurrency, date) {
     var result = JSON.parse(response.getContentText());
 
     if (result.document && result.document.rates &&
-        result.document.rates[`${fromCurrency}_${toCurrency}`] &&
-        result.document.rates[`${fromCurrency}_${toCurrency}`][date]) {
-      return result.document.rates[`${fromCurrency}_${toCurrency}`][date].rate;
-    }
+      result.document.rates[date] &&
+      result.document.rates[date][`${fromCurrency}_${toCurrency}`]) {
+        return result.document.rates[date][`${fromCurrency}_${toCurrency}`].rate;
+      }
     return null; // Not found in MongoDB
   } catch (error) {
     console.error("Failed to query MongoDB:", error.toString());
