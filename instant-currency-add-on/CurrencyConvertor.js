@@ -1,10 +1,16 @@
-function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType) {
+// Global cache instance
+var scriptCache = CacheService.getScriptCache();
+
+function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date) {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   var range = convertEntireSheet ? spreadsheet.getActiveSheet().getDataRange() : spreadsheet.getActiveRange();
   var values = range.getValues();
 
+  // Use current date if not provided
+  date = date || new Date().toISOString().split('T')[0];
+
   if (conversionType === 'hardcode') {
-      var conversionRate = getConversionRate(fromCurrency, toCurrency);
+      var conversionRate = getConversionRate(fromCurrency, toCurrency, date);
       var updatedValues = values.map(row => row.map(cell => typeof cell === 'number' ? cell * conversionRate : cell));
 
       range.setValues(updatedValues);
@@ -23,19 +29,92 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
   }
 }
 
-function getConversionRate(fromCurrencyCode, toCurrencyCode) {
-  var apiUrl = `https://api.frankfurter.app/latest?from=${fromCurrencyCode}&to=${toCurrencyCode}`;
+function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
+  // Use current date if not provided
+  date = date || new Date().toISOString().split('T')[0];
+
+  // Create a cache key combining currencies and date
+  var cacheKey = `${fromCurrencyCode}_${toCurrencyCode}_${date}`;
+
+  // Step 1: Check CacheService first
+  var cachedRate = scriptCache.get(cacheKey);
+  if (cachedRate) {
+    return parseFloat(cachedRate);
+  }
+
+  // Step 2: If not in cache, check MongoDB
+  var mongoRate = getRateFromMongoDB(fromCurrencyCode, toCurrencyCode, date);
+  if (mongoRate) {
+    // Store in cache and return
+    scriptCache.put(cacheKey, mongoRate.toString(), 21600); // Cache for 6 hours
+    return mongoRate;
+  }
+
+  // Step 3: If not in MongoDB, call API
+  var apiUrl = buildApiUrl(fromCurrencyCode, toCurrencyCode, date);
   var response = UrlFetchApp.fetch(apiUrl);
   var json = JSON.parse(response.getContentText());
   var rate = json.rates[toCurrencyCode];
-  var rateDate = json.date;
 
-  storeRateInMongoDB(fromCurrencyCode, toCurrencyCode, rate, rateDate);
+  // Store in both cache and MongoDB
+  scriptCache.put(cacheKey, rate.toString(), 21600); // Cache for 6 hours
+  storeRateInMongoDB(fromCurrencyCode, toCurrencyCode, rate, date);
+
   return rate;
 }
 
+function buildApiUrl(fromCurrency, toCurrency, date) {
+  // If date is today, use latest endpoint
+  var today = new Date().toISOString().split('T')[0];
+  if (date === today) {
+    return `https://api.frankfurter.app/latest?from=${fromCurrency}&to=${toCurrency}`;
+  } else {
+    // Otherwise use historical endpoint
+    return `https://api.frankfurter.app/${date}?from=${fromCurrency}&to=${toCurrency}`;
+  }
+}
+
+function getRateFromMongoDB(fromCurrency, toCurrency, date) {
+  var props = getMongoDBProperties();
+  var findUrl = props.baseUrl + "/action/findOne";
+
+  var findPayload = {
+    dataSource: props.clusterName,
+    database: props.dbName,
+    collection: props.collectionName,
+    filter: {
+      "_id": "exchange_rates",
+      [`rates.${fromCurrency}_${toCurrency}.${date}`]: { $exists: true }
+    },
+    projection: { [`rates.${fromCurrency}_${toCurrency}.${date}.rate`]: 1 }
+  };
+
+  var options = {
+    method: "post",
+    contentType: "application/json",
+    headers: { "api-key": props.apiKey },
+    payload: JSON.stringify(findPayload),
+    muteHttpExceptions: true
+  };
+
+  try {
+    var response = UrlFetchApp.fetch(findUrl, options);
+    var result = JSON.parse(response.getContentText());
+
+    if (result.document && result.document.rates &&
+        result.document.rates[`${fromCurrency}_${toCurrency}`] &&
+        result.document.rates[`${fromCurrency}_${toCurrency}`][date]) {
+      return result.document.rates[`${fromCurrency}_${toCurrency}`][date].rate;
+    }
+    return null; // Not found in MongoDB
+  } catch (error) {
+    console.error("Failed to query MongoDB:", error.toString());
+    return null;
+  }
+}
+
 function getCurrencyFormat(currencyString) {
-  
+
   formatMap = {
     "AUD": '"$"#,##0.00', // Australian Dollar - $1,234.56
     "BGN": '#,##0.00 "лв"', // Bulgarian Lev - 1 234,56 лв → changed because the correct format uses a comma as the decimal separator
