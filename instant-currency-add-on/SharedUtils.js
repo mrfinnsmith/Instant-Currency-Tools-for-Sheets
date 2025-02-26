@@ -18,7 +18,7 @@ function storeRateInMongoDB(from, to, rate, date) {
       database: props.dbName,
       collection: props.collectionName,
       filter: { "_id": "exchange_rates" },
-      update: { $set: { [`rates.${from}_${to}.${date}`]: { rate: rate, lastUpdated: new Date().toISOString() } } },
+      update: { $set: { [`rates.${date}.${from}_${to}`]: { rate: rate, lastUpdated: new Date().toISOString() } } },
       upsert: true
   };
 
