@@ -150,3 +150,47 @@ function getCurrencyFormat(currencyString) {
 };
   return formatMap[currencyString] || '#,##0.00'; // Default format if currency not found
 }
+
+function loadLatestRatesToCache() {
+  // Get the latest date from MongoDB
+  var latestDate = getLatestDateInRates();
+  if (!latestDate) {
+    return; // No dates available
+  }
+  
+  var props = getMongoDBProperties();
+  var findUrl = props.baseUrl + "/action/findOne";
+
+  var findPayload = {
+    dataSource: props.clusterName,
+    database: props.dbName,
+    collection: props.collectionName,
+    filter: { "_id": "exchange_rates" },
+    projection: { [`rates.${latestDate}`]: 1 }
+  };
+
+  var options = {
+    method: "post",
+    contentType: "application/json",
+    headers: { "api-key": props.apiKey },
+    payload: JSON.stringify(findPayload),
+    muteHttpExceptions: true
+  };
+
+  try {
+    var response = UrlFetchApp.fetch(findUrl, options);
+    var result = JSON.parse(response.getContentText());
+    
+    if (result.document && result.document.rates && result.document.rates[latestDate]) {
+      var ratePairs = result.document.rates[latestDate];
+      
+      // Load each rate into cache with 24-hour expiration (86400 seconds)
+      for (var pairKey in ratePairs) {
+        var rate = ratePairs[pairKey].rate;
+        scriptCache.put(pairKey + "_" + latestDate, rate.toString(), 86400);
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load rates to cache:", error.toString());
+  }
+}
