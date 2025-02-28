@@ -3,6 +3,9 @@ function onOpen() {
 }
 
 function openCurrencySidebar() {
+    // Load latest rates into cache on sidebar open
+    loadLatestRatesToCache();
+    
     var html = HtmlService.createTemplateFromFile('Sidebar')
       .evaluate()
       .setTitle('Currency Convertor')
