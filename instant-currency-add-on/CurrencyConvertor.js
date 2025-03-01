@@ -81,7 +81,7 @@ function getRateFromMongoDB(fromCurrency, toCurrency, date) {
   var findPayload = {
     dataSource: props.clusterName,
     database: props.dbName,
-    collection: props.collectionName,
+    collection: props.ratesCollectionName,
     filter: {
       "_id": "exchange_rates",
       [`rates.${date}.${fromCurrency}_${toCurrency}`]: { $exists: true }
@@ -164,8 +164,8 @@ function loadLatestRatesToCache() {
   var findPayload = {
     dataSource: props.clusterName,
     database: props.dbName,
-    collection: props.collectionName,
-    filter: { "_id": "exchange_rates" },
+    collection: props.ratesCollectionName,
+    filter: { "_id": props.ratesDocumentId },
     projection: { [`rates.${latestDate}`]: 1 }
   };
 
@@ -184,10 +184,10 @@ function loadLatestRatesToCache() {
     if (result.document && result.document.rates && result.document.rates[latestDate]) {
       var ratePairs = result.document.rates[latestDate];
       
-      // Load each rate into cache with 24-hour expiration (86400 seconds)
+      // Load each rate into cache with 21600 seconds (6 hours) expiration for consistency
       for (var pairKey in ratePairs) {
         var rate = ratePairs[pairKey].rate;
-        scriptCache.put(pairKey + "_" + latestDate, rate.toString(), 86400);
+        scriptCache.put(pairKey + "_" + latestDate, rate.toString(), 21600);
       }
     }
   } catch (error) {

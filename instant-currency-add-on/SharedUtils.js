@@ -5,7 +5,9 @@ function getMongoDBProperties() {
       baseUrl: scriptProperties.getProperty('MONGO-BASE-URL'),
       dbName: scriptProperties.getProperty('MONGO-DB-NAME'),
       collectionName: scriptProperties.getProperty('MONGO-SUBSCRIPTION-COLLECTION-NAME'),
-      clusterName: scriptProperties.getProperty('MONGO-CLUSTER-NAME')
+      ratesCollectionName: scriptProperties.getProperty('MONGO-RATES-COLLECTION-NAME'),
+      clusterName: scriptProperties.getProperty('MONGO-CLUSTER-NAME'),
+      ecbRatesDocumentId: scriptProperties.getProperty('ECB-RATES-DOCUMENT-ID')
   };
 }
 
@@ -16,8 +18,8 @@ function storeRateInMongoDB(from, to, rate, date) {
   var updatePayload = {
       dataSource: props.clusterName,
       database: props.dbName,
-      collection: props.collectionName,
-      filter: { "_id": "exchange_rates" },
+      collection: props.ratesCollectionName,
+      filter: { "_id": props.ecbRatesDocumentId },
       update: { $set: { [`rates.${date}.${from}_${to}`]: { rate: rate, lastUpdated: new Date().toISOString() } } },
       upsert: true
   };
@@ -39,38 +41,34 @@ function storeRateInMongoDB(from, to, rate, date) {
 
 function getLatestDateInRates() {
   var props = getMongoDBProperties();
-  var findUrl = props.baseUrl + "/action/findOne";
+  var findUrl = props.baseUrl + "/action/find";
 
   var findPayload = {
     dataSource: props.clusterName,
     database: props.dbName,
-    collection: props.collectionName,
-    filter: { "_id": "exchange_rates" },
-    projection: { "rates": 1 }
+    collection: props.ratesCollectionName
   };
 
   var options = {
     method: "post",
     contentType: "application/json",
     headers: { "api-key": props.apiKey },
-    payload: JSON.stringify(findPayload),
-    muteHttpExceptions: true
+    payload: JSON.stringify(findPayload)
   };
 
   try {
     var response = UrlFetchApp.fetch(findUrl, options);
     var result = JSON.parse(response.getContentText());
+    var document = result.documents[0];
     
-    if (result.document && result.document.rates) {
-      // Get all dates in the rates object
-      var dates = Object.keys(result.document.rates);
+    if (document && document.rates) {
+      var dates = Object.keys(document.rates);
       
       if (dates.length === 0) {
         console.log("No dates found in rates");
         return null;
       }
       
-      // Sort dates in descending order (newest first)
       dates.sort(function(a, b) {
         return new Date(b) - new Date(a);
       });
