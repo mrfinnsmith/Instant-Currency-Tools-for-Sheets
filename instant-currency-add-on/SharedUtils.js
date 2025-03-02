@@ -4,7 +4,7 @@ function getMongoDBProperties() {
       apiKey: scriptProperties.getProperty('MONGO-API-KEY'),
       baseUrl: scriptProperties.getProperty('MONGO-BASE-URL'),
       dbName: scriptProperties.getProperty('MONGO-DB-NAME'),
-      collectionName: scriptProperties.getProperty('MONGO-SUBSCRIPTION-COLLECTION-NAME'),
+      subscriptionCollectionName: scriptProperties.getProperty('MONGO-SUBSCRIPTION-COLLECTION-NAME'),
       ratesCollectionName: scriptProperties.getProperty('MONGO-RATES-COLLECTION-NAME'),
       clusterName: scriptProperties.getProperty('MONGO-CLUSTER-NAME'),
       ecbRatesDocumentId: scriptProperties.getProperty('ECB-RATES-DOCUMENT-ID')
@@ -60,19 +60,19 @@ function getLatestDateInRates() {
     var response = UrlFetchApp.fetch(findUrl, options);
     var result = JSON.parse(response.getContentText());
     var document = result.documents[0];
-    
+
     if (document && document.rates) {
       var dates = Object.keys(document.rates);
-      
+
       if (dates.length === 0) {
         console.log("No dates found in rates");
         return null;
       }
-      
+
       dates.sort(function(a, b) {
         return new Date(b) - new Date(a);
       });
-      
+
       var latestDate = dates[0];
       console.log("Latest date in rates:", latestDate);
       return latestDate;

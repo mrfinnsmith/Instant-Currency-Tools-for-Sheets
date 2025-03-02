@@ -12,7 +12,7 @@ function checkMongoDBSubscriptionStatus(email, productId) {
     var query = {
         dataSource: props.clusterName,
         database: props.dbName,
-        collection: props.collectionName,
+        collection: props.subscriptionCollectionName,
         filter: {
             "email": email,
             ["products." + productId]: { "$exists": true }
