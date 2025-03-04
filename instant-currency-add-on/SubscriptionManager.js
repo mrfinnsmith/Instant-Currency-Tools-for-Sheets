@@ -45,6 +45,43 @@ function checkMongoDBSubscriptionStatus(email, productId) {
     }
 }
 
+function checkSheetSubscriptionStatus(email, productId) {
+  try {
+    const scriptProperties = PropertiesService.getScriptProperties();
+    const subscriptionSpreadsheetId = scriptProperties.getProperty('LOG-SPREADSHEET-ID');
+    const subscriptionSheetId = scriptProperties.getProperty('SUBSCRIPTION-SHEET-ID');
+    
+    const subscriptionSpreadsheet = SpreadsheetApp.openById(subscriptionSpreadsheetId);
+    const subscriptionSheet = subscriptionSpreadsheet.getSheetById(subscriptionSheetId);
+    
+    const data = subscriptionSheet.getDataRange().getValues();
+    const headers = data[0];
+    
+    const emailColIndex = headers.indexOf("email");
+    const statusColIndex = headers.indexOf(`${productId}_status`);
+    const lastUpdatedColIndex = headers.indexOf(`${productId}_lastUpdated`);
+    
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][emailColIndex] === email) {
+        const status = data[i][statusColIndex];
+        const lastUpdated = lastUpdatedColIndex !== -1 ? data[i][lastUpdatedColIndex] : new Date().toISOString();
+        
+        return { 
+          status: status || "none",
+          lastUpdated: lastUpdated
+        };
+      }
+    }
+    
+    // User not found in subscription sheet
+    return { status: "none" };
+    
+  } catch (error) {
+    console.error("Failed to check sheet subscription:", error.toString());
+    return { status: "error", error: error.toString() };
+  }
+}
+
 function isUserSubscribed(productId) {
     var email = Session.getActiveUser().getEmail();
 
@@ -54,18 +91,16 @@ function isUserSubscribed(productId) {
 
     try {
         var cachedData = checkSubscriptionCache(email, productId);
-        if (cachedData) {
-            console.log('found in cache');
-            return cachedData.status === "active";
+        if (cachedData && cachedData.status === "active") {
+            return true;
         }
-        console.log('not found in cache');
-        var mongoData = checkMongoDBSubscriptionStatus(email, productId);
-        if (mongoData) {
-            console.log('found in mongo');
-            cache.put(email + "-" + productId, JSON.stringify(mongoData), 21600); // Cache for 6 hours
-            return mongoData.status === "active";
+        
+        var sheetData = checkSheetSubscriptionStatus(email, productId);
+        if (sheetData && sheetData.status === "active") {
+            cache.put(email + "-" + productId, JSON.stringify(sheetData), 21600);
+            return true;
         }
-        console.log('not found in mongo')
+        
         return false;
     } catch (error) {
         return false;
