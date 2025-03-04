@@ -29,6 +29,7 @@ function doPost(e) {
     // Continue with existing logic only if data was successfully extracted
     if (extractedData) {
       logCheckoutEventToSheet(extractedData);
+      updateSubscriptionSheet(extractedData);
       updateMongoDBSubscription(extractedData);
     } else {
       console.log('No data extracted for logging or database update due to previous errors.');
@@ -177,4 +178,97 @@ function fetchExpandedCheckoutSession(sessionId) {
     console.error('Error fetching session data:', error.toString());
     return null;
   }
+}
+
+function updateSubscriptionSheet(extractedData) {
+  const scriptProperties = PropertiesService.getScriptProperties();
+  const logSsId = scriptProperties.getProperty('LOG_SPREADSHEET_ID');
+  const subSheetId = scriptProperties.getProperty('SUBSCRIPTION-SHEET-ID');
+  
+  const spreadsheet = SpreadsheetApp.openById(logSsId);
+  let subSheet;
+  
+  const sheets = spreadsheet.getSheets();
+  sheets.forEach(sheet => {
+    if (sheet.getSheetId() == subSheetId) {
+      subSheet = sheet;
+    }
+  });
+  
+  if (!subSheet) {
+    console.error("Subscription sheet not found.");
+    return;
+  }
+  
+  // Check if sheet is empty and set up headers if needed
+  if (subSheet.getLastRow() === 0) {
+    subSheet.appendRow(["email"]);
+  }
+  
+  // Process each product
+  extractedData.forEach(product => {
+    const email = product.email;
+    const productId = product.productId;
+    
+    // Add product columns if they don't exist
+    const productColumn = getProductColumnIndex(subSheet, productId);
+    if (productColumn === -1) {
+      addProductColumns(subSheet, productId);
+    }
+    
+    // Now check if email exists
+    let data = subSheet.getDataRange().getValues();
+    let rowFound = false;
+    
+    for (let i = 1; i < data.length; i++) { // Skip header row
+      if (data[i][0] === email) {
+        rowFound = true;
+        const productColumn = getProductColumnIndex(subSheet, productId);
+        subSheet.getRange(i + 1, productColumn + 1).setValue("active");
+        subSheet.getRange(i + 1, productColumn + 2).setValue(new Date().toISOString());
+        break;
+      }
+    }
+    
+    if (!rowFound) {
+      // Get current headers to build new row
+      const headers = subSheet.getRange(1, 1, 1, subSheet.getLastColumn()).getValues()[0];
+      const newRow = Array(headers.length).fill("");
+      newRow[0] = email;
+      
+      // Set status and date
+      const productColumn = getProductColumnIndex(subSheet, productId);
+      if (productColumn !== -1) {
+        newRow[productColumn] = "active";
+        newRow[productColumn + 1] = new Date().toISOString();
+      }
+      
+      subSheet.appendRow(newRow);
+    }
+  });
+}
+
+function getProductColumnIndex(sheet, productId) {
+  if (sheet.getLastColumn() === 0) return -1;
+  
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  
+  for (let i = 1; i < headers.length; i++) {
+    if (headers[i] && headers[i].toString() === productId + "_status") {
+      return i;
+    }
+  }
+  
+  return -1;
+}
+
+function addProductColumns(sheet, productId) {
+  const lastCol = Math.max(1, sheet.getLastColumn());
+  
+  // Add two new columns - one for status and one for date
+  sheet.insertColumnsAfter(lastCol, 2);
+  
+  // Set headers
+  sheet.getRange(1, lastCol + 1).setValue(productId + "_status");
+  sheet.getRange(1, lastCol + 2).setValue(productId + "_lastUpdated");
 }
