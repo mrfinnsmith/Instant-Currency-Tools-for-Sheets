@@ -47,25 +47,25 @@ function updateMongoDBSubscription(extractedData) {
   const collectionName = scriptProperties.getProperty('mongoDbSubcriptionCollectionName');
   const updateUrl = baseUrl + "/action/updateOne";
 
-  // Iterate over each product in the extracted data
-  extractedData.products.forEach(product => {
+  // extractedData is already an array of products, don't look for .products property
+  extractedData.forEach(product => {
     let updatePayload = {
       dataSource: clusterName,
       database: dbName,
       collection: collectionName,
-      filter: { "email": extractedData.email },
+      filter: { "email": product.email },
       update: {
         $set: {
           ["products." + product.productId + ".productName"]: product.productName,
-          ["products." + product.productId + ".stripeCustomerId"]: extractedData.customerId,
+          ["products." + product.productId + ".stripeCustomerId"]: product.customerId,
           ["products." + product.productId + ".status"]: "active",
           ["products." + product.productId + ".lastUpdated"]: new Date().toISOString()
         },
         $setOnInsert: {
-          "email": extractedData.email  // Set email only on document creation
+          "email": product.email
         }
       },
-      upsert: true  // Ensure that if the document doesn't exist, it's created
+      upsert: true
     };
 
     let options = {
@@ -138,7 +138,7 @@ function logCheckoutEventToSheet(productsData) {
     logSheet.appendRow([
       time,
       product.eventType,
-      product.productId, 
+      product.productId,
       product.productName,
       product.email,
       product.customerId,
