@@ -1,6 +1,6 @@
 var cache = CacheService.getScriptCache();
 
-function checkMongoDBSubscriptionStatus(email, productId) {
+function checkCacheAndMongoDBSubscriptionStatus(email, productId) {
     var props = getMongoDBProperties();
     var cacheKey = email + "-" + productId;
     var cachedData = cache.get(cacheKey);
@@ -53,7 +53,7 @@ function isUserSubscribed(productId) {
     }
 
     try {
-        var subscriptionStatus = checkMongoDBSubscriptionStatus(email, productId);
+        var subscriptionStatus = checkCacheAndMongoDBSubscriptionStatus(email, productId);
         return subscriptionStatus.status === "active";
     } catch (error) {
         return false;
