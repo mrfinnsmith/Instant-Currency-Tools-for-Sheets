@@ -1,13 +1,16 @@
 var cache = CacheService.getScriptCache();
 
-function checkCacheAndMongoDBSubscriptionStatus(email, productId) {
-    var props = getMongoDBProperties();
+function checkSubscriptionCache(email, productId) {
     var cacheKey = email + "-" + productId;
     var cachedData = cache.get(cacheKey);
     if (cachedData) {
-        return { email: email, productId: productId, status: JSON.parse(cachedData).status };
+        return JSON.parse(cachedData);
     }
+    return null;
+}
 
+function checkMongoDBSubscriptionStatus(email, productId) {
+    var props = getMongoDBProperties();
     var url = props.baseUrl + '/action/findOne';
     var query = {
         dataSource: props.clusterName,
@@ -33,15 +36,12 @@ function checkCacheAndMongoDBSubscriptionStatus(email, productId) {
         var response = UrlFetchApp.fetch(url, options);
         var result = JSON.parse(response.getContentText());
         if (result.document) {
-            var productData = result.document.products[productId];
-            cache.put(cacheKey, JSON.stringify(productData), 21600); // Cache for 6 hours
-            return { email: email, productId: productId, status: productData.status };
-        } else {
-            return { email: email, productId: productId, status: "none" };
+            return result.document.products[productId];
         }
+        return { status: "none" };
     } catch (error) {
         console.error("Failed to fetch MongoDB document:", error.toString());
-        return { email: email, productId: productId, status: "error", error: error.toString() };
+        return { status: "error", error: error.toString() };
     }
 }
 
@@ -53,8 +53,20 @@ function isUserSubscribed(productId) {
     }
 
     try {
-        var subscriptionStatus = checkCacheAndMongoDBSubscriptionStatus(email, productId);
-        return subscriptionStatus.status === "active";
+        var cachedData = checkSubscriptionCache(email, productId);
+        if (cachedData) {
+            console.log('found in cache');
+            return cachedData.status === "active";
+        }
+        console.log('not found in cache');
+        var mongoData = checkMongoDBSubscriptionStatus(email, productId);
+        if (mongoData) {
+            console.log('found in mongo');
+            cache.put(email + "-" + productId, JSON.stringify(mongoData), 21600); // Cache for 6 hours
+            return mongoData.status === "active";
+        }
+        console.log('not found in mongo')
+        return false;
     } catch (error) {
         return false;
     }
