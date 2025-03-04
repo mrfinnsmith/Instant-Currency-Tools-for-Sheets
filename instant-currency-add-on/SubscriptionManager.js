@@ -45,13 +45,13 @@ function checkMongoDBSubscriptionStatus(email, productId) {
     }
 }
 
-function checkUserSubscriptionStatus(productId) {
+function isUserSubscribed(productId) {
     var email = Session.getActiveUser().getEmail();
-    
+
     if (!email) {
         return false;
     }
-    
+
     try {
         var subscriptionStatus = checkMongoDBSubscriptionStatus(email, productId);
         return subscriptionStatus.status === "active";
