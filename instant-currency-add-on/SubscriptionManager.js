@@ -44,3 +44,18 @@ function checkMongoDBSubscriptionStatus(email, productId) {
         return { email: email, productId: productId, status: "error", error: error.toString() };
     }
 }
+
+function checkUserSubscriptionStatus(productId) {
+    var email = Session.getActiveUser().getEmail();
+    
+    if (!email) {
+        return false;
+    }
+    
+    try {
+        var subscriptionStatus = checkMongoDBSubscriptionStatus(email, productId);
+        return subscriptionStatus.status === "active";
+    } catch (error) {
+        return false;
+    }
+}
