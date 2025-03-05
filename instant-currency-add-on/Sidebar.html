@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <base target="_top">
-  <?!= include('css'); ?>
-</head>
-<body>
-  <div class="conversion-tool">
-    <select id="fromCurrency">
-      <!-- Dropdown for "from currency" -->
-    </select>
-    <select id="toCurrency">
-      <!-- Dropdown for "to currency" -->
-    </select>
-    <button onclick="switchCurrencies()">Switch</button>
-    <div id="historicalRatePicker" class="premium-feature">
-      <label for="datePicker">Pick a Date:</label>
-      <input type="date" id="datePicker" disabled>
-    </div>
-    <div>
-      <input type="radio" id="hardcode" name="conversionType" value="hardcode" checked>
-      <label for="hardcode">Replace with new values</label><br>
-      <input type="radio" id="formula" name="conversionType" value="formula">
-      <label for="formula">Replace with GOOGLEFINANCE formula</label>
-    </div>
-    <div>
-      <input type="checkbox" id="convertEntireSheet">
-      <label for="convertEntireSheet">Convert entire sheet</label>
-    </div>
-    <button onclick="convert()">Convert</button>
-  </div>
-  <?!= include('SidebarJavascript'); ?>
-</body>
+   <head>
+      <base target="_top">
+      <?!= include('css'); ?>
+      <script>
+         // Make premium status available to sidebar JavaScript
+         var isPremium = <?= isPremium ?>;
+         var productId = "<?= PropertiesService.getScriptProperties().getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID') ?>";
+      </script>
+   </head>
+   <body>
+      <div class="conversion-tool">
+         <select id="fromCurrency">
+            <!-- Dropdown for "from currency" -->
+         </select>
+         <select id="toCurrency">
+            <!-- Dropdown for "to currency" -->
+         </select>
+         <button onclick="switchCurrencies()">Switch</button>
+         <div id="historicalRatePicker" class="premium-feature">
+            <label for="datePicker">Pick a Date:</label>
+            <input type="date" id="datePicker" disabled>
+         </div>
+         <div>
+            <input type="radio" id="hardcode" name="conversionType" value="hardcode" checked>
+            <label for="hardcode">Replace with new values</label><br>
+            <input type="radio" id="formula" name="conversionType" value="formula">
+            <label for="formula">Replace with GOOGLEFINANCE formula</label>
+         </div>
+         <div>
+            <input type="checkbox" id="convertEntireSheet">
+            <label for="convertEntireSheet">Convert entire sheet</label>
+         </div>
+         <button onclick="convert()">Convert</button>
+      </div>
+      <?!= include('SidebarJavascript'); ?>
+   </body>
 </html>
