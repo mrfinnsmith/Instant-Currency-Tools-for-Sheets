@@ -13,7 +13,7 @@ function openCurrencySidebar() {
   template.isPremium = isPremium;
 
   var html = template.evaluate()
-    .setTitle('Currency Convertor')
+    .setTitle('Instant Currency')
     .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   SpreadsheetApp.getUi().showSidebar(html);
 }
