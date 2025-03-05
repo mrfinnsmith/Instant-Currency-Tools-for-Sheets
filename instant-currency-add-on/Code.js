@@ -3,13 +3,18 @@ function onOpen() {
 }
 
 function openCurrencySidebar() {
-    // Load latest rates into cache on sidebar open
-    loadLatestRatesToCache();
-    
-    var html = HtmlService.createTemplateFromFile('Sidebar')
-      .evaluate()
-      .setTitle('Currency Convertor')
-      .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+  loadLatestRatesToCache();
+
+  const props = PropertiesService.getScriptProperties();
+  const productId = props.getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID');
+  const isPremium = isUserSubscribed(productId);
+
+  var template = HtmlService.createTemplateFromFile('Sidebar');
+  template.isPremium = isPremium;
+
+  var html = template.evaluate()
+    .setTitle('Currency Convertor')
+    .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   SpreadsheetApp.getUi().showSidebar(html);
 }
 
