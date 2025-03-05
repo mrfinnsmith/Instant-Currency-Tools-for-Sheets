@@ -8,31 +8,202 @@
          var isPremium = <?= isPremium ?>;
          var productId = "<?= PropertiesService.getScriptProperties().getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID') ?>";
       </script>
+      <style>
+         body {
+         font-family: Arial, sans-serif;
+         margin: 0;
+         padding: 0;
+         background-color: #4CAF50;
+         }
+         .container {
+         padding: 20px;
+         }
+         .content-box {
+         background-color: white;
+         border-radius: 10px;
+         padding: 20px;
+         margin-bottom: 20px;
+         }
+         .header {
+         font-size: 24px;
+         color: #4CAF50;
+         margin-bottom: 20px;
+         border-bottom: 1px solid #eee;
+         padding-bottom: 10px;
+         }
+         select, button, input[type="date"] {
+         margin-bottom: 15px;
+         width: 100%;
+         padding: 8px;
+         border-radius: 5px;
+         border: 1px solid #ddd;
+         }
+         .action-button {
+         background-color: #4999e9;
+         color: white;
+         border: none;
+         padding: 12px;
+         font-weight: bold;
+         cursor: pointer;
+         text-transform: uppercase;
+         margin-bottom: 20px;
+         }
+         .switch-currencies {
+         background-color: #f1f1f1;
+         color: #333;
+         }
+         .form-group {
+         margin-bottom: 15px;
+         }
+         .label {
+         display: block;
+         margin-bottom: 5px;
+         color: #4a4a4a;
+         font-size: 16px;
+         }
+         .toggle {
+         position: relative;
+         display: inline-block;
+         width: 50px;
+         height: 24px;
+         }
+         .toggle input {
+         opacity: 0;
+         width: 0;
+         height: 0;
+         }
+         .slider {
+         position: absolute;
+         cursor: pointer;
+         top: 0;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         background-color: #ccc;
+         transition: .4s;
+         border-radius: 24px;
+         }
+         .slider:before {
+         position: absolute;
+         content: "";
+         height: 16px;
+         width: 16px;
+         left: 4px;
+         bottom: 4px;
+         background-color: white;
+         transition: .4s;
+         border-radius: 50%;
+         }
+         input:checked + .slider {
+         background-color: #4CAF50;
+         }
+         input:checked + .slider:before {
+         transform: translateX(26px);
+         }
+         .advanced-settings {
+         color: white;
+         margin-top: 10px;
+         margin-bottom: 20px;
+         }
+         .advanced-header {
+         display: flex;
+         align-items: center;
+         margin-bottom: 20px;
+         font-size: 18px;
+         }
+         .advanced-header svg {
+         margin-right: 10px;
+         }
+         .setting-row {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-bottom: 15px;
+         }
+         .setting-label {
+         color: white;
+         font-size: 16px;
+         }
+         .divider {
+         height: 1px;
+         background-color: rgba(255, 255, 255, 0.3);
+         margin: 15px 0;
+         width: 100%;
+         }
+         .footer {
+         text-align: center;
+         margin-top: 20px;
+         color: white;
+         }
+         .footer a {
+         color: white;
+         text-decoration: none;
+         margin: 0 10px;
+         }
+      </style>
    </head>
    <body>
-      <div class="conversion-tool">
-         <select id="fromCurrency">
-            <!-- Dropdown for "from currency" -->
-         </select>
-         <select id="toCurrency">
-            <!-- Dropdown for "to currency" -->
-         </select>
-         <button onclick="switchCurrencies()">Switch</button>
-         <div id="historicalRatePicker" class="premium-feature">
-            <label for="datePicker">Pick a Date:</label>
-            <input type="date" id="datePicker" disabled>
+      <div class="container">
+         <div class="content-box">
+            <div class="header">Currency Converter</div>
+            <div class="form-group">
+               <label class="label">From Currency</label>
+               <select id="fromCurrency">
+                  <!-- Dropdown for "from currency" -->
+               </select>
+            </div>
+            <div class="form-group">
+               <label class="label">To Currency</label>
+               <select id="toCurrency">
+                  <!-- Dropdown for "to currency" -->
+               </select>
+            </div>
+            <button class="switch-currencies" onclick="switchCurrencies()">Switch</button>
          </div>
-         <div>
-            <input type="radio" id="hardcode" name="conversionType" value="hardcode" checked>
-            <label for="hardcode">Replace with new values</label><br>
-            <input type="radio" id="formula" name="conversionType" value="formula">
-            <label for="formula">Replace with GOOGLEFINANCE formula</label>
+         <button class="action-button" onclick="convert()">CONVERT</button>
+         <div class="advanced-settings">
+            <div class="advanced-header">
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+               </svg>
+               <span>Advanced settings</span>
+            </div>
+            <div class="divider"></div>
+            <!--
+               <div class="setting-row">
+                  <div class="setting-label">Replace with new values</div>
+                  <label class="toggle">
+                     <input type="radio" id="hardcode" name="conversionType" value="hardcode" checked>
+                     <span class="slider"></span>
+                  </label>
+               </div>
+               -->
+            <!-- Change the GOOGLEFINANCE option from radio to checkbox -->
+            <div class="setting-row">
+               <div class="setting-label">Replace with GOOGLEFINANCE formula</div>
+               <label class="toggle">
+               <input type="checkbox" id="formula" name="conversionType" value="formula">
+               <span class="slider"></span>
+               </label>
+            </div>
+            <div class="setting-row">
+               <div class="setting-label">Convert entire sheet</div>
+               <label class="toggle">
+               <input type="checkbox" id="convertEntireSheet">
+               <span class="slider"></span>
+               </label>
+            </div>
+            <div id="historicalRatePicker" class="premium-feature setting-row">
+               <div class="setting-label">Pick a Date:</div>
+               <input type="date" id="datePicker" style="width: 150px;" disabled>
+            </div>
+            <div class="divider"></div>
          </div>
-         <div>
-            <input type="checkbox" id="convertEntireSheet">
-            <label for="convertEntireSheet">Convert entire sheet</label>
+         <div class="footer">
+            <a href="https://instantcurrency.tools/contact/" target="_blank">Need help?</a> | 
+            <a href="https://instantcurrency.tools/pricing" target="_blank">Upgrade</a>
          </div>
-         <button onclick="convert()">Convert</button>
       </div>
       <?!= include('SidebarJavascript'); ?>
    </body>

@@ -40,12 +40,14 @@
    }
    
    function convert() {
-     var fromCurrency = document.getElementById('fromCurrency').value;
-     var toCurrency = document.getElementById('toCurrency').value;
-     var convertEntireSheet = document.getElementById('convertEntireSheet').checked;
-     var conversionType = document.querySelector('input[name="conversionType"]:checked').value;
-     
-     google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType);
+   var fromCurrency = document.getElementById('fromCurrency').value;
+   var toCurrency = document.getElementById('toCurrency').value;
+   var convertEntireSheet = document.getElementById('convertEntireSheet').checked;
+   
+   // Check if formula checkbox is checked
+   var conversionType = document.getElementById('formula').checked ? "formula" : "hardcode";
+   
+   google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType);
    }
    
    function addTooltipListeners() {
