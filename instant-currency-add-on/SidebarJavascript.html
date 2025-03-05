@@ -2,28 +2,38 @@
    // Function to fetch available currencies from Frankfurter API and update dropdowns alphabetically
    function updateCurrencyDropdowns() {
    google.script.run.withSuccessHandler(function(currencies) {
-   var fromDropdown = document.getElementById('fromCurrency');
-   var toDropdown = document.getElementById('toCurrency');
+    var fromDropdown = document.getElementById('fromCurrency');
+    var toDropdown = document.getElementById('toCurrency');
    
-   // Clear existing options
-   fromDropdown.innerHTML = '';
-   toDropdown.innerHTML = '';
+    // Clear existing options
+    fromDropdown.innerHTML = '';
+    toDropdown.innerHTML = '';
    
-   // Get the currency codes and sort them alphabetically
-   var currencyCodes = Object.keys(currencies).sort();
+    // Get the currency codes and sort them alphabetically
+    var currencyCodes = Object.keys(currencies).sort();
    
-   let defaultCurrency = 'USD';
+    // Define default currencies
+    let fromDefault = 'USD';
+    let toDefault = 'EUR';
    
-   // Populate the dropdowns with the currencies in alphabetical order
-   currencyCodes.forEach(function(code) {
-     var flagEmoji = currencyFlags[code] ? currencyFlags[code] + ' ' : '';
-     var option = document.createElement('option');
-     option.value = code;
-     option.text =  currencies[code] + ' (' + code + ') ' + flagEmoji;
-     if (code == defaultCurrency) option.selected = "selected";
-     fromDropdown.appendChild(option.cloneNode(true));
-     toDropdown.appendChild(option);
-   });
+    // Populate the dropdowns with the currencies in alphabetical order
+    currencyCodes.forEach(function(code) {
+      var flagEmoji = currencyFlags[code] ? currencyFlags[code] + ' ' : '';
+      
+      // Create option for fromDropdown
+      var fromOption = document.createElement('option');
+      fromOption.value = code;
+      fromOption.text = currencies[code] + ' (' + code + ') ' + flagEmoji;
+      if (code === fromDefault) fromOption.selected = "selected";
+      fromDropdown.appendChild(fromOption);
+      
+      // Create separate option for toDropdown
+      var toOption = document.createElement('option');
+      toOption.value = code;
+      toOption.text = currencies[code] + ' (' + code + ') ' + flagEmoji;
+      if (code === toDefault) toOption.selected = "selected";
+      toDropdown.appendChild(toOption);
+    });
    }).getCurrencies();
    }
    
