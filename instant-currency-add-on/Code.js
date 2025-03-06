@@ -29,3 +29,7 @@ function getCurrencies() {
   var currencies = JSON.parse(response.getContentText());
   return currencies;
 }
+
+function showRateInfoModal() {
+  SpreadsheetApp.getUi().alert("Currency exchange rates aren't perfectly symmetrical - converting from one currency to another and back introduces small rounding differences.");
+}

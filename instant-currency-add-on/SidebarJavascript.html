@@ -107,6 +107,9 @@
    }).isUserSubscribed(productId);
    }
    
+   function showRateInfo() {
+   google.script.run.showRateInfoModal();
+   }
    document.addEventListener('DOMContentLoaded', function() {
      updateCurrencyDropdowns();
      addTooltipListeners();

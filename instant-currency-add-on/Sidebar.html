@@ -28,7 +28,10 @@
                   <!-- Dropdown for "to currency" -->
                </select>
             </div>
-            <button class="switch-currencies" onclick="switchCurrencies()">Switch</button>
+            <div class="switch-container">
+               <button class="switch-currencies" onclick="switchCurrencies()">Switch</button>
+               <span class="info-icon" onclick="showRateInfo()">ⓘ</span>
+            </div>
          </div>
          <button class="action-button" onclick="convert()">CONVERT</button>
          <div class="advanced-settings">
