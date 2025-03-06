@@ -15,15 +15,20 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
 
     range.setValues(updatedValues);
   } else if (conversionType === 'formula') {
-    var updatedFormulas = values.map(row => row.map(cell => {
-      if (typeof cell === 'number') {
-        return `=${cell}*GOOGLEFINANCE("CURRENCY:${fromCurrency}${toCurrency}")`;
-      } else {
-        return cell;
-      }
-    }));
+    const processedValues = values.map(row =>
+      row.map(cellValue => {
+        const valueToCheck = typeof cellValue === 'string' ? cellValue.trim() : cellValue;
 
-    range.setFormulas(updatedFormulas);
+        if ((typeof valueToCheck === 'number' || (!isNaN(valueToCheck) && valueToCheck !== '')) && valueToCheck !== 0) {
+          const numValue = typeof valueToCheck === 'number' ? valueToCheck : parseFloat(valueToCheck);
+          return `=${numValue}*GOOGLEFINANCE("CURRENCY:${fromCurrency}${toCurrency}")`;
+        }
+
+        return cellValue;
+      })
+    );
+
+    range.setValues(processedValues);
   }
   var currencyFormat = getCurrencyFormat(toCurrency);
   range.setNumberFormat(currencyFormat);
