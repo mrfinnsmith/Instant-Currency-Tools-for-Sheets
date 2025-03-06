@@ -10,23 +10,23 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
   date = date || new Date().toISOString().split('T')[0];
 
   if (conversionType === 'hardcode') {
-      var conversionRate = getConversionRate(fromCurrency, toCurrency, date);
-      var updatedValues = values.map(row => row.map(cell => typeof cell === 'number' ? cell * conversionRate : cell));
+    var conversionRate = getConversionRate(fromCurrency, toCurrency, date);
+    var updatedValues = values.map(row => row.map(cell => typeof cell === 'number' ? cell * conversionRate : cell));
 
-      range.setValues(updatedValues);
-      var currencyFormat = getCurrencyFormat(toCurrency);
-      range.setNumberFormat(currencyFormat);
+    range.setValues(updatedValues);
   } else if (conversionType === 'formula') {
-      var updatedFormulas = values.map(row => row.map(cell => {
-          if (typeof cell === 'number') {
-              return `=${cell}*GOOGLEFINANCE("CURRENCY:${fromCurrency}${toCurrency}")`;
-          } else {
-              return cell;
-          }
-      }));
+    var updatedFormulas = values.map(row => row.map(cell => {
+      if (typeof cell === 'number') {
+        return `=${cell}*GOOGLEFINANCE("CURRENCY:${fromCurrency}${toCurrency}")`;
+      } else {
+        return cell;
+      }
+    }));
 
-      range.setFormulas(updatedFormulas);
+    range.setFormulas(updatedFormulas);
   }
+  var currencyFormat = getCurrencyFormat(toCurrency);
+  range.setNumberFormat(currencyFormat);
 }
 
 function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
@@ -104,8 +104,8 @@ function getRateFromMongoDB(fromCurrency, toCurrency, date) {
     if (result.document && result.document.rates &&
       result.document.rates[date] &&
       result.document.rates[date][`${fromCurrency}_${toCurrency}`]) {
-        return result.document.rates[date][`${fromCurrency}_${toCurrency}`].rate;
-      }
+      return result.document.rates[date][`${fromCurrency}_${toCurrency}`].rate;
+    }
     return null; // Not found in MongoDB
   } catch (error) {
     console.error("Failed to query MongoDB:", error.toString());
@@ -147,7 +147,7 @@ function getCurrencyFormat(currencyString) {
     "TRY": '"₺"#,##0.00', // Turkish Lira - ₺1.234,56 → changed because the correct format uses a comma as the decimal separator
     "USD": '"$"#,##0.00', // United States Dollar - $1,234.56
     "ZAR": '"R"#,##0.00' // South African Rand - R1.234,56 → changed because the correct format uses a comma as the decimal separator
-};
+  };
   return formatMap[currencyString] || '#,##0.00'; // Default format if currency not found
 }
 
@@ -157,7 +157,7 @@ function loadLatestRatesToCache() {
   if (!latestDate) {
     return; // No dates available
   }
-  
+
   var props = getMongoDBProperties();
   var findUrl = props.baseUrl + "/action/findOne";
 
@@ -180,10 +180,10 @@ function loadLatestRatesToCache() {
   try {
     var response = UrlFetchApp.fetch(findUrl, options);
     var result = JSON.parse(response.getContentText());
-    
+
     if (result.document && result.document.rates && result.document.rates[latestDate]) {
       var ratePairs = result.document.rates[latestDate];
-      
+
       // Load each rate into cache with 21600 seconds (6 hours) expiration for consistency
       for (var pairKey in ratePairs) {
         var rate = ratePairs[pairKey].rate;
