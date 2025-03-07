@@ -8,10 +8,13 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
   var values = range.getValues();
 
   if (conversionType === 'hardcode') {
-    var conversionRate = getConversionRate(fromCurrency, toCurrency, date);
-    var updatedValues = values.map(row => row.map(cell => typeof cell === 'number' ? cell * conversionRate : cell));
-
-    range.setValues(updatedValues);
+    try {
+      var conversionRate = getConversionRate(fromCurrency, toCurrency, date);
+      var updatedValues = values.map(row => row.map(cell => typeof cell === 'number' ? cell * conversionRate : cell));
+      range.setValues(updatedValues);
+    } catch (error) {
+      // Error already shown to user
+    }
   } else if (conversionType === 'formula') {
     const processedValues = values.map(row =>
       row.map(cellValue => {
@@ -33,6 +36,13 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
 }
 
 function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
+  const currentDate = new Date();
+  const requestDate = new Date(date);
+  if (requestDate > currentDate) {
+    SpreadsheetApp.getUi().alert("Future dates not supported. Using latest available rates instead.");
+    date = latestAvailableDate;
+  }
+
   // Create a cache key combining currencies and date
   var cacheKey = `${SOURCE}_${fromCurrencyCode}_${toCurrencyCode}_${date}`;
 
@@ -51,11 +61,16 @@ function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
   }
 
   // Step 3: If not in MongoDB, call API
-  var apiUrl = buildApiUrl(fromCurrencyCode, toCurrencyCode, date);
-  var response = UrlFetchApp.fetch(apiUrl);
-  var json = JSON.parse(response.getContentText());
-  var rate = json.rates[toCurrencyCode];
-
+  try {
+    var apiUrl = buildApiUrl(fromCurrencyCode, toCurrencyCode, date);
+    var response = UrlFetchApp.fetch(apiUrl);
+    var json = JSON.parse(response.getContentText());
+    var rate = json.rates[toCurrencyCode];
+    if (!rate) throw new Error("Rate not available");
+  } catch (error) {
+    SpreadsheetApp.getUi().alert("Rate not available for " + date + ". Try a different date.");
+    throw error;
+  }
   // Store in both cache and MongoDB
   scriptCache.put(cacheKey, rate.toString(), 21600); // Cache for 6 hours
   storeRateInMongoDB(fromCurrencyCode, toCurrencyCode, rate, date);
