@@ -3,7 +3,7 @@ function onOpen() {
 }
 
 function openCurrencySidebar() {
-  loadLatestRatesToCache();
+  var latestDate = loadLatestRatesToCache();
 
   const props = PropertiesService.getScriptProperties();
   const productId = props.getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID');
@@ -11,6 +11,7 @@ function openCurrencySidebar() {
 
   var template = HtmlService.createTemplateFromFile('Sidebar');
   template.isPremium = isPremium;
+  template.latestAvailableDate = latestDate;
 
   var html = template.evaluate()
     .setTitle('Instant Currency')

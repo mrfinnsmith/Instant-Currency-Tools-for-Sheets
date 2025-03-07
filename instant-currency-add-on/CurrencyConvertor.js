@@ -1,13 +1,11 @@
 // Global cache instance
 var scriptCache = CacheService.getScriptCache();
+const SOURCE = "ECB";
 
 function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date) {
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   var range = convertEntireSheet ? spreadsheet.getActiveSheet().getDataRange() : spreadsheet.getActiveRange();
   var values = range.getValues();
-
-  // Use current date if not provided
-  date = date || new Date().toISOString().split('T')[0];
 
   if (conversionType === 'hardcode') {
     var conversionRate = getConversionRate(fromCurrency, toCurrency, date);
@@ -35,11 +33,8 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
 }
 
 function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
-  // Use current date if not provided
-  date = date || new Date().toISOString().split('T')[0];
-
   // Create a cache key combining currencies and date
-  var cacheKey = `${fromCurrencyCode}_${toCurrencyCode}_${date}`;
+  var cacheKey = `${SOURCE}_${fromCurrencyCode}_${toCurrencyCode}_${date}`;
 
   // Step 1: Check CacheService first
   var cachedRate = scriptCache.get(cacheKey);
@@ -69,14 +64,7 @@ function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
 }
 
 function buildApiUrl(fromCurrency, toCurrency, date) {
-  // If date is today, use latest endpoint
-  var today = new Date().toISOString().split('T')[0];
-  if (date === today) {
-    return `https://api.frankfurter.app/latest?from=${fromCurrency}&to=${toCurrency}`;
-  } else {
-    // Otherwise use historical endpoint
-    return `https://api.frankfurter.app/${date}?from=${fromCurrency}&to=${toCurrency}`;
-  }
+  return `https://api.frankfurter.app/${date}?from=${fromCurrency}&to=${toCurrency}`;
 }
 
 function getRateFromMongoDB(fromCurrency, toCurrency, date) {
@@ -160,8 +148,10 @@ function loadLatestRatesToCache() {
   // Get the latest date from MongoDB
   var latestDate = getLatestDateInRates();
   if (!latestDate) {
-    return; // No dates available
+    return null; // No dates available
   }
+
+  SpreadsheetApp.getUi().alert("Latest rates available are from: " + latestDate);
 
   var props = getMongoDBProperties();
   var findUrl = props.baseUrl + "/action/findOne";
@@ -192,10 +182,16 @@ function loadLatestRatesToCache() {
       // Load each rate into cache with 21600 seconds (6 hours) expiration for consistency
       for (var pairKey in ratePairs) {
         var rate = ratePairs[pairKey].rate;
-        scriptCache.put(pairKey + "_" + latestDate, rate.toString(), 21600);
+        var currencies = pairKey.split('_');
+        var fromCurrency = currencies[0];
+        var toCurrency = currencies[1];
+        var cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${latestDate}`;
+        scriptCache.put(cacheKey, rate.toString(), 21600);
       }
     }
+    return latestDate;
   } catch (error) {
     console.error("Failed to load rates to cache:", error.toString());
+    return null;
   }
 }

@@ -1,13 +1,13 @@
 function getMongoDBProperties() {
   var scriptProperties = PropertiesService.getScriptProperties();
   return {
-      apiKey: scriptProperties.getProperty('MONGO-API-KEY'),
-      baseUrl: scriptProperties.getProperty('MONGO-BASE-URL'),
-      dbName: scriptProperties.getProperty('MONGO-DB-NAME'),
-      subscriptionCollectionName: scriptProperties.getProperty('MONGO-SUBSCRIPTION-COLLECTION-NAME'),
-      ratesCollectionName: scriptProperties.getProperty('MONGO-RATES-COLLECTION-NAME'),
-      clusterName: scriptProperties.getProperty('MONGO-CLUSTER-NAME'),
-      ecbRatesDocumentId: scriptProperties.getProperty('ECB-RATES-DOCUMENT-ID')
+    apiKey: scriptProperties.getProperty('MONGO-API-KEY'),
+    baseUrl: scriptProperties.getProperty('MONGO-BASE-URL'),
+    dbName: scriptProperties.getProperty('MONGO-DB-NAME'),
+    subscriptionCollectionName: scriptProperties.getProperty('MONGO-SUBSCRIPTION-COLLECTION-NAME'),
+    ratesCollectionName: scriptProperties.getProperty('MONGO-RATES-COLLECTION-NAME'),
+    clusterName: scriptProperties.getProperty('MONGO-CLUSTER-NAME'),
+    ecbRatesDocumentId: scriptProperties.getProperty('ECB-RATES-DOCUMENT-ID')
   };
 }
 
@@ -16,26 +16,34 @@ function storeRateInMongoDB(from, to, rate, date) {
   var updateUrl = props.baseUrl + "/action/updateOne";
 
   var updatePayload = {
-      dataSource: props.clusterName,
-      database: props.dbName,
-      collection: props.ratesCollectionName,
-      filter: { "_id": props.ecbRatesDocumentId },
-      update: { $set: { [`rates.${date}.${from}_${to}`]: { rate: rate, lastUpdated: new Date().toISOString() } } },
-      upsert: true
+    dataSource: props.clusterName,
+    database: props.dbName,
+    collection: props.ratesCollectionName,
+    filter: { "_id": props.ecbRatesDocumentId },
+    update: {
+      $set: {
+        [`rates.${date}.${from}_${to}`]: {
+          rate: rate,
+          lastUpdated: new Date().toISOString(),
+          source: SOURCE
+        }
+      }
+    },
+    upsert: true
   };
 
   var options = {
-      method: "post",
-      contentType: "application/json",
-      headers: { "api-key": props.apiKey },
-      payload: JSON.stringify(updatePayload),
-      muteHttpExceptions: true
+    method: "post",
+    contentType: "application/json",
+    headers: { "api-key": props.apiKey },
+    payload: JSON.stringify(updatePayload),
+    muteHttpExceptions: true
   };
 
   try {
-      UrlFetchApp.fetch(updateUrl, options);
+    UrlFetchApp.fetch(updateUrl, options);
   } catch (error) {
-      console.error("Failed to update MongoDB:", error.toString());
+    console.error("Failed to update MongoDB:", error.toString());
   }
 }
 
@@ -69,7 +77,7 @@ function getLatestDateInRates() {
         return null;
       }
 
-      dates.sort(function(a, b) {
+      dates.sort(function (a, b) {
         return new Date(b) - new Date(a);
       });
 

@@ -53,11 +53,20 @@
    var fromCurrency = document.getElementById('fromCurrency').value;
    var toCurrency = document.getElementById('toCurrency').value;
    var convertEntireSheet = document.getElementById('convertEntireSheet').checked;
+   var datePicker = document.getElementById('datePicker');
+   var date = datePicker && !datePicker.disabled && datePicker.value ? datePicker.value : latestAvailableDate;
+   
+   if (!datePicker.value || datePicker.disabled) {
+     alert("Using rates from: " + latestAvailableDate);
+   }
    
    // Check if formula checkbox is checked
    var conversionType = document.getElementById('formula').checked ? "formula" : "hardcode";
    
-   google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType);
+   google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date);
+   
+   var dateDisplay = document.getElementById('conversionDateDisplay');
+   dateDisplay.textContent = "Converting using rates from: " + date;
    }
    
    function addTooltipListeners() {

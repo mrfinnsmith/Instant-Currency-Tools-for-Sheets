@@ -7,6 +7,7 @@
          // Make premium status available to sidebar JavaScript
          var isPremium = <?= isPremium ?>;
          var productId = "<?= PropertiesService.getScriptProperties().getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID') ?>";
+         var latestAvailableDate = "<?= latestAvailableDate ?>";
       </script>
    </head>
    <body>
@@ -34,6 +35,7 @@
             </div>
          </div>
          <button class="action-button" onclick="convert()">CONVERT</button>
+         <div id="conversionDateDisplay" class="setting-label"></div>
          <div class="advanced-settings">
             <div class="advanced-header">
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
