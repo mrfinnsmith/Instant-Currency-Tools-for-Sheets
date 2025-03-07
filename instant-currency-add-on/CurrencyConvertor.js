@@ -19,7 +19,7 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
 
         if ((typeof valueToCheck === 'number' || (!isNaN(valueToCheck) && valueToCheck !== '')) && valueToCheck !== 0) {
           const numValue = typeof valueToCheck === 'number' ? valueToCheck : parseFloat(valueToCheck);
-          return `=${numValue}*INDEX(GOOGLEFINANCE("CURRENCY:${fromCurrency}${toCurrency}", "price", "${date}"),2,2)`;
+          return `=IFERROR(${numValue}*INDEX(GOOGLEFINANCE("CURRENCY:${fromCurrency}${toCurrency}", "price", "${date}"),2,2), "Rate unavailable. Use undo to revert.")`;
         }
 
         return cellValue;
