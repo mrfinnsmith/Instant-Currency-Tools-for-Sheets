@@ -23,15 +23,15 @@
                   <!-- Dropdown for "from currency" -->
                </select>
             </div>
+            <div class="switch-container">
+               <button class="switch-icon-button" onclick="switchCurrencies()" title="Switch currencies">↑↓</button>
+               <span class="info-icon" onclick="showRateInfo()">ⓘ</span>
+            </div>
             <div class="form-group">
                <label class="label">To Currency</label>
                <select id="toCurrency">
                   <!-- Dropdown for "to currency" -->
                </select>
-            </div>
-            <div class="switch-container">
-               <button class="switch-currencies" onclick="switchCurrencies()">Switch</button>
-               <span class="info-icon" onclick="showRateInfo()">ⓘ</span>
             </div>
          </div>
          <button class="action-button" onclick="convert()">CONVERT</button>
