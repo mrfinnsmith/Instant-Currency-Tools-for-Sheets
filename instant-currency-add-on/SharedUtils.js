@@ -1,3 +1,5 @@
+var latestAvailableDate = null;
+
 function getMongoDBProperties() {
   var scriptProperties = PropertiesService.getScriptProperties();
   return {

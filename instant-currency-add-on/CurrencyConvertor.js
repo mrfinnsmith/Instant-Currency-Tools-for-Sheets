@@ -33,6 +33,17 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
 }
 
 function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
+  // Validate date is not in future
+  var selectedDate = new Date(date);
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (selectedDate > today) {
+    // Use latest available date instead
+    date = latestAvailableDate;
+    // Optionally alert user
+    SpreadsheetApp.getActiveSpreadsheet().toast("Future date selected. Using latest available rates from " + latestAvailableDate);
+  }
   // Create a cache key combining currencies and date
   var cacheKey = `${SOURCE}_${fromCurrencyCode}_${toCurrencyCode}_${date}`;
 
