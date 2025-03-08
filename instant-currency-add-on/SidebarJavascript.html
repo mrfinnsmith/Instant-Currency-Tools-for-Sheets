@@ -66,7 +66,22 @@
    google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date);
    
    var dateDisplay = document.getElementById('conversionDateDisplay');
-   dateDisplay.textContent = "Converting using rates from: " + date;
+   if (conversionType !== "formula") {
+   // Format date from YYYY-MM-DD to Month Day, Year
+   const dateParts = date.split('-');
+   const dateObj = new Date(dateParts[0], parseInt(dateParts[1])-1, dateParts[2]);
+   const formattedDate = dateObj.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+   
+   dateDisplay.textContent = "Converting using rates from " + formattedDate;
+   dateDisplay.style.display = "block";
+   
+   // Hide after 5 seconds
+   setTimeout(function() {
+    dateDisplay.style.display = "none";
+   }, 5000);
+   } else {
+   dateDisplay.style.display = "none";
+   }
    }
    
    function addTooltipListeners() {
