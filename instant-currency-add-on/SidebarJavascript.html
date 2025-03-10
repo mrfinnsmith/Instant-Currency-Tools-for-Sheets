@@ -23,14 +23,14 @@
       // Create option for fromDropdown
       var fromOption = document.createElement('option');
       fromOption.value = code;
-      fromOption.text = currencies[code] + ' (' + code + ') ' + flagEmoji;
+      fromOption.text = code + ' ' + flagEmoji + ' (' + currencies[code] + ')';
       if (code === fromDefault) fromOption.selected = "selected";
       fromDropdown.appendChild(fromOption);
       
       // Create separate option for toDropdown
       var toOption = document.createElement('option');
       toOption.value = code;
-      toOption.text = currencies[code] + ' (' + code + ') ' + flagEmoji;
+      toOption.text = code + ' ' + flagEmoji + ' (' + currencies[code] + ')';
       if (code === toDefault) toOption.selected = "selected";
       toDropdown.appendChild(toOption);
     });
