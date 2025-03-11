@@ -1,321 +1,310 @@
 <script>
-   // Function to fetch available currencies from Frankfurter API and update dropdowns alphabetically
-   function updateCurrencyDropdowns() {
-   google.script.run.withSuccessHandler(function(currencies) {
-    var fromDropdown = document.getElementById('fromCurrency');
-    var toDropdown = document.getElementById('toCurrency');
-   
-    // Clear existing options
-    fromDropdown.innerHTML = '';
-    toDropdown.innerHTML = '';
-   
-    // Get the currency codes and sort them alphabetically
-    var currencyCodes = Object.keys(currencies).sort();
-   
-    // Define default currencies
-    let fromDefault = 'USD';
-    let toDefault = 'EUR';
-   
-    // Populate the dropdowns with the currencies in alphabetical order
-    currencyCodes.forEach(function(code) {
-      var flagEmoji = currencyFlags[code] ? currencyFlags[code] + ' ' : '';
-      
-      // Create option for fromDropdown
-      var fromOption = document.createElement('option');
-      fromOption.value = code;
-      fromOption.text = code + ' ' + flagEmoji + ' (' + currencies[code] + ')';
-      if (code === fromDefault) fromOption.selected = "selected";
-      fromDropdown.appendChild(fromOption);
-      
-      // Create separate option for toDropdown
-      var toOption = document.createElement('option');
-      toOption.value = code;
-      toOption.text = code + ' ' + flagEmoji + ' (' + currencies[code] + ')';
-      if (code === toDefault) toOption.selected = "selected";
-      toDropdown.appendChild(toOption);
-    });
-   }).getCurrencies();
+   function fetchCurrencies() {
+     google.script.run.withSuccessHandler(populateCurrencyDropdowns).getCurrencies();
    }
    
-   // Call the function to update the dropdowns
-   updateCurrencyDropdowns();
-   
-   function switchCurrencies() {
+   function populateCurrencyDropdowns(currencies) {
      var fromDropdown = document.getElementById('fromCurrency');
      var toDropdown = document.getElementById('toCurrency');
-     // Swapping the values of the dropdowns
-     var temp = fromDropdown.value;
-     fromDropdown.value = toDropdown.value;
-     toDropdown.value = temp;
-   }
-   
-   function convert() {
-   var fromCurrency = document.getElementById('fromCurrency').value;
-   var toCurrency = document.getElementById('toCurrency').value;
-   var convertEntireSheet = document.getElementById('convertEntireSheet').checked;
-   var datePicker = document.getElementById('datePicker');
-   var date;
-   
-   if (datePicker && !datePicker.disabled && datePicker.value) {
-       date = datePicker.value;
-   } else {
-       date = latestAvailableDate;
-   }
-   
-   if (!datePicker.value || datePicker.disabled) {
-     alert("Using rates from: " + latestAvailableDate);
-   }
-   
-   console.log("convert function - latestAvailableDate: ", latestAvailableDate);
-   console.log("convert function - date being used: ", date);
-   
-   // Check if formula checkbox is checked
-   var conversionType = document.getElementById('formula').checked ? "formula" : "hardcode";
-   
-   google.script.run
-     .withSuccessHandler(function(actualDateUsed) {
-       var dateDisplay = document.getElementById('conversionDateDisplay');
-       if (conversionType !== "formula" && actualDateUsed) {
-         // Format date from YYYY-MM-DD to Month Day, Year
-         const dateParts = actualDateUsed.split('-');
-         const dateObj = new Date(dateParts[0], parseInt(dateParts[1])-1, dateParts[2]);
-         const formattedDate = dateObj.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
-         
-         dateDisplay.textContent = "Converting using rates from " + formattedDate;
-         dateDisplay.style.display = "block";
-         
-         // Hide after 5 seconds
-         setTimeout(function() {
-           dateDisplay.style.display = "none";
-         }, 5000);
-       } else {
-         dateDisplay.style.display = "none";
-       }
-     })
-     .convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate);
-   }
-   
-   function addTooltipListeners() {
-     const premiumFeatures = document.querySelectorAll('.premium-feature');
-     premiumFeatures.forEach(feature => {
-       const tooltip = document.createElement('span');
-       tooltip.className = 'tooltip';
-       tooltip.textContent = 'Click Upgrade below to access this premium feature.';
-       tooltip.style.visibility = 'hidden';
-       tooltip.style.position = 'absolute';
-       tooltip.style.backgroundColor = 'black';
-       tooltip.style.color = 'white';
-       tooltip.style.borderRadius = '5px';
-       tooltip.style.padding = '5px';
-       tooltip.style.marginTop = '20px';
-       feature.appendChild(tooltip);
-   
-       feature.addEventListener('mouseover', () => {
-         tooltip.style.visibility = 'visible';
-       });
-       feature.addEventListener('mouseout', () => {
-         tooltip.style.visibility = 'hidden';
-       });
+     
+     fromDropdown.innerHTML = '';
+     toDropdown.innerHTML = '';
+     
+     var currencyCodes = Object.keys(currencies).sort();
+     
+     let fromDefault = 'USD';
+     let toDefault = 'EUR';
+     
+     currencyCodes.forEach(function(code) {
+       fromDropdown.appendChild(createFormattedCurrencyOption(code, currencies[code], fromDefault));
+       toDropdown.appendChild(createFormattedCurrencyOption(code, currencies[code], toDefault));
      });
    }
    
-   function updatePremiumFeatures() {
-   google.script.run.withSuccessHandler(function(isSubscribed) {
-    // Enable/disable date picker based on subscription status
-    document.getElementById('datePicker').disabled = !isSubscribed;
-    
-    const premiumFeatures = document.querySelectorAll('.premium-feature');
-    
-    premiumFeatures.forEach(feature => {
-      // Enable/disable inputs
-      const inputs = feature.querySelectorAll('input, select');
-      inputs.forEach(input => {
-        input.disabled = !isSubscribed;
-      });
+   function createFormattedCurrencyOption(code, currencyName, defaultValue) {
+     var flagEmoji = currencyFlags[code] ? currencyFlags[code] + ' ' : '';
+     var option = document.createElement('option');
+     option.value = code;
+     option.text = code + ' ' + flagEmoji + ' (' + currencyName + ')';
+     if (code === defaultValue) option.selected = "selected";
+     return option;
+   }
       
-      // Handle tooltips
-      const tooltip = feature.querySelector('.tooltip');
-      if (tooltip) {
-        tooltip.style.display = isSubscribed ? 'none' : 'block';
+      function switchCurrencies() {
+        var fromDropdown = document.getElementById('fromCurrency');
+        var toDropdown = document.getElementById('toCurrency');
+        // Swapping the values of the dropdowns
+        var temp = fromDropdown.value;
+        fromDropdown.value = toDropdown.value;
+        toDropdown.value = temp;
       }
-    });
-   }).isUserSubscribed(productId);
-   }
-   
-   function showRateInfo() {
-   google.script.run.showRateInfoModal();
-   }
-   document.addEventListener('DOMContentLoaded', function() {
-     updateCurrencyDropdowns();
+      
+      function convert() {
+      var fromCurrency = document.getElementById('fromCurrency').value;
+      var toCurrency = document.getElementById('toCurrency').value;
+      var convertEntireSheet = document.getElementById('convertEntireSheet').checked;
+      var datePicker = document.getElementById('datePicker');
+      var date;
+      
+      if (datePicker && !datePicker.disabled && datePicker.value) {
+          date = datePicker.value;
+      } else {
+          date = latestAvailableDate;
+      }
+      
+      if (!datePicker.value || datePicker.disabled) {
+        alert("Using rates from: " + latestAvailableDate);
+      }
+      
+      console.log("convert function - latestAvailableDate: ", latestAvailableDate);
+      console.log("convert function - date being used: ", date);
+      
+      // Check if formula checkbox is checked
+      var conversionType = document.getElementById('formula').checked ? "formula" : "hardcode";
+      
+      google.script.run
+        .withSuccessHandler(function(actualDateUsed) {
+          var dateDisplay = document.getElementById('conversionDateDisplay');
+          if (conversionType !== "formula" && actualDateUsed) {
+            // Format date from YYYY-MM-DD to Month Day, Year
+            const dateParts = actualDateUsed.split('-');
+            const dateObj = new Date(dateParts[0], parseInt(dateParts[1])-1, dateParts[2]);
+            const formattedDate = dateObj.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+            
+            dateDisplay.textContent = "Converting using rates from " + formattedDate;
+            dateDisplay.style.display = "block";
+            
+            // Hide after 5 seconds
+            setTimeout(function() {
+              dateDisplay.style.display = "none";
+            }, 5000);
+          } else {
+            dateDisplay.style.display = "none";
+          }
+        })
+        .convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate);
+      }
+      
+      function addTooltipListeners() {
+        const premiumFeatures = document.querySelectorAll('.premium-feature');
+        premiumFeatures.forEach(feature => {
+          const tooltip = document.createElement('span');
+          tooltip.className = 'tooltip';
+          tooltip.textContent = 'Click Upgrade below to access this premium feature.';
+          tooltip.style.visibility = 'hidden';
+          tooltip.style.position = 'absolute';
+          tooltip.style.backgroundColor = 'black';
+          tooltip.style.color = 'white';
+          tooltip.style.borderRadius = '5px';
+          tooltip.style.padding = '5px';
+          tooltip.style.marginTop = '20px';
+          feature.appendChild(tooltip);
+      
+          feature.addEventListener('mouseover', () => {
+            tooltip.style.visibility = 'visible';
+          });
+          feature.addEventListener('mouseout', () => {
+            tooltip.style.visibility = 'hidden';
+          });
+        });
+      }
+      
+      function updatePremiumFeatures() {
+      google.script.run.withSuccessHandler(function(isSubscribed) {
+       // Enable/disable date picker based on subscription status
+       document.getElementById('datePicker').disabled = !isSubscribed;
+       
+       const premiumFeatures = document.querySelectorAll('.premium-feature');
+       
+       premiumFeatures.forEach(feature => {
+         // Enable/disable inputs
+         const inputs = feature.querySelectorAll('input, select');
+         inputs.forEach(input => {
+           input.disabled = !isSubscribed;
+         });
+         
+         // Handle tooltips
+         const tooltip = feature.querySelector('.tooltip');
+         if (tooltip) {
+           tooltip.style.display = isSubscribed ? 'none' : 'block';
+         }
+       });
+      }).isUserSubscribed(productId);
+      }
+      
+      function showRateInfo() {
+      google.script.run.showRateInfoModal();
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+     fetchCurrencies();
      addTooltipListeners();
-   
+    
      updatePremiumFeatures();
      setInterval(updatePremiumFeatures, 5 * 60 * 1000);
-     
    });
-   
-   
-   const currencyFlags = {
-   'AFN': '🇦🇫',
-   'ALL': '🇦🇱',
-   'DZD': '🇩🇿',
-   'AOA': '🇦🇴',
-   'AUD': '🇦🇺',
-   'ARS': '🇦🇷',
-   'AMD': '🇦🇲',
-   'AWG': '🇦🇼',
-   'AZN': '🇦🇿',
-   'BSD': '🇧🇸',
-   'BHD': '🇧🇭',
-   'BDT': '🇧🇩',
-   'BBD': '🇧🇧',
-   'BYN': '🇧🇾',
-   'BZD': '🇧🇿',
-   'BMD': '🇧🇲',
-   'BTN': '🇧🇹',
-   'BOB': '🇧🇴',
-   'BOV': '🇧🇴',
-   'BAM': '🇧🇦',
-   'BWP': '🇧🇼',
-   'BRL': '🇧🇷',
-   'CHF': '🇨🇭',
-   'BND': '🇧🇳',
-   'BGN': '🇧🇬',
-   'DKK': '🇩🇰',
-   'BIF': '🇧🇮',
-   'CVE': '🇨🇻',
-   'KHR': '🇰🇭',
-   'CAD': '🇨🇦',
-   'KYD': '🇰🇾',
-   'CLF': '🇨🇱',
-   'CLP': '🇨🇱',
-   'CNY': '🇨🇳',
-   'COP': '🇨🇴',
-   'COU': '🇨🇴',
-   'KMF': '🇰🇲',
-   'CDF': '🇨🇩',
-   'CRC': '🇨🇷',
-   'CUC': '🇨🇺',
-   'CUP': '🇨🇺',
-   'EUR': '🇪🇺',
-   'CZK': '🇨🇿',
-   'DJF': '🇩🇯',
-   'DOP': '🇩🇴',
-   'EGP': '🇪🇬',
-   'SVC': '🇸🇻',
-   'ERN': '🇪🇷',
-   'ETB': '🇪🇹',
-   'FKP': '🇫🇰',
-   'FJD': '🇫🇯',
-   'GMD': '🇬🇲',
-   'GEL': '🇬🇪',
-   'GHS': '🇬🇭',
-   'GIP': '🇬🇮',
-   'GTQ': '🇬🇹',
-   'GNF': '🇬🇳',
-   'GYD': '🇬🇾',
-   'HTG': '🇭🇹',
-   'HNL': '🇭🇳',
-   'HKD': '🇭🇰',
-   'HUF': '🇭🇺',
-   'ISK': '🇮🇸',
-   'IDR': '🇮🇩',
-   'IRR': '🇮🇷',
-   'IQD': '🇮🇶',
-   'ILS': '🇮🇱',
-   'JMD': '🇯🇲',
-   'JPY': '🇯🇵',
-   'JOD': '🇯🇴',
-   'KZT': '🇰🇿',
-   'KES': '🇰🇪',
-   'GBP': '🇬🇧',
-   'KPW': '🇰🇵',
-   'KRW': '🇰🇷',
-   'KWD': '🇰🇼',
-   'KGS': '🇰🇬',
-   'LAK': '🇱🇦',
-   'LBP': '🇱🇧',
-   'LSL': '🇱🇸',
-   'INR': '🇮🇳',
-   'LRD': '🇱🇷',
-   'LYD': '🇱🇾',
-   'MAD': '🇲🇦',
-   'MOP': '🇲🇴',
-   'MGA': '🇲🇬',
-   'MWK': '🇲🇼',
-   'MYR': '🇲🇾',
-   'MVR': '🇲🇻',
-   'NOK': '🇳🇴',
-   'NZD': '🇳🇿',
-   'MRU': '🇲🇷',
-   'MUR': '🇲🇺',
-   'MXN': '🇲🇽',
-   'MXV': '🇲🇽',
-   'MDL': '🇲🇩',
-   'MNT': '🇲🇳',
-   'MZN': '🇲🇿',
-   'MMK': '🇲🇲',
-   'NAD': '🇳🇦',
-   'NPR': '🇳🇵',
-   'NIO': '🇳🇮',
-   'NGN': '🇳🇬',
-   'OMR': '🇴🇲',
-   'PKR': '🇵🇰',
-   'PAB': '🇵🇦',
-   'PGK': '🇵🇬',
-   'PYG': '🇵🇾',
-   'PEN': '🇵🇪',
-   'PHP': '🇵🇭',
-   'PLN': '🇵🇱',
-   'USD': '🇺🇸',
-   'QAR': '🇶🇦',
-   'MKD': '🇲🇰',
-   'RON': '🇷🇴',
-   'RUB': '🇷🇺',
-   'RWF': '🇷🇼',
-   'SHP': '🇸🇭',
-   'WST': '🇼🇸',
-   'STN': '🇸🇹',
-   'SAR': '🇸🇦',
-   'RSD': '🇷🇸',
-   'SCR': '🇸🇨',
-   'SLE': '🇸🇱',
-   'SGD': '🇸🇬',
-   'SBD': '🇸🇧',
-   'SOS': '🇸🇴',
-   'SSP': '🇸🇸',
-   'LKR': '🇱🇰',
-   'SDG': '🇸🇩',
-   'SRD': '🇸🇷',
-   'SZL': '🇸🇿',
-   'SEK': '🇸🇪',
-   'CHE': '🇨🇭',
-   'CHW': '🇨🇭',
-   'SYP': '🇸🇾',
-   'TWD': '🇹🇼',
-   'TJS': '🇹🇯',
-   'TZS': '🇹🇿',
-   'THB': '🇹🇭',
-   'TOP': '🇹🇴',
-   'TTD': '🇹🇹',
-   'TND': '🇹🇳',
-   'TRY': '🇹🇷',
-   'TMT': '🇹🇲',
-   'UGX': '🇺🇬',
-   'UAH': '🇺🇦',
-   'AED': '🇦🇪',
-   'USN': '🇺🇸',
-   'UYI': '🇺🇾',
-   'UYU': '🇺🇾',
-   'UZS': '🇺🇿',
-   'VUV': '🇻🇺',
-   'VEF': '🇻🇪',
-   'VED': '🇻🇪',
-   'VND': '🇻🇳',
-   'YER': '🇾🇪',
-   'ZMW': '🇿🇲',
-   'ZWL': '🇿🇼',
-   'ZAR': '🇿🇦'
-   };
-   
+      
+      
+      const currencyFlags = {
+      'AFN': '🇦🇫',
+      'ALL': '🇦🇱',
+      'DZD': '🇩🇿',
+      'AOA': '🇦🇴',
+      'AUD': '🇦🇺',
+      'ARS': '🇦🇷',
+      'AMD': '🇦🇲',
+      'AWG': '🇦🇼',
+      'AZN': '🇦🇿',
+      'BSD': '🇧🇸',
+      'BHD': '🇧🇭',
+      'BDT': '🇧🇩',
+      'BBD': '🇧🇧',
+      'BYN': '🇧🇾',
+      'BZD': '🇧🇿',
+      'BMD': '🇧🇲',
+      'BTN': '🇧🇹',
+      'BOB': '🇧🇴',
+      'BOV': '🇧🇴',
+      'BAM': '🇧🇦',
+      'BWP': '🇧🇼',
+      'BRL': '🇧🇷',
+      'CHF': '🇨🇭',
+      'BND': '🇧🇳',
+      'BGN': '🇧🇬',
+      'DKK': '🇩🇰',
+      'BIF': '🇧🇮',
+      'CVE': '🇨🇻',
+      'KHR': '🇰🇭',
+      'CAD': '🇨🇦',
+      'KYD': '🇰🇾',
+      'CLF': '🇨🇱',
+      'CLP': '🇨🇱',
+      'CNY': '🇨🇳',
+      'COP': '🇨🇴',
+      'COU': '🇨🇴',
+      'KMF': '🇰🇲',
+      'CDF': '🇨🇩',
+      'CRC': '🇨🇷',
+      'CUC': '🇨🇺',
+      'CUP': '🇨🇺',
+      'EUR': '🇪🇺',
+      'CZK': '🇨🇿',
+      'DJF': '🇩🇯',
+      'DOP': '🇩🇴',
+      'EGP': '🇪🇬',
+      'SVC': '🇸🇻',
+      'ERN': '🇪🇷',
+      'ETB': '🇪🇹',
+      'FKP': '🇫🇰',
+      'FJD': '🇫🇯',
+      'GMD': '🇬🇲',
+      'GEL': '🇬🇪',
+      'GHS': '🇬🇭',
+      'GIP': '🇬🇮',
+      'GTQ': '🇬🇹',
+      'GNF': '🇬🇳',
+      'GYD': '🇬🇾',
+      'HTG': '🇭🇹',
+      'HNL': '🇭🇳',
+      'HKD': '🇭🇰',
+      'HUF': '🇭🇺',
+      'ISK': '🇮🇸',
+      'IDR': '🇮🇩',
+      'IRR': '🇮🇷',
+      'IQD': '🇮🇶',
+      'ILS': '🇮🇱',
+      'JMD': '🇯🇲',
+      'JPY': '🇯🇵',
+      'JOD': '🇯🇴',
+      'KZT': '🇰🇿',
+      'KES': '🇰🇪',
+      'GBP': '🇬🇧',
+      'KPW': '🇰🇵',
+      'KRW': '🇰🇷',
+      'KWD': '🇰🇼',
+      'KGS': '🇰🇬',
+      'LAK': '🇱🇦',
+      'LBP': '🇱🇧',
+      'LSL': '🇱🇸',
+      'INR': '🇮🇳',
+      'LRD': '🇱🇷',
+      'LYD': '🇱🇾',
+      'MAD': '🇲🇦',
+      'MOP': '🇲🇴',
+      'MGA': '🇲🇬',
+      'MWK': '🇲🇼',
+      'MYR': '🇲🇾',
+      'MVR': '🇲🇻',
+      'NOK': '🇳🇴',
+      'NZD': '🇳🇿',
+      'MRU': '🇲🇷',
+      'MUR': '🇲🇺',
+      'MXN': '🇲🇽',
+      'MXV': '🇲🇽',
+      'MDL': '🇲🇩',
+      'MNT': '🇲🇳',
+      'MZN': '🇲🇿',
+      'MMK': '🇲🇲',
+      'NAD': '🇳🇦',
+      'NPR': '🇳🇵',
+      'NIO': '🇳🇮',
+      'NGN': '🇳🇬',
+      'OMR': '🇴🇲',
+      'PKR': '🇵🇰',
+      'PAB': '🇵🇦',
+      'PGK': '🇵🇬',
+      'PYG': '🇵🇾',
+      'PEN': '🇵🇪',
+      'PHP': '🇵🇭',
+      'PLN': '🇵🇱',
+      'USD': '🇺🇸',
+      'QAR': '🇶🇦',
+      'MKD': '🇲🇰',
+      'RON': '🇷🇴',
+      'RUB': '🇷🇺',
+      'RWF': '🇷🇼',
+      'SHP': '🇸🇭',
+      'WST': '🇼🇸',
+      'STN': '🇸🇹',
+      'SAR': '🇸🇦',
+      'RSD': '🇷🇸',
+      'SCR': '🇸🇨',
+      'SLE': '🇸🇱',
+      'SGD': '🇸🇬',
+      'SBD': '🇸🇧',
+      'SOS': '🇸🇴',
+      'SSP': '🇸🇸',
+      'LKR': '🇱🇰',
+      'SDG': '🇸🇩',
+      'SRD': '🇸🇷',
+      'SZL': '🇸🇿',
+      'SEK': '🇸🇪',
+      'CHE': '🇨🇭',
+      'CHW': '🇨🇭',
+      'SYP': '🇸🇾',
+      'TWD': '🇹🇼',
+      'TJS': '🇹🇯',
+      'TZS': '🇹🇿',
+      'THB': '🇹🇭',
+      'TOP': '🇹🇴',
+      'TTD': '🇹🇹',
+      'TND': '🇹🇳',
+      'TRY': '🇹🇷',
+      'TMT': '🇹🇲',
+      'UGX': '🇺🇬',
+      'UAH': '🇺🇦',
+      'AED': '🇦🇪',
+      'USN': '🇺🇸',
+      'UYI': '🇺🇾',
+      'UYU': '🇺🇾',
+      'UZS': '🇺🇿',
+      'VUV': '🇻🇺',
+      'VEF': '🇻🇪',
+      'VED': '🇻🇪',
+      'VND': '🇻🇳',
+      'YER': '🇾🇪',
+      'ZMW': '🇿🇲',
+      'ZWL': '🇿🇼',
+      'ZAR': '🇿🇦'
+      };
+      
 </script>
