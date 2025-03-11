@@ -51,6 +51,9 @@
       } else {
           date = latestAvailableDate;
       }
+   
+      console.log("Date selected:", date);
+   console.log("Conversion type:", conversionType);
       
       if (!datePicker.value || datePicker.disabled) {
         alert("Using rates from: " + latestAvailableDate);

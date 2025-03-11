@@ -3,70 +3,77 @@ var scriptCache = CacheService.getScriptCache();
 const SOURCE = "ECB";
 
 function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate) {
-  console.log(`Inside convertCurrencyInSelectedRange. latestAvailableDate is ${latestAvailableDate}`);
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  var range = convertEntireSheet ? spreadsheet.getActiveSheet().getDataRange() : spreadsheet.getActiveRange();
-  var values = range.getValues();
 
-  // Variable to store actual date used
-  var actualDateUsed = date;
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const range = convertEntireSheet ? spreadsheet.getActiveSheet().getDataRange() : spreadsheet.getActiveRange();
 
-  // Validate date is not in future
-  var selectedDate = new Date(date);
-  var today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Validate date and get actual date to use
+  const actualDateUsed = validateAndGetActualDate(date, latestAvailableDate);
+  console.log("Returning actualDateUsed:", actualDateUsed);
 
-  if (selectedDate > today) {
-
-    // Use latest available date instead
-    actualDateUsed = latestAvailableDate;
-    // Alert user
-    SpreadsheetApp.getActiveSpreadsheet().toast("Future date selected. Using latest available rates from " + latestAvailableDate);
-  }
-
+  // Apply conversion based on selected strategy
   if (conversionType === 'hardcode') {
-    try {
-      var conversionRate = getConversionRate(fromCurrency, toCurrency, actualDateUsed);
-      var updatedValues = values.map(row => row.map(cell => typeof cell === 'number' ? cell * conversionRate : cell));
-      range.setValues(updatedValues);
-    } catch (error) {
-      // Error already shown to user
-    }
+    applyHardcodedConversion(range, fromCurrency, toCurrency, actualDateUsed);
   } else if (conversionType === 'formula') {
-    const processedValues = values.map(row =>
-      row.map(cellValue => {
-        const valueToCheck = typeof cellValue === 'string' ? cellValue.trim() : cellValue;
-
-        if ((typeof valueToCheck === 'number' || (!isNaN(valueToCheck) && valueToCheck !== '')) && valueToCheck !== 0) {
-          const numValue = typeof valueToCheck === 'number' ? valueToCheck : parseFloat(valueToCheck);
-          return `=IFERROR(${numValue}*INDEX(GOOGLEFINANCE("CURRENCY:${fromCurrency}${toCurrency}", "price", "${actualDateUsed}"),2,2), "Rate unavailable. Use undo to revert.")`;
-        }
-
-        return cellValue;
-      })
-    );
-
-    range.setValues(processedValues);
+    applyFormulaConversion(range, fromCurrency, toCurrency, actualDateUsed);
   }
-  var currencyFormat = getCurrencyFormat(toCurrency);
-  range.setNumberFormat(currencyFormat);
 
-  // Return the actual date used
+  // Apply formatting
+  applyCurrencyFormatting(range, toCurrency);
+
   return actualDateUsed;
 }
 
-function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
-  // Validate date is not in future
-  var selectedDate = new Date(date);
-  var today = new Date();
+function validateAndGetActualDate(selectedDate, latestAvailableDate) {
+  const dateObj = new Date(selectedDate);
+  const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  if (selectedDate > today) {
-    console.log("Future date detected - latestAvailableDate: ", latestAvailableDate);
-    date = latestAvailableDate;
-    // Optionally alert user
+  if (dateObj > today) {
     SpreadsheetApp.getActiveSpreadsheet().toast("Future date selected. Using latest available rates from " + latestAvailableDate);
+    return latestAvailableDate;
   }
+
+  return selectedDate;
+}
+
+function applyHardcodedConversion(range, fromCurrency, toCurrency, date) {
+  try {
+    const conversionRate = getConversionRate(fromCurrency, toCurrency, date);
+    const values = range.getValues();
+    const updatedValues = values.map(row =>
+      row.map(cell => typeof cell === 'number' ? cell * conversionRate : cell)
+    );
+    range.setValues(updatedValues);
+  } catch (error) {
+    // Error already shown to user by getConversionRate
+  }
+}
+
+function applyFormulaConversion(range, fromCurrency, toCurrency, date) {
+  const values = range.getValues();
+  const processedValues = values.map(row =>
+    row.map(cellValue => {
+      const valueToCheck = typeof cellValue === 'string' ? cellValue.trim() : cellValue;
+
+      if ((typeof valueToCheck === 'number' || (!isNaN(valueToCheck) && valueToCheck !== '')) && valueToCheck !== 0) {
+        const numValue = typeof valueToCheck === 'number' ? valueToCheck : parseFloat(valueToCheck);
+        return `=IFERROR(${numValue}*INDEX(GOOGLEFINANCE("CURRENCY:${fromCurrency}${toCurrency}", "price", "${date}"),2,2), "Rate unavailable. Use undo to revert.")`;
+      }
+
+      return cellValue;
+    })
+  );
+
+  range.setValues(processedValues);
+}
+
+function applyCurrencyFormatting(range, currencyCode) {
+  const currencyFormat = getCurrencyFormat(currencyCode);
+  range.setNumberFormat(currencyFormat);
+}
+
+function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
   // Create a cache key combining currencies and date
   var cacheKey = `${SOURCE}_${fromCurrencyCode}_${toCurrencyCode}_${date}`;
 
