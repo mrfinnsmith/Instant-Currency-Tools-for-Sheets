@@ -73,15 +73,59 @@ function applyCurrencyFormatting(range, currencyCode) {
   range.setNumberFormat(currencyFormat);
 }
 
+/**
+ * CurrencyRateService - Service for managing currency rate operations
+ */
+class CurrencyRateService {
+  static getRate(fromCurrency, toCurrency, date) {
+    // Check cache first
+    const cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${date}`;
+    const cachedRate = scriptCache.get(cacheKey);
+
+    if (cachedRate) {
+      return parseFloat(cachedRate);
+    }
+
+    // Try MongoDB
+    const mongoRate = getRateFromMongoDB(fromCurrency, toCurrency, date);
+    if (mongoRate) {
+      // Store in cache
+      scriptCache.put(cacheKey, mongoRate.toString(), 21600);
+      return mongoRate;
+    }
+
+    // Try API as fallback
+    try {
+      const apiUrl = buildApiUrl(fromCurrency, toCurrency, date);
+      const response = UrlFetchApp.fetch(apiUrl);
+      const data = JSON.parse(response.getContentText());
+
+      if (data.rates && data.rates[toCurrency]) {
+        const rate = data.rates[toCurrency];
+
+        // Store in MongoDB and cache
+        storeRateInMongoDB(fromCurrency, toCurrency, rate, date);
+        scriptCache.put(cacheKey, rate.toString(), 21600);
+
+        return rate;
+      }
+    } catch (error) {
+      console.error("API fetch error:", error);
+    }
+
+    return null;
+  }
+}
+
 function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
   const rate = CurrencyRateService.getRate(fromCurrencyCode, toCurrencyCode, date);
-  
+
   if (!rate) {
     console.log(`Rate not available for ${date}`);
     SpreadsheetApp.getActiveSpreadsheet().toast(`Rate not available for ${date}. Try a different date.`, "Currency Conversion Error");
     throw new Error(`Rate not available for ${date}`);
   }
-  
+
   return rate;
 }
 
