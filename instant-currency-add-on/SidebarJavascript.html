@@ -54,34 +54,45 @@
    var toCurrency = document.getElementById('toCurrency').value;
    var convertEntireSheet = document.getElementById('convertEntireSheet').checked;
    var datePicker = document.getElementById('datePicker');
-   var date = datePicker && !datePicker.disabled && datePicker.value ? datePicker.value : latestAvailableDate;
+   var date;
+   
+   if (datePicker && !datePicker.disabled && datePicker.value) {
+       date = datePicker.value;
+   } else {
+       date = latestAvailableDate;
+   }
    
    if (!datePicker.value || datePicker.disabled) {
      alert("Using rates from: " + latestAvailableDate);
    }
    
+   console.log("convert function - latestAvailableDate: ", latestAvailableDate);
+   console.log("convert function - date being used: ", date);
+   
    // Check if formula checkbox is checked
    var conversionType = document.getElementById('formula').checked ? "formula" : "hardcode";
    
-   google.script.run.convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date);
-   
-   var dateDisplay = document.getElementById('conversionDateDisplay');
-   if (conversionType !== "formula") {
-   // Format date from YYYY-MM-DD to Month Day, Year
-   const dateParts = date.split('-');
-   const dateObj = new Date(dateParts[0], parseInt(dateParts[1])-1, dateParts[2]);
-   const formattedDate = dateObj.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
-   
-   dateDisplay.textContent = "Converting using rates from " + formattedDate;
-   dateDisplay.style.display = "block";
-   
-   // Hide after 5 seconds
-   setTimeout(function() {
-    dateDisplay.style.display = "none";
-   }, 5000);
-   } else {
-   dateDisplay.style.display = "none";
-   }
+   google.script.run
+     .withSuccessHandler(function(actualDateUsed) {
+       var dateDisplay = document.getElementById('conversionDateDisplay');
+       if (conversionType !== "formula" && actualDateUsed) {
+         // Format date from YYYY-MM-DD to Month Day, Year
+         const dateParts = actualDateUsed.split('-');
+         const dateObj = new Date(dateParts[0], parseInt(dateParts[1])-1, dateParts[2]);
+         const formattedDate = dateObj.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+         
+         dateDisplay.textContent = "Converting using rates from " + formattedDate;
+         dateDisplay.style.display = "block";
+         
+         // Hide after 5 seconds
+         setTimeout(function() {
+           dateDisplay.style.display = "none";
+         }, 5000);
+       } else {
+         dateDisplay.style.display = "none";
+       }
+     })
+     .convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate);
    }
    
    function addTooltipListeners() {

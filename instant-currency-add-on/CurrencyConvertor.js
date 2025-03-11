@@ -2,14 +2,31 @@
 var scriptCache = CacheService.getScriptCache();
 const SOURCE = "ECB";
 
-function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date) {
+function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate) {
+  console.log(`Inside convertCurrencyInSelectedRange. latestAvailableDate is ${latestAvailableDate}`);
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   var range = convertEntireSheet ? spreadsheet.getActiveSheet().getDataRange() : spreadsheet.getActiveRange();
   var values = range.getValues();
 
+  // Variable to store actual date used
+  var actualDateUsed = date;
+
+  // Validate date is not in future
+  var selectedDate = new Date(date);
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (selectedDate > today) {
+
+    // Use latest available date instead
+    actualDateUsed = latestAvailableDate;
+    // Alert user
+    SpreadsheetApp.getActiveSpreadsheet().toast("Future date selected. Using latest available rates from " + latestAvailableDate);
+  }
+
   if (conversionType === 'hardcode') {
     try {
-      var conversionRate = getConversionRate(fromCurrency, toCurrency, date);
+      var conversionRate = getConversionRate(fromCurrency, toCurrency, actualDateUsed);
       var updatedValues = values.map(row => row.map(cell => typeof cell === 'number' ? cell * conversionRate : cell));
       range.setValues(updatedValues);
     } catch (error) {
@@ -22,7 +39,7 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
 
         if ((typeof valueToCheck === 'number' || (!isNaN(valueToCheck) && valueToCheck !== '')) && valueToCheck !== 0) {
           const numValue = typeof valueToCheck === 'number' ? valueToCheck : parseFloat(valueToCheck);
-          return `=IFERROR(${numValue}*INDEX(GOOGLEFINANCE("CURRENCY:${fromCurrency}${toCurrency}", "price", "${date}"),2,2), "Rate unavailable. Use undo to revert.")`;
+          return `=IFERROR(${numValue}*INDEX(GOOGLEFINANCE("CURRENCY:${fromCurrency}${toCurrency}", "price", "${actualDateUsed}"),2,2), "Rate unavailable. Use undo to revert.")`;
         }
 
         return cellValue;
@@ -33,6 +50,9 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
   }
   var currencyFormat = getCurrencyFormat(toCurrency);
   range.setNumberFormat(currencyFormat);
+
+  // Return the actual date used
+  return actualDateUsed;
 }
 
 function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
@@ -42,7 +62,7 @@ function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
   today.setHours(0, 0, 0, 0);
 
   if (selectedDate > today) {
-    // Use latest available date instead
+    console.log("Future date detected - latestAvailableDate: ", latestAvailableDate);
     date = latestAvailableDate;
     // Optionally alert user
     SpreadsheetApp.getActiveSpreadsheet().toast("Future date selected. Using latest available rates from " + latestAvailableDate);
@@ -179,7 +199,7 @@ function loadLatestRatesToCache() {
     dataSource: props.clusterName,
     database: props.dbName,
     collection: props.ratesCollectionName,
-    filter: { "_id": props.ratesDocumentId },
+    filter: { "_id": props.ecbRatesDocumentId },
     projection: { [`rates.${latestDate}`]: 1 }
   };
 
@@ -208,6 +228,7 @@ function loadLatestRatesToCache() {
         scriptCache.put(cacheKey, rate.toString(), 21600);
       }
     }
+    console.log("loadLatestRatesToCache - returning latestDate: ", latestDate);
     return latestDate;
   } catch (error) {
     console.error("Failed to load rates to cache:", error.toString());
