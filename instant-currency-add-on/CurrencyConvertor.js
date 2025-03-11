@@ -216,9 +216,7 @@ function loadLatestRatesToCache() {
   if (!latestDate) {
     return null; // No dates available
   }
-
-  SpreadsheetApp.getUi().alert("Latest rates available are from: " + latestDate);
-
+  
   var props = getMongoDBProperties();
   var findUrl = props.baseUrl + "/action/findOne";
 
