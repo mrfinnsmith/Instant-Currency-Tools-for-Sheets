@@ -74,38 +74,14 @@ function applyCurrencyFormatting(range, currencyCode) {
 }
 
 function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
-  // Create a cache key combining currencies and date
-  var cacheKey = `${SOURCE}_${fromCurrencyCode}_${toCurrencyCode}_${date}`;
-
-  // Step 1: Check CacheService first
-  var cachedRate = scriptCache.get(cacheKey);
-  if (cachedRate) {
-    return parseFloat(cachedRate);
+  const rate = CurrencyRateService.getRate(fromCurrencyCode, toCurrencyCode, date);
+  
+  if (!rate) {
+    console.log(`Rate not available for ${date}`);
+    SpreadsheetApp.getActiveSpreadsheet().toast(`Rate not available for ${date}. Try a different date.`, "Currency Conversion Error");
+    throw new Error(`Rate not available for ${date}`);
   }
-
-  // Step 2: If not in cache, check MongoDB
-  var mongoRate = getRateFromMongoDB(fromCurrencyCode, toCurrencyCode, date);
-  if (mongoRate) {
-    // Store in cache and return
-    scriptCache.put(cacheKey, mongoRate.toString(), 21600); // Cache for 6 hours
-    return mongoRate;
-  }
-
-  // Step 3: If not in MongoDB, call API
-  try {
-    var apiUrl = buildApiUrl(fromCurrencyCode, toCurrencyCode, date);
-    var response = UrlFetchApp.fetch(apiUrl);
-    var json = JSON.parse(response.getContentText());
-    var rate = json.rates[toCurrencyCode];
-    if (!rate) throw new Error("Rate not available");
-  } catch (error) {
-    SpreadsheetApp.getUi().alert("Rate not available for " + date + ". Try a different date.");
-    throw error;
-  }
-  // Store in both cache and MongoDB
-  scriptCache.put(cacheKey, rate.toString(), 21600); // Cache for 6 hours
-  storeRateInMongoDB(fromCurrencyCode, toCurrencyCode, rate, date);
-
+  
   return rate;
 }
 
