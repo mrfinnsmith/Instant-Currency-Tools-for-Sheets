@@ -21,7 +21,7 @@ function storeRateInMongoDB(from, to, rate, date) {
     dataSource: props.clusterName,
     database: props.dbName,
     collection: props.ratesCollectionName,
-    filter: { "_id": props.ecbRatesDocumentId },
+    filter: { "_id": { "$oid": props.ecbRatesDocumentId } },
     update: {
       $set: {
         [`rates.${date}.${from}_${to}`]: {
