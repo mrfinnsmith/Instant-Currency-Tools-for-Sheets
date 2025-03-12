@@ -3,17 +3,17 @@ function onOpen() {
 }
 
 function openCurrencySidebar() {
-  var latestDate = loadLatestRatesToCache();
+  const latestDate = loadLatestRatesToCache();
 
   const props = PropertiesService.getScriptProperties();
   const productId = props.getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID');
   const isPremium = isUserSubscribed(productId);
 
-  var template = HtmlService.createTemplateFromFile('Sidebar');
+  const template = HtmlService.createTemplateFromFile('Sidebar');
   template.isPremium = isPremium;
   template.latestAvailableDate = latestDate;
 
-  var html = template.evaluate()
+  const html = template.evaluate()
     .setTitle('Instant Currency')
     .setSandboxMode(HtmlService.SandboxMode.IFRAME);
   SpreadsheetApp.getUi().showSidebar(html);
@@ -25,9 +25,9 @@ function include(filename) {
 
 // Function to fetch available currencies from Frankfurter API and return as JSON string
 function getCurrencies() {
-  var url = 'https://api.frankfurter.app/currencies';
-  var response = UrlFetchApp.fetch(url);
-  var currencies = JSON.parse(response.getContentText());
+  const url = 'https://api.frankfurter.app/currencies';
+  const response = UrlFetchApp.fetch(url);
+  const currencies = JSON.parse(response.getContentText());
   return currencies;
 }
 
