@@ -1,5 +1,5 @@
 // Global cache instance
-var scriptCache = CacheService.getScriptCache();
+const scriptCache = CacheService.getScriptCache();
 const SOURCE = "ECB";
 
 function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate) {
@@ -30,7 +30,9 @@ function validateAndGetActualDate(selectedDate, latestAvailableDate) {
   today.setHours(0, 0, 0, 0);
 
   if (dateObj > today) {
-    SpreadsheetApp.getActiveSpreadsheet().toast("Future date selected. Using latest available rates from " + latestAvailableDate);
+    const dateObj = new Date(latestAvailableDate);
+    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    SpreadsheetApp.getActiveSpreadsheet().toast(`Future date selected. Using latest available rates from ${formattedDate}`);
     return latestAvailableDate;
   }
 
@@ -121,9 +123,11 @@ function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
   const rate = CurrencyRateService.getRate(fromCurrencyCode, toCurrencyCode, date);
 
   if (!rate) {
-    console.log(`Rate not available for ${date}`);
-    SpreadsheetApp.getActiveSpreadsheet().toast(`Rate not available for ${date}. Try a different date.`, "Currency Conversion Error");
-    throw new Error(`Rate not available for ${date}`);
+    const dateObj = new Date(date);
+    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    console.log(`Rate not available for ${formattedDate}`);
+    SpreadsheetApp.getActiveSpreadsheet().toast(`Rate not available for ${formattedDate}. Try a different date.`, "Currency Conversion Error");
+    throw new Error(`Rate not available for ${formattedDate}`);
   }
 
   return rate;
@@ -134,10 +138,10 @@ function buildApiUrl(fromCurrency, toCurrency, date) {
 }
 
 function getRateFromMongoDB(fromCurrency, toCurrency, date) {
-  var props = getMongoDBProperties();
-  var findUrl = props.baseUrl + "/action/findOne";
+  const props = getMongoDBProperties();
+  const findUrl = `${props.baseUrl}/action/findOne`;
 
-  var findPayload = {
+  const findPayload = {
     dataSource: props.clusterName,
     database: props.dbName,
     collection: props.ratesCollectionName,
@@ -148,7 +152,7 @@ function getRateFromMongoDB(fromCurrency, toCurrency, date) {
     projection: { [`rates.${date}.${fromCurrency}_${toCurrency}.rate`]: 1 }
   };
 
-  var options = {
+  const options = {
     method: "post",
     contentType: "application/json",
     headers: { "api-key": props.apiKey },
@@ -157,12 +161,10 @@ function getRateFromMongoDB(fromCurrency, toCurrency, date) {
   };
 
   try {
-    var response = UrlFetchApp.fetch(findUrl, options);
-    var result = JSON.parse(response.getContentText());
+    const response = UrlFetchApp.fetch(findUrl, options);
+    const result = JSON.parse(response.getContentText());
 
-    if (result.document && result.document.rates &&
-      result.document.rates[date] &&
-      result.document.rates[date][`${fromCurrency}_${toCurrency}`]) {
+    if (result.document?.rates?.[date]?.[`${fromCurrency}_${toCurrency}`]) {
       return result.document.rates[date][`${fromCurrency}_${toCurrency}`].rate;
     }
     return null; // Not found in MongoDB
@@ -212,15 +214,15 @@ function getCurrencyFormat(currencyString) {
 
 function loadLatestRatesToCache() {
   // Get the latest date from MongoDB
-  var latestDate = getLatestDateInRates();
+  const latestDate = getLatestDateInRates();
   if (!latestDate) {
     return null; // No dates available
   }
-  
-  var props = getMongoDBProperties();
-  var findUrl = props.baseUrl + "/action/findOne";
 
-  var findPayload = {
+  const props = getMongoDBProperties();
+  const findUrl = `${props.baseUrl}/action/findOne`;
+
+  const findPayload = {
     dataSource: props.clusterName,
     database: props.dbName,
     collection: props.ratesCollectionName,
@@ -228,7 +230,7 @@ function loadLatestRatesToCache() {
     projection: { [`rates.${latestDate}`]: 1 }
   };
 
-  var options = {
+  const options = {
     method: "post",
     contentType: "application/json",
     headers: { "api-key": props.apiKey },
@@ -237,19 +239,17 @@ function loadLatestRatesToCache() {
   };
 
   try {
-    var response = UrlFetchApp.fetch(findUrl, options);
-    var result = JSON.parse(response.getContentText());
+    const response = UrlFetchApp.fetch(findUrl, options);
+    const result = JSON.parse(response.getContentText());
 
-    if (result.document && result.document.rates && result.document.rates[latestDate]) {
-      var ratePairs = result.document.rates[latestDate];
+    if (result.document?.rates?.[latestDate]) {
+      const ratePairs = result.document.rates[latestDate];
 
       // Load each rate into cache with 21600 seconds (6 hours) expiration for consistency
-      for (var pairKey in ratePairs) {
-        var rate = ratePairs[pairKey].rate;
-        var currencies = pairKey.split('_');
-        var fromCurrency = currencies[0];
-        var toCurrency = currencies[1];
-        var cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${latestDate}`;
+      for (const pairKey in ratePairs) {
+        const rate = ratePairs[pairKey].rate;
+        const [fromCurrency, toCurrency] = pairKey.split('_');
+        const cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${latestDate}`;
         scriptCache.put(cacheKey, rate.toString(), 21600);
       }
     }

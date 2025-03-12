@@ -1,7 +1,7 @@
-var latestAvailableDate = null;
+let latestAvailableDate = null;
 
 function getMongoDBProperties() {
-  var scriptProperties = PropertiesService.getScriptProperties();
+  const scriptProperties = PropertiesService.getScriptProperties();
   return {
     apiKey: scriptProperties.getProperty('MONGO-API-KEY'),
     baseUrl: scriptProperties.getProperty('MONGO-BASE-URL'),
@@ -14,10 +14,10 @@ function getMongoDBProperties() {
 }
 
 function storeRateInMongoDB(from, to, rate, date) {
-  var props = getMongoDBProperties();
-  var updateUrl = props.baseUrl + "/action/updateOne";
+  const props = getMongoDBProperties();
+  const updateUrl = `${props.baseUrl}/action/updateOne`;
 
-  var updatePayload = {
+  const updatePayload = {
     dataSource: props.clusterName,
     database: props.dbName,
     collection: props.ratesCollectionName,
@@ -34,7 +34,7 @@ function storeRateInMongoDB(from, to, rate, date) {
     upsert: true
   };
 
-  var options = {
+  const options = {
     method: "post",
     contentType: "application/json",
     headers: { "api-key": props.apiKey },
@@ -50,16 +50,16 @@ function storeRateInMongoDB(from, to, rate, date) {
 }
 
 function getLatestDateInRates() {
-  var props = getMongoDBProperties();
-  var findUrl = props.baseUrl + "/action/find";
+  const props = getMongoDBProperties();
+  const findUrl = props.baseUrl + "/action/find";
 
-  var findPayload = {
+  const findPayload = {
     dataSource: props.clusterName,
     database: props.dbName,
     collection: props.ratesCollectionName
   };
 
-  var options = {
+  const options = {
     method: "post",
     contentType: "application/json",
     headers: { "api-key": props.apiKey },
@@ -67,23 +67,21 @@ function getLatestDateInRates() {
   };
 
   try {
-    var response = UrlFetchApp.fetch(findUrl, options);
-    var result = JSON.parse(response.getContentText());
-    var document = result.documents[0];
+    const response = UrlFetchApp.fetch(findUrl, options);
+    const result = JSON.parse(response.getContentText());
+    const document = result.documents[0];
 
     if (document && document.rates) {
-      var dates = Object.keys(document.rates);
+      const dates = Object.keys(document.rates);
 
       if (dates.length === 0) {
         console.log("No dates found in rates");
         return null;
       }
 
-      dates.sort(function (a, b) {
-        return new Date(b) - new Date(a);
-      });
+      dates.sort((a, b) => new Date(b) - new Date(a));
 
-      var latestDate = dates[0];
+      const latestDate = dates[0];
       console.log("Latest date in rates:", latestDate);
       return latestDate;
     } else {

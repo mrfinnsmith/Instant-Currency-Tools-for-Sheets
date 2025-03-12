@@ -5,9 +5,9 @@
       <?!= include('css'); ?>
       <script>
          // Make premium status available to sidebar JavaScript
-         var isPremium = <?= isPremium ?>;
-         var productId = "<?= PropertiesService.getScriptProperties().getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID') ?>";
-         var latestAvailableDate = "<?= latestAvailableDate ?>";
+         const isPremium = <?= isPremium ?>;
+         const productId = "<?= PropertiesService.getScriptProperties().getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID') ?>";
+         const latestAvailableDate = "<?= latestAvailableDate ?>";
       </script>
    </head>
    <body>

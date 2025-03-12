@@ -4,132 +4,125 @@
    }
    
    function populateCurrencyDropdowns(currencies) {
-     var fromDropdown = document.getElementById('fromCurrency');
-     var toDropdown = document.getElementById('toCurrency');
-     
-     fromDropdown.innerHTML = '';
-     toDropdown.innerHTML = '';
-     
-     var currencyCodes = Object.keys(currencies).sort();
-     
-     let fromDefault = 'USD';
-     let toDefault = 'EUR';
-     
-     currencyCodes.forEach(function(code) {
-       fromDropdown.appendChild(createFormattedCurrencyOption(code, currencies[code], fromDefault));
-       toDropdown.appendChild(createFormattedCurrencyOption(code, currencies[code], toDefault));
-     });
+   const fromDropdown = document.getElementById('fromCurrency');
+   const toDropdown = document.getElementById('toCurrency');
+   
+   fromDropdown.innerHTML = '';
+   toDropdown.innerHTML = '';
+   
+   const currencyCodes = Object.keys(currencies).sort();
+   
+   const fromDefault = 'USD';
+   const toDefault = 'EUR';
+   
+   currencyCodes.forEach(function(code) {
+    fromDropdown.appendChild(createFormattedCurrencyOption(code, currencies[code], fromDefault));
+    toDropdown.appendChild(createFormattedCurrencyOption(code, currencies[code], toDefault));
+   });
    }
    
    function createFormattedCurrencyOption(code, currencyName, defaultValue) {
-     var flagEmoji = currencyFlags[code] ? currencyFlags[code] + ' ' : '';
-     var option = document.createElement('option');
-     option.value = code;
-     option.text = code + ' ' + flagEmoji + ' (' + currencyName + ')';
-     if (code === defaultValue) option.selected = "selected";
-     return option;
+   const flagEmoji = currencyFlags[code] ? currencyFlags[code] + ' ' : '';
+   const option = document.createElement('option');
+   option.value = code;
+   option.text = code + ' ' + flagEmoji + ' (' + currencyName + ')';
+   if (code === defaultValue) option.selected = "selected";
+   return option;
    }
       
       function switchCurrencies() {
-        var fromDropdown = document.getElementById('fromCurrency');
-        var toDropdown = document.getElementById('toCurrency');
-        // Swapping the values of the dropdowns
-        var temp = fromDropdown.value;
-        fromDropdown.value = toDropdown.value;
-        toDropdown.value = temp;
-      }
+   const fromDropdown = document.getElementById('fromCurrency');
+   const toDropdown = document.getElementById('toCurrency');
+   const temp = fromDropdown.value;
+   fromDropdown.value = toDropdown.value;
+   toDropdown.value = temp;
+   }
       
       function convert() {
-      var fromCurrency = document.getElementById('fromCurrency').value;
-      var toCurrency = document.getElementById('toCurrency').value;
-      var convertEntireSheet = document.getElementById('convertEntireSheet').checked;
-      var datePicker = document.getElementById('datePicker');
-      var date;
-      
-      if (datePicker && !datePicker.disabled && datePicker.value) {
-          date = datePicker.value;
-      } else {
-          date = latestAvailableDate;
-      }
+   const fromCurrency = document.getElementById('fromCurrency').value;
+   const toCurrency = document.getElementById('toCurrency').value;
+   const convertEntireSheet = document.getElementById('convertEntireSheet').checked;
+   const datePicker = document.getElementById('datePicker');
+   let date;
    
-      console.log("Date selected:", date);
-      console.log("Conversion type:", conversionType);
-      
-      console.log("convert function - latestAvailableDate: ", latestAvailableDate);
-      console.log("convert function - date being used: ", date);
-      
-      // Check if formula checkbox is checked
-      var conversionType = document.getElementById('formula').checked ? "formula" : "hardcode";
-      
-      google.script.run
-        .withSuccessHandler(function(actualDateUsed) {
-   var dateDisplay = document.getElementById('conversionDateDisplay');
-   if (actualDateUsed) {
-    // Format date from YYYY-MM-DD to Month Day, Year
-    const dateParts = actualDateUsed.split('-');
-    const dateObj = new Date(dateParts[0], parseInt(dateParts[1])-1, dateParts[2]);
-    const formattedDate = dateObj.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
-    
-    dateDisplay.textContent = "Converting using rates from " + formattedDate;
-    dateDisplay.style.display = "block";
-    
-    // Hide after 5 seconds
-    setTimeout(function() {
-      dateDisplay.style.display = "none";
-    }, 5000);
+   if (datePicker && !datePicker.disabled && datePicker.value) {
+      date = datePicker.value;
    } else {
-    dateDisplay.style.display = "none";
+      date = latestAvailableDate;
    }
-   })
-        .convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate);
+   
+   // Check if formula checkbox is checked
+   const conversionType = document.getElementById('formula').checked ? "formula" : "hardcode";
+   
+   google.script.run
+    .withSuccessHandler(function(actualDateUsed) {
+      const dateDisplay = document.getElementById('conversionDateDisplay');
+      if (actualDateUsed) {
+        // Format date from YYYY-MM-DD to Month Day, Year
+        const dateParts = actualDateUsed.split('-');
+        const dateObj = new Date(dateParts[0], parseInt(dateParts[1])-1, dateParts[2]);
+        const formattedDate = dateObj.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+        
+        dateDisplay.textContent = "Converting using rates from " + formattedDate;
+        dateDisplay.style.display = "block";
+        
+        // Hide after 5 seconds
+        setTimeout(function() {
+          dateDisplay.style.display = "none";
+        }, 5000);
+      } else {
+        dateDisplay.style.display = "none";
       }
+    })
+    .convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate);
+   }
       
       function addTooltipListeners() {
-        const premiumFeatures = document.querySelectorAll('.premium-feature');
-        premiumFeatures.forEach(feature => {
-          const tooltip = document.createElement('span');
-          tooltip.className = 'tooltip';
-          tooltip.textContent = 'Click Upgrade below to access this premium feature.';
-          tooltip.style.visibility = 'hidden';
-          tooltip.style.position = 'absolute';
-          tooltip.style.backgroundColor = 'black';
-          tooltip.style.color = 'white';
-          tooltip.style.borderRadius = '5px';
-          tooltip.style.padding = '5px';
-          tooltip.style.marginTop = '20px';
-          feature.appendChild(tooltip);
-      
-          feature.addEventListener('mouseover', () => {
-            tooltip.style.visibility = 'visible';
-          });
-          feature.addEventListener('mouseout', () => {
-            tooltip.style.visibility = 'hidden';
-          });
-        });
-      }
+   const premiumFeatures = document.querySelectorAll('.premium-feature');
+   premiumFeatures.forEach(feature => {
+    const tooltip = document.createElement('span');
+    tooltip.className = 'tooltip';
+    tooltip.textContent = 'Click Upgrade below to access this premium feature.';
+    tooltip.style.visibility = 'hidden';
+    tooltip.style.position = 'absolute';
+    tooltip.style.backgroundColor = 'black';
+    tooltip.style.color = 'white';
+    tooltip.style.borderRadius = '5px';
+    tooltip.style.padding = '5px';
+    tooltip.style.marginTop = '20px';
+    feature.appendChild(tooltip);
+   
+    feature.addEventListener('mouseover', () => {
+      tooltip.style.visibility = 'visible';
+    });
+    feature.addEventListener('mouseout', () => {
+      tooltip.style.visibility = 'hidden';
+    });
+   });
+   }
       
       function updatePremiumFeatures() {
-      google.script.run.withSuccessHandler(function(isSubscribed) {
-       // Enable/disable date picker based on subscription status
-       document.getElementById('datePicker').disabled = !isSubscribed;
-       
-       const premiumFeatures = document.querySelectorAll('.premium-feature');
-       
-       premiumFeatures.forEach(feature => {
-         // Enable/disable inputs
-         const inputs = feature.querySelectorAll('input, select');
-         inputs.forEach(input => {
-           input.disabled = !isSubscribed;
-         });
-         
-         // Handle tooltips
-         const tooltip = feature.querySelector('.tooltip');
-         if (tooltip) {
-           tooltip.style.display = isSubscribed ? 'none' : 'block';
-         }
-       });
-      }).isUserSubscribed(productId);
-      }
+   google.script.run.withSuccessHandler(function(isSubscribed) {
+   // Enable/disable date picker based on subscription status
+   document.getElementById('datePicker').disabled = !isSubscribed;
+   
+   const premiumFeatures = document.querySelectorAll('.premium-feature');
+   
+   premiumFeatures.forEach(feature => {
+     // Enable/disable inputs
+     const inputs = feature.querySelectorAll('input, select');
+     inputs.forEach(input => {
+       input.disabled = !isSubscribed;
+     });
+     
+     // Handle tooltips
+     const tooltip = feature.querySelector('.tooltip');
+     if (tooltip) {
+       tooltip.style.display = isSubscribed ? 'none' : 'block';
+     }
+   });
+   }).isUserSubscribed(productId);
+   }
       
       function showRateInfo() {
       google.script.run.showRateInfoModal();
