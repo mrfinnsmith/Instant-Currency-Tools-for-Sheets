@@ -8,7 +8,7 @@ function onOpen(e) {
 
   const MENU_CONVERT = "💲 Convert currency";
   const MENU_MEMBERSHIP = "✓ Check membership";
-  const MENU_ABOUT = "ℹ️ About the Instant Currency";
+  const MENU_ABOUT = "ℹ️ About Instant Currency";
 
   if (e && e.authMode == ScriptApp.AuthMode.NONE) {
     // Only add basic menu items in NONE mode
@@ -78,13 +78,13 @@ function showAboutDialog() {
     '<p style="margin:5px 0;">Convert currency values directly in Google Sheets.</p>' +
     '</div>' +
     '<div style="padding:0 15px 15px; color:#454F5E; font-family:Arial, Helvetica, sans-serif;">' +
-    '<p style="margin:10px 0 5px;"><strong>USE:</strong></p>' +
     '<ul style="padding-left:20px; margin:5px 0;">' +
     '<li>Click "Convert currency" to open the converter</li>' +
     '<li>Select currencies and convert selected cells</li>' +
     '<li>Upgrade for historical rates</li>' +
     '</ul>' +
-    '<p style="margin:5px 0;">Data sourced from European Central Bank (ECB).</p>' +
+    '<p style="margin:5px 0;">Data sourced from the ECB.</p>' +
+    '<button onclick="google.script.run.openCurrencySidebar()" style="background-color:#1B9C85; color:white; padding:8px 12px; border:none; border-radius:4px; cursor:pointer; margin-top:10px;">Open</button>' +
     '<p style="margin:5px 0;"><a href="https://instantcurrency.tools/currency-tools/" target="_blank" style="color:#1B9C85; text-decoration:underline;">Learn more</a></p>' +
     '</div>' +
     '</div>'
