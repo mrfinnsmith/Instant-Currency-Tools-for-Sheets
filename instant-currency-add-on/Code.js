@@ -5,17 +5,21 @@ function onInstall(e) {
 function onOpen(e) {
   const ui = SpreadsheetApp.getUi();
   const menu = ui.createAddonMenu();
-  
+
+  const MENU_CONVERT = "💲 Convert currency";
+  const MENU_MEMBERSHIP = "✓ Check membership";
+  const MENU_ABOUT = "ℹ️ About the Instant Currency";
+
   if (e && e.authMode == ScriptApp.AuthMode.NONE) {
     // Only add basic menu items in NONE mode
-    menu.addItem("Convert currency", "openCurrencySidebar")
-        .addItem("About the add-on", "showAboutDialog")
-        .addToUi();
+    menu.addItem(MENU_CONVERT, "openCurrencySidebar")
+      .addItem(MENU_ABOUT, "showAboutDialog")
+      .addToUi();
   } else {
-    menu.addItem("Convert currency", "openCurrencySidebar")
-        .addItem("Check membership", "checkMembershipStatus")
-        .addItem("About the add-on", "showAboutDialog")
-        .addToUi();
+    menu.addItem(MENU_CONVERT, "openCurrencySidebar")
+      .addItem(MENU_MEMBERSHIP, "checkMembershipStatus")
+      .addItem(MENU_ABOUT, "showAboutDialog")
+      .addToUi();
   }
 }
 
@@ -66,16 +70,27 @@ function checkMembershipStatus() {
 
 function showAboutDialog() {
   const htmlOutput = HtmlService.createHtmlOutput(
-    '<div style="text-align:center; padding:15px;">' +
-    '<h2>INSTANT CURRENCY</h2>' +
-    '<p>Instant Currency is an add-on for converting currency values in Google Sheets.</p>' +
-    '<p>It uses the Frankfurter API and supports multiple currencies.</p>' +
-    '<p><a href="https://instantcurrency.tools" target="_blank">Learn more</a></p>' +
-    '<p style="margin-top:20px; font-size:12px;">v1.0 - March 2025</p>' +
+    '<div>' +
+    '<div style="padding:15px; background-color:#EDF6EE; font-family:Arial, Helvetica, sans-serif;">' +
+    '<div class="header" style="display:flex; align-items:center; font-size:18px; color:#1B9C85; margin-bottom:10px; border-bottom:1px solid #D4F3D7; padding-bottom:5px;">' +
+    '<span style="font-weight:bold;">INSTANT CURRENCY</span>' +
+    '</div>' +
+    '<p style="margin:5px 0;">Convert currency values directly in Google Sheets.</p>' +
+    '</div>' +
+    '<div style="padding:0 15px 15px; color:#454F5E; font-family:Arial, Helvetica, sans-serif;">' +
+    '<p style="margin:10px 0 5px;"><strong>USE:</strong></p>' +
+    '<ul style="padding-left:20px; margin:5px 0;">' +
+    '<li>Click "Convert currency" to open the converter</li>' +
+    '<li>Select currencies and convert selected cells</li>' +
+    '<li>Upgrade for historical rates</li>' +
+    '</ul>' +
+    '<p style="margin:5px 0;">Data sourced from European Central Bank (ECB).</p>' +
+    '<p style="margin:5px 0;"><a href="https://instantcurrency.tools/currency-tools/" target="_blank" style="color:#1B9C85; text-decoration:underline;">Learn more</a></p>' +
+    '</div>' +
     '</div>'
   )
-  .setWidth(400)
-  .setHeight(300);
+    .setWidth(400)
+    .setHeight(300);
 
-  SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'About');
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'About Instant Currency');
 }
