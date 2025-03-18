@@ -14,6 +14,9 @@ function getMongoDBProperties() {
 }
 
 function storeRateInMongoDB(from, to, rate, date) {
+  // Standardize date
+  const standardDate = date.split('T')[0];
+
   const props = getMongoDBProperties();
   const updateUrl = `${props.baseUrl}/action/updateOne`;
 
@@ -24,7 +27,7 @@ function storeRateInMongoDB(from, to, rate, date) {
     filter: { "_id": { "$oid": props.ecbRatesDocumentId } },
     update: {
       $set: {
-        [`rates.${date}.${from}_${to}`]: {
+        [`rates.${standardDate}.${from}_${to}`]: {
           rate: rate,
           lastUpdated: new Date().toISOString(),
           source: SOURCE

@@ -25,17 +25,21 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
 }
 
 function validateAndGetActualDate(selectedDate, latestAvailableDate) {
-  const dateObj = new Date(selectedDate);
+  const dateObj = new Date(selectedDate + "T00:00:00Z");
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   if (dateObj > today) {
-    const dateObj = new Date(latestAvailableDate);
-    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const latestDateObj = new Date(latestAvailableDate + "T00:00:00Z");
+    const formattedDate = latestDateObj.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
     SpreadsheetApp.getActiveSpreadsheet().toast(`Future date selected. Using latest available rates from ${formattedDate}`);
     return latestAvailableDate;
   }
-
   return selectedDate;
 }
 
@@ -80,8 +84,11 @@ function applyCurrencyFormatting(range, currencyCode) {
  */
 class CurrencyRateService {
   static getRate(fromCurrency, toCurrency, date) {
-    // Check cache first
-    const cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${date}`;
+    // Standardize date for consistent cache key
+    const standardDate = date.split('T')[0]; // Extract date portion only
+    const cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${standardDate}`;
+
+    // Rest of function unchanged
     const cachedRate = scriptCache.get(cacheKey);
 
     if (cachedRate) {
@@ -123,9 +130,13 @@ function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
   const rate = CurrencyRateService.getRate(fromCurrencyCode, toCurrencyCode, date);
 
   if (!rate) {
-    const dateObj = new Date(date);
-    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    console.log(`Rate not available for ${formattedDate}`);
+    const dateObj = new Date(date + "T00:00:00Z");
+    const formattedDate = dateObj.toLocaleDateString('en-US', {
+      timeZone: 'UTC',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
     SpreadsheetApp.getActiveSpreadsheet().toast(`Rate not available for ${formattedDate}. Try a different date.`, "Currency Conversion Error");
     throw new Error(`Rate not available for ${formattedDate}`);
   }
@@ -134,10 +145,15 @@ function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
 }
 
 function buildApiUrl(fromCurrency, toCurrency, date) {
-  return `https://api.frankfurter.app/${date}?from=${fromCurrency}&to=${toCurrency}`;
+  // Ensure consistent date format for API
+  const standardDate = date.split('T')[0]; // Extract date portion
+  return `https://api.frankfurter.app/${standardDate}?from=${fromCurrency}&to=${toCurrency}`;
 }
 
 function getRateFromMongoDB(fromCurrency, toCurrency, date) {
+  // Standardize date for consistent MongoDB queries
+  const standardDate = date.split('T')[0];
+
   const props = getMongoDBProperties();
   const findUrl = `${props.baseUrl}/action/findOne`;
 
@@ -147,11 +163,12 @@ function getRateFromMongoDB(fromCurrency, toCurrency, date) {
     collection: props.ratesCollectionName,
     filter: {
       "_id": "exchange_rates",
-      [`rates.${date}.${fromCurrency}_${toCurrency}`]: { $exists: true }
+      [`rates.${standardDate}.${fromCurrency}_${toCurrency}`]: { $exists: true }
     },
-    projection: { [`rates.${date}.${fromCurrency}_${toCurrency}.rate`]: 1 }
+    projection: { [`rates.${standardDate}.${fromCurrency}_${toCurrency}.rate`]: 1 }
   };
 
+  // Rest of function unchanged
   const options = {
     method: "post",
     contentType: "application/json",
@@ -164,8 +181,8 @@ function getRateFromMongoDB(fromCurrency, toCurrency, date) {
     const response = UrlFetchApp.fetch(findUrl, options);
     const result = JSON.parse(response.getContentText());
 
-    if (result.document?.rates?.[date]?.[`${fromCurrency}_${toCurrency}`]) {
-      return result.document.rates[date][`${fromCurrency}_${toCurrency}`].rate;
+    if (result.document?.rates?.[standardDate]?.[`${fromCurrency}_${toCurrency}`]) {
+      return result.document.rates[standardDate][`${fromCurrency}_${toCurrency}`].rate;
     }
     return null; // Not found in MongoDB
   } catch (error) {
@@ -216,8 +233,11 @@ function loadLatestRatesToCache() {
   // Get the latest date from MongoDB
   const latestDate = getLatestDateInRates();
   if (!latestDate) {
-    return null; // No dates available
+    return null;
   }
+
+  // Standardize date format
+  const standardDate = latestDate.split('T')[0];
 
   const props = getMongoDBProperties();
   const findUrl = `${props.baseUrl}/action/findOne`;
@@ -227,9 +247,10 @@ function loadLatestRatesToCache() {
     database: props.dbName,
     collection: props.ratesCollectionName,
     filter: { "_id": props.ecbRatesDocumentId },
-    projection: { [`rates.${latestDate}`]: 1 }
+    projection: { [`rates.${standardDate}`]: 1 }
   };
 
+  // Rest of function with standardized cacheKey creation
   const options = {
     method: "post",
     contentType: "application/json",
@@ -242,14 +263,14 @@ function loadLatestRatesToCache() {
     const response = UrlFetchApp.fetch(findUrl, options);
     const result = JSON.parse(response.getContentText());
 
-    if (result.document?.rates?.[latestDate]) {
-      const ratePairs = result.document.rates[latestDate];
+    if (result.document?.rates?.[standardDate]) {
+      const ratePairs = result.document.rates[standardDate];
 
       // Load each rate into cache with 21600 seconds (6 hours) expiration for consistency
       for (const pairKey in ratePairs) {
         const rate = ratePairs[pairKey].rate;
         const [fromCurrency, toCurrency] = pairKey.split('_');
-        const cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${latestDate}`;
+        const cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${standardDate}`;
         scriptCache.put(cacheKey, rate.toString(), 21600);
       }
     }
