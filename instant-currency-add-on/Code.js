@@ -57,7 +57,8 @@ function checkMembershipStatus() {
   const ui = SpreadsheetApp.getUi();
 
   if (isPremium) {
-    ui.alert("Premium Membership", "You have an active premium membership.", ui.ButtonSet.OK);
+    ui.alert("Premium Membership", "You have an active premium membership. Reloading Instant Currency.", ui.ButtonSet.OK);
+    openCurrencySidebar();
   } else {
     ui.alert("Free Version", "You're using the free version. Upgrade for historical exchange rates and more features.", ui.ButtonSet.OK);
   }
