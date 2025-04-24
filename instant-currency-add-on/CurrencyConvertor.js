@@ -88,7 +88,6 @@ class CurrencyRateService {
     const standardDate = date.split('T')[0]; // Extract date portion only
     const cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${standardDate}`;
 
-    // Rest of function unchanged
     const cachedRate = scriptCache.get(cacheKey);
 
     if (cachedRate) {
@@ -168,7 +167,6 @@ function getRateFromMongoDB(fromCurrency, toCurrency, date) {
     projection: { [`rates.${standardDate}.${fromCurrency}_${toCurrency}.rate`]: 1 }
   };
 
-  // Rest of function unchanged
   const options = {
     method: "post",
     contentType: "application/json",
@@ -250,7 +248,6 @@ function loadLatestRatesToCache() {
     projection: { [`rates.${standardDate}`]: 1 }
   };
 
-  // Rest of function with standardized cacheKey creation
   const options = {
     method: "post",
     contentType: "application/json",
