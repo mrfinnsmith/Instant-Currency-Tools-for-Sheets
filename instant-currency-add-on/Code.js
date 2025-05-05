@@ -2,27 +2,52 @@ function onInstall(e) {
   onOpen(e);
 }
 
+/**
+ * This function creates the add-on menu with appropriate handling for different authorization modes.
+ * 
+ * The previous implementation incorrectly used the same function references for both authorized
+ * and unauthorized states, causing the add-on to be rejected by Google Workspace Marketplace.
+ * 
+ * When in AuthMode.NONE (before user authorization), add-ons can only use a limited set of services.
+ * Functions like openCurrencySidebar that use restricted services must not be called in this state.
+ * Instead, we now use stub functions that only display authorization prompts when in AuthMode.NONE.
+ * 
+ * Reference: https://developers.google.com/workspace/add-ons/concepts/editor-auth-lifecycle
+ */
 function onOpen(e) {
   const ui = SpreadsheetApp.getUi();
   const menu = ui.createAddonMenu();
-
   const MENU_CONVERT = "💲 Convert currency";
   const MENU_MEMBERSHIP = "✓ Check membership";
   const MENU_ABOUT = "ℹ️ About Instant Currency";
 
-  if (e && e.authMode == ScriptApp.AuthMode.NONE) {
-    // Only add basic menu items in NONE mode
-    menu.addItem(MENU_CONVERT, "openCurrencySidebar")
-      .addItem(MENU_ABOUT, "showAboutDialog")
+  if (e && e.authMode === ScriptApp.AuthMode.NONE) {
+    // In AuthMode.NONE, only add menu items linked to stub functions that do NOT use restricted services
+    menu
+      .addItem(MENU_CONVERT, "showAuthPrompt")
+      .addItem(MENU_ABOUT, "showAboutPrompt")
       .addToUi();
   } else {
-    menu.addItem(MENU_CONVERT, "openCurrencySidebar")
+    // In other modes, add the full menu with real functionality
+    menu
+      .addItem(MENU_CONVERT, "openCurrencySidebar")
       .addItem(MENU_MEMBERSHIP, "checkMembershipStatus")
       .addItem(MENU_ABOUT, "showAboutDialog")
       .addToUi();
   }
 }
 
+function showAuthPrompt() {
+  SpreadsheetApp.getUi().alert(
+    "Please authorize the add-on to use this feature. Click this menu item again after authorizing."
+  );
+}
+
+function showAboutPrompt() {
+  SpreadsheetApp.getUi().alert(
+    "Instant Currency converts values directly in Google Sheets. Please authorize the add-on for full functionality."
+  );
+}
 function openCurrencySidebar() {
   const latestDate = loadLatestRatesToCache();
 
