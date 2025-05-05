@@ -1,158 +1,244 @@
+// Constants
+const TARGET_TIME_HOURS = 16;
+const TARGET_TIME_MINUTES = 45;
+const PRIMARY_TIMEZONE_API = 'https://worldtimeapi.org/api/timezone/';
+const FALLBACK_TIMEZONE_API = 'https://timeapi.io/api/Time/current/zone?timeZone=';
+const FRANKFURTER_API = 'https://api.frankfurter.app/latest';
+const TIMEZONE = 'Europe/Berlin';
+const TOP_CURRENCIES = ['CAD', 'MXN', 'USD', 'EUR', 'GBP', 'JPY', 'AUD'];
+
+// Get today's date in ISO format (YYYY-MM-DD)
 const todaysDate = new Date().toISOString().split('T')[0];
 
 function main() {
-  /* 
-  Script timezone should be set to UTC+0.This means that lastUpdated in MongoDB will also be UTC+0,
-  */
-
   const scriptProperties = PropertiesService.getScriptProperties();
-
   const mongoDbLastDailyUpdate = scriptProperties.getProperty('MONGO-LAST-DAILY-UPDATE');
 
-  // If we've already updated everything today, stop.
+  // Skip if already updated today
   if (mongoDbLastDailyUpdate === todaysDate) {
-    console.log('MONGO-LAST-DAILY-UPDATE is ' + mongoDbLastDailyUpdate + '. Today (todaysDate) is ' + todaysDate + '. Top exchange rates have already been updated today.');
+    console.log(`Already updated top currency pairs in MongoDB today (${todaysDate}). Exiting.`);
     return;
   }
 
-  // Call API to get info about current time in CET.
-  let CETCurrentTimeInfo = getTimeZoneInfo('Europe/Berlin');
+  // Get current CET time (try primary API, fall back if needed)
+  let CETCurrentTimeInfo = getTimeZoneInfo(TIMEZONE);
+
   if (CETCurrentTimeInfo.error) {
-    console.error('Error fetching CET current time info:', CETCurrentTimeInfo.error);
-    return;
+    console.log(`WorldTimeAPI.org (primary) failed. Trying TimeAPI.io fallback.`);
+    CETCurrentTimeInfo = getTimeZoneInfoFallback(TIMEZONE);
+
+    if (CETCurrentTimeInfo.error) {
+      console.error(`Both timezone APIs (WorldTimeAPI.org and TimeAPI.io) failed. Exiting.`);
+      return;
+    }
   }
 
-  // Parse the UTC datetime string from API and adjust for the UTC offset
-  let CETCurrentTime = new Date(CETCurrentTimeInfo.responseJSON.datetime);
-  let offset = CETCurrentTimeInfo.responseJSON.utc_offset;
-  let offsetHours = parseInt(offset.substring(1, 3));
-  let offsetMinutes = parseInt(offset.substring(4, 6));
-  if (offset[0] === '-') {
-    offsetHours = -offsetHours;
-    offsetMinutes = -offsetMinutes;
+  // Process time based on which API we used
+  let CETCurrentTime;
+
+  if (CETCurrentTimeInfo.source === 'primary') {
+    // Parse from primary API format
+    CETCurrentTime = parseTimeFromPrimaryAPI(CETCurrentTimeInfo.responseJSON);
+  } else {
+    // Parse from fallback API format
+    CETCurrentTime = new Date(CETCurrentTimeInfo.responseJSON.dateTime);
   }
-  
-  // Apply the offset to the current UTC time
-  CETCurrentTime.setHours(CETCurrentTime.getUTCHours() + offsetHours);
-  CETCurrentTime.setMinutes(CETCurrentTime.getUTCMinutes() + offsetMinutes);
 
-  console.log('Current Time in CET: ' + CETCurrentTime.toISOString());
+  console.log(`Current Time (CET): ${CETCurrentTime.toISOString()}`);
 
-  // Define target time as today at 16:45 CET
-  let targetTime = new Date(CETCurrentTime);  // Use CETCurrentTime to ensure the date matches
-  targetTime.setHours(16, 45, 0, 0);  // Set time to 16:45 CET
+  // Set target time to 16:45 CET today
+  let targetTime = new Date(CETCurrentTime);
+  targetTime.setHours(TARGET_TIME_HOURS, TARGET_TIME_MINUTES, 0, 0);
 
-  // Calculate the difference in milliseconds and convert to minutes
-  let timeDifference = CETCurrentTime - targetTime;  // Compare directly
-  let timeDifferenceMinutes = Math.floor(timeDifference / 60000);
+  // Check if current time is at or after target time
+  const isAfterTargetTime = CETCurrentTime >= targetTime;
+  console.log(`Target time: ${targetTime.toISOString()}, Is after target: ${isAfterTargetTime}`);
 
-  // Check if the current time is at or after 16:45 CET
-  let isAtOrAfter = timeDifference >= 0;
+  if (isAfterTargetTime) {
+    const timeDifferenceMinutes = Math.floor((CETCurrentTime - targetTime) / 60000);
+    console.log(`${timeDifferenceMinutes} minutes after target time. Updating rates.`);
 
-  if (isAtOrAfter) {
-    console.log('It is ' + timeDifferenceMinutes + ' minutes after 4:45 PM in CET. Updating rates.');
-
-    // Should return true or false
-    let updatedSuccessfully = updateTopECBCurrencies();
+    const updatedSuccessfully = updateTopECBCurrencies();
 
     if (updatedSuccessfully) {
       scriptProperties.setProperty('MONGO-LAST-DAILY-UPDATE', todaysDate);
+      console.log(`Update completed successfully. Set last update date to ${todaysDate}.`);
+    } else {
+      console.error(`Update failed. Last update date not changed.`);
     }
   } else {
-    console.log('It is not yet 4:45 PM in CET');
+    console.log(`Not yet ${TARGET_TIME_HOURS}:${TARGET_TIME_MINUTES} CET. Skipping update.`);
+  }
+}
+
+function parseTimeFromPrimaryAPI(responseJSON) {
+  const dateTime = new Date(responseJSON.datetime);
+  const offset = responseJSON.utc_offset;
+  const offsetHours = parseInt(offset.substring(1, 3));
+  const offsetMinutes = parseInt(offset.substring(4, 6));
+  const sign = offset[0] === '-' ? -1 : 1;
+
+  // Apply offset to get local time
+  const localTime = new Date(dateTime);
+  localTime.setHours(localTime.getUTCHours() + (sign * offsetHours));
+  localTime.setMinutes(localTime.getUTCMinutes() + (sign * offsetMinutes));
+
+  return localTime;
+}
+
+function getTimeZoneInfo(timezone) {
+  const apiUrl = `${PRIMARY_TIMEZONE_API}${timezone}`;
+  try {
+    const response = UrlFetchApp.fetch(apiUrl, { method: 'GET' });
+    const responseJSON = JSON.parse(response.getContentText());
+    return { responseJSON, source: 'primary' };
+  } catch (error) {
+    return {
+      responseJSON: null,
+      error: `Primary API error: ${error}`,
+      source: 'primary'
+    };
+  }
+}
+
+function getTimeZoneInfoFallback(timezone) {
+  const apiUrl = `${FALLBACK_TIMEZONE_API}${timezone}`;
+  try {
+    const response = UrlFetchApp.fetch(apiUrl, {
+      method: 'GET',
+      muteHttpExceptions: true
+    });
+
+    if (response.getResponseCode() !== 200) {
+      throw new Error(`HTTP status ${response.getResponseCode()}`);
+    }
+
+    const responseJSON = JSON.parse(response.getContentText());
+    return { responseJSON, source: 'fallback' };
+  } catch (error) {
+    return {
+      responseJSON: null,
+      error: `Fallback API error: ${error}`,
+      source: 'fallback'
+    };
   }
 }
 
 function updateTopECBCurrencies() {
-  // Script Properties should be manually updated in the Google Apps Script IDE
   const scriptProperties = PropertiesService.getScriptProperties();
-  const baseUrl = scriptProperties.getProperty('mongoDbBaseUrl');
-  const apiKey = scriptProperties.getProperty('mongoDbApiKey');
-  const clusterName = scriptProperties.getProperty('mongoDbClusterName');
-  const dbName = scriptProperties.getProperty('mongoDbDatabaseName');
-  const collectionName = scriptProperties.getProperty('mongoDbCollectionName');
-  const ecbDocumentId = scriptProperties.getProperty('ecbDocumentId');
+  const mongoConfig = {
+    baseUrl: scriptProperties.getProperty('mongoDbBaseUrl'),
+    apiKey: scriptProperties.getProperty('mongoDbApiKey'),
+    clusterName: scriptProperties.getProperty('mongoDbClusterName'),
+    dbName: scriptProperties.getProperty('mongoDbDatabaseName'),
+    collectionName: scriptProperties.getProperty('mongoDbCollectionName'),
+    ecbDocumentId: scriptProperties.getProperty('ecbDocumentId')
+  };
 
-  // Default noIssuesUpdating to true, then flip to false if any fail.
-  let noIssuesUpdating = true;
+  // Validate required MongoDB configuration
+  if (!validateMongoConfig(mongoConfig)) {
+    return false;
+  }
 
-  // Most traded currencies plus Canada and Mexico
-  const topCurrencies = ['CAD', 'MXN', 'USD', 'EUR', 'GBP', 'JPY', 'AUD'];
-
-  // Specific MongoDB endpoint for updating a record.
-  const updateUrl = baseUrl + "/action/updateOne";
-  
   // New structure: rates > date > currency_pair > { rate, lastUpdated }
   const updateOperations = {};
   let rateDate = null;
 
-  // Loop through top currencies and get rates for all pairs.
-  topCurrencies.forEach(baseCurrency => {
-    topCurrencies.forEach(targetCurrency => {
-      if (baseCurrency !== targetCurrency) {
-        
-        let fetchedRateData = fetchRate(baseCurrency, targetCurrency);
-        let newDate = fetchedRateData.rateDate;
-        let newRate = fetchedRateData.rate;
-        let lastUpdated = fetchedRateData.lastChecked;
-        
-        if (newDate < todaysDate) {
-          console.log('newDate for ' + baseCurrency + ' and ' + targetCurrency + ' is ' + newDate + '. todaysDate is ' + todaysDate + ', so the "new" currency information is old. Moving to the next currency pair.');
-          noIssuesUpdating = false;
-        } else {
-          // Store the rate date for later use - all rates should have the same date
-          rateDate = newDate;
-          
-          const currencyPairKey = `${baseCurrency}_${targetCurrency}`;
-          // Instead of nesting by currency pair first, we nest by date first
-          updateOperations[`rates.${newDate}.${currencyPairKey}.rate`] = newRate;
-          updateOperations[`rates.${newDate}.${currencyPairKey}.lastUpdated`] = lastUpdated;
-        }
+  // Loop through currency pairs
+  for (const baseCurrency of TOP_CURRENCIES) {
+    for (const targetCurrency of TOP_CURRENCIES) {
+      if (baseCurrency === targetCurrency) continue;
+
+      const fetchedRateData = fetchRate(baseCurrency, targetCurrency);
+
+      // Skip if we got an error or old date
+      if (fetchedRateData.error) {
+        console.error(`Error fetching rate from Frankfurter API for ${baseCurrency}_${targetCurrency}: ${fetchedRateData.error}`);
+        continue;
       }
-    });
-  });
 
-  // If we have rates, update the MongoDB document
-  if (rateDate) {
-    const updatePayload = {
-      dataSource: clusterName,
-      database: dbName,
-      collection: collectionName,
-      filter: { "_id": { "$oid": ecbDocumentId } },
-      update: {
-        $set: updateOperations
-      },
-      upsert: false
-    };
-    
-    const updateOptions = {
-      method: "post",
-      contentType: "application/json",
-      headers: {
-        "api-key": apiKey
-      },
-      payload: JSON.stringify(updatePayload),
-      muteHttpExceptions: true
-    };
+      if (fetchedRateData.rateDate < todaysDate) {
+        console.log(`${baseCurrency}_${targetCurrency}: Rate date ${fetchedRateData.rateDate} is older than today. Skipping.`);
+        continue;
+      }
 
-    try {
-      const updateResponse = UrlFetchApp.fetch(updateUrl, updateOptions);
-      const updateResponseData = JSON.parse(updateResponse.getContentText());
-      console.log('Update Response:', updateResponseData);
-    } catch (error) {
-      console.error('Error updating document:', error.toString());
-      noIssuesUpdating = false;
+      // Store the rate date for later use - all rates should have the same date
+      rateDate = fetchedRateData.rateDate;
+
+      const currencyPairKey = `${baseCurrency}_${targetCurrency}`;
+      updateOperations[`rates.${rateDate}.${currencyPairKey}.rate`] = fetchedRateData.rate;
+      updateOperations[`rates.${rateDate}.${currencyPairKey}.lastUpdated`] = fetchedRateData.lastChecked;
     }
-  } else {
-    console.log('No valid rates found to update.');
-    noIssuesUpdating = false;
   }
 
-  return noIssuesUpdating;
+  // If we have rates, update the MongoDB document
+  if (rateDate && Object.keys(updateOperations).length > 0) {
+    console.log(`Updating MongoDB with ${Object.keys(updateOperations).length} currency pairs for date ${rateDate}`);
+    return updateMongoDocument(mongoConfig, updateOperations);
+  } else {
+    console.log(`No valid rates found to update.`);
+    return false;
+  }
+}
+
+function validateMongoConfig(config) {
+  const requiredProps = ['baseUrl', 'apiKey', 'clusterName', 'dbName', 'collectionName', 'ecbDocumentId'];
+  const missingProps = requiredProps.filter(prop => !config[prop]);
+
+  if (missingProps.length > 0) {
+    console.error(`Missing required MongoDB configuration: ${missingProps.join(', ')}`);
+    return false;
+  }
+
+  return true;
+}
+
+function updateMongoDocument(config, updateOperations) {
+  const updateUrl = `${config.baseUrl}/action/updateOne`;
+
+  const updatePayload = {
+    dataSource: config.clusterName,
+    database: config.dbName,
+    collection: config.collectionName,
+    filter: { "_id": { "$oid": config.ecbDocumentId } },
+    update: {
+      $set: updateOperations
+    },
+    upsert: false
+  };
+
+  const options = {
+    method: "post",
+    payload: JSON.stringify(updatePayload),
+    contentType: "application/json",
+    muteHttpExceptions: true,
+    headers: {}
+  };
+
+  if (config.apiKey && config.apiKey.trim() !== "") {
+    options.headers["api-key"] = config.apiKey.trim();
+  }
+
+  try {
+    const updateResponse = UrlFetchApp.fetch(updateUrl, options);
+    const statusCode = updateResponse.getResponseCode();
+
+    if (statusCode >= 200 && statusCode < 300) {
+      console.log(`MongoDB update successful with status code: ${statusCode}`);
+      return true;
+    } else {
+      console.error(`MongoDB update failed with status code: ${statusCode}`);
+      console.error(`Response content: ${updateResponse.getContentText()}`);
+      return false;
+    }
+  } catch (error) {
+    console.error(`MongoDB update error: ${error}`);
+    return false;
+  }
 }
 
 function fetchRate(baseCurrency, targetCurrency) {
-  const url = `https://api.frankfurter.app/latest?from=${baseCurrency}&to=${targetCurrency}`;
+  const url = `${FRANKFURTER_API}?from=${baseCurrency}&to=${targetCurrency}`;
 
   try {
     const response = UrlFetchApp.fetch(url);
@@ -160,7 +246,6 @@ function fetchRate(baseCurrency, targetCurrency) {
     if (response.getResponseCode() === 200) {
       const data = JSON.parse(response.getContentText());
       return {
-        // Currently this function returns an object with redundant information. (e.g. It is only used to by a function that updates ECB rates, but it specifies that its source is ECB.) Later, if we add more sources, we may want to return similar data from them, so we need to specify this redundant info.
         fromCurrency: baseCurrency,
         toCurrency: targetCurrency,
         rate: data.rates[targetCurrency],
@@ -168,8 +253,14 @@ function fetchRate(baseCurrency, targetCurrency) {
         lastChecked: new Date().toISOString(),
         source: "ECB"
       };
+    } else {
+      return {
+        error: `HTTP status ${response.getResponseCode()}`
+      };
     }
   } catch (error) {
-    return { error: error.toString() };
+    return {
+      error: `Error fetching rate: ${error}`
+    };
   }
 }
