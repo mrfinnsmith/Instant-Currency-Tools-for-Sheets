@@ -35,10 +35,10 @@ function main() {
   // Create log message with all available time info
   let timeLogMessage = `Current time (Berlin): ${berlinTimeJS.toISOString()} [JS]`;
   if (primaryAPITime) {
-    timeLogMessage += `, ${primaryAPITime.toISOString()} [Primary API]`;
+    timeLogMessage += `, ${primaryAPITime.toISOString()} [WorldTimeAPI]`;
   }
   if (fallbackAPITime) {
-    timeLogMessage += `, ${fallbackAPITime.toISOString()} [Fallback API]`;
+    timeLogMessage += `, ${fallbackAPITime.toISOString()} [TimeAPI.io]`;
   }
   console.log(timeLogMessage);
 
