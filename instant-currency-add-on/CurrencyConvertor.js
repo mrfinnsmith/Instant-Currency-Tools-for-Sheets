@@ -1,6 +1,8 @@
-// Global cache instance
-const scriptCache = CacheService.getScriptCache();
 const SOURCE = "ECB";
+
+function getScriptCache() {
+  return CacheService.getScriptCache();
+}
 
 function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate) {
 
@@ -88,7 +90,7 @@ class CurrencyRateService {
     const standardDate = date.split('T')[0]; // Extract date portion only
     const cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${standardDate}`;
 
-    const cachedRate = scriptCache.get(cacheKey);
+    const cachedRate = getScriptCache().get(cacheKey);
 
     if (cachedRate) {
       return parseFloat(cachedRate);
@@ -98,7 +100,7 @@ class CurrencyRateService {
     const mongoRate = getRateFromMongoDB(fromCurrency, toCurrency, date);
     if (mongoRate) {
       // Store in cache
-      scriptCache.put(cacheKey, mongoRate.toString(), 21600);
+      getScriptCache().put(cacheKey, rate.toString(), 21600)
       return mongoRate;
     }
 
@@ -113,7 +115,7 @@ class CurrencyRateService {
 
         // Store in MongoDB and cache
         storeRateInMongoDB(fromCurrency, toCurrency, rate, date);
-        scriptCache.put(cacheKey, rate.toString(), 21600);
+        getScriptCache().put(cacheKey, rate.toString(), 21600);
 
         return rate;
       }
@@ -191,7 +193,7 @@ function getRateFromMongoDB(fromCurrency, toCurrency, date) {
 
 function getCurrencyFormat(currencyString) {
 
-  formatMap = {
+  const formatMap = {
     "AUD": '"$"#,##0.00', // Australian Dollar - $1,234.56
     "BGN": '#,##0.00 "лв"', // Bulgarian Lev - 1 234,56 лв → changed because the correct format uses a comma as the decimal separator
     "BRL": '"R$" #,##0.00', // Brazilian Real - R$ 1.234,56 → changed because the correct format uses a comma as the decimal separator
@@ -268,7 +270,7 @@ function loadLatestRatesToCache() {
         const rate = ratePairs[pairKey].rate;
         const [fromCurrency, toCurrency] = pairKey.split('_');
         const cacheKey = `${SOURCE}_${fromCurrency}_${toCurrency}_${standardDate}`;
-        scriptCache.put(cacheKey, rate.toString(), 21600);
+        getScriptCache().put(cacheKey, rate.toString(), 21600);
       }
     }
     console.log("loadLatestRatesToCache - returning latestDate: ", latestDate);

@@ -1,8 +1,10 @@
-const cache = CacheService.getScriptCache();
+function getCache() {
+  return CacheService.getScriptCache();
+}
 
 function checkSubscriptionCache(email, productId) {
   const cacheKey = email + "-" + productId;
-  const cachedData = cache.get(cacheKey);
+  const cachedData = getCache().get(cacheKey);
   if (cachedData) {
     return JSON.parse(cachedData);
   }
@@ -97,7 +99,7 @@ function isUserSubscribed(productId) {
 
     const sheetData = checkSheetSubscriptionStatus(email, productId);
     if (sheetData && sheetData.status === "active") {
-      cache.put(email + "-" + productId, JSON.stringify(sheetData), 21600);
+      getCache().put(email + "-" + productId, JSON.stringify(sheetData), 21600);
       return true;
     }
 
