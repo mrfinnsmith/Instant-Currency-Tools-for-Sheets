@@ -4,14 +4,14 @@ function onInstall(e) {
 
 /**
  * This function creates the add-on menu with appropriate handling for different authorization modes.
- * 
+ *
+ * Fixed in commit 86b402b8c452 to address Google Workspace Marketplace rejection.
  * The previous implementation incorrectly used the same function references for both authorized
- * and unauthorized states, causing the add-on to be rejected by Google Workspace Marketplace.
- * 
- * When in AuthMode.NONE (before user authorization), add-ons can only use a limited set of services.
- * Functions like openCurrencySidebar that use restricted services must not be called in this state.
- * Instead, we now use stub functions that only display authorization prompts when in AuthMode.NONE.
- * 
+ * and unauthorized states, which violated Google's requirements.
+ *
+ * When in AuthMode.NONE (before user authorization), we now use stub functions
+ * that only display authorization prompts instead of attempting to use restricted services.
+ *
  * Reference: https://developers.google.com/workspace/add-ons/concepts/editor-auth-lifecycle
  */
 function onOpen(e) {
