@@ -38,16 +38,44 @@ function onOpen(e) {
 }
 
 function showAuthPrompt() {
-  SpreadsheetApp.getUi().alert(
-    "Please authorize the add-on to use this feature. Click this menu item again after authorizing."
-  );
+  try {
+    // Intentionally trigger Google's authorization dialog by attempting
+    // to use a restricted service
+    PropertiesService.getScriptProperties().getProperty('AUTH_CHECK');
+
+    // Refresh the menu with all options
+    onOpen();
+
+    // If authorization is successful, open the sidebar
+    openCurrencySidebar();
+  } catch (error) {
+    // Only show alert if error isn't related to authorization
+    // (Authorization errors will already show Google's dialog)
+    if (!error.message.includes('Authorization required')) {
+      SpreadsheetApp.getUi().alert(
+        "An error occurred: " + error.message
+      );
+    }
+  }
 }
 
 function showAboutPrompt() {
-  SpreadsheetApp.getUi().alert(
-    "Instant Currency converts values directly in Google Sheets. Please authorize the add-on for full functionality."
-  );
+  try {
+    // Trigger authorization
+    PropertiesService.getScriptProperties().getProperty('AUTH_CHECK');
+
+    // If authorization is successful, show regular about dialog
+    showAboutDialog();
+  } catch (error) {
+    // Only show alert if error isn't related to authorization
+    if (!error.message.includes('Authorization required')) {
+      SpreadsheetApp.getUi().alert(
+        "An error occurred: " + error.message
+      );
+    }
+  }
 }
+
 function openCurrencySidebar() {
   const latestDate = loadLatestRatesToCache();
 
