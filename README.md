@@ -2,10 +2,29 @@ Google Sheets add-on that transforms currency handling by eliminating manual con
 
 # Project Structure
 
-This repository contains two separate Google Apps Script projects synced via clasp:
+This repository contains three separate Google Apps Script projects synced via clasp:
 
 - `src/add-on/`: Main add-on code that runs in Google Sheets
 - `src/event-handlers/`: Background processes for subscription tracking and rate updates
+- `src/analytics/`: Marketplace analytics tracking for install and review metrics
+
+```
+├── README.md
+├── docs
+│   └── PHASE_1_MARKETING_PLAN.md
+└── src
+    ├── add-on
+    │   ├── appsscript.json
+    │   └── [.js files]
+    ├── analytics
+    │   ├── appsscript.json
+    │   └── [.js files]
+    └── event-handlers
+        ├── appsscript.json
+        └── [.js files]
+```
+
+**Note**: Google Apps Script files (.gs) are stored as .js files when synced locally with clasp. Each project has its own clasp ID and separate Google Apps Script project.
 
 # Features & Implementation
 
@@ -13,6 +32,7 @@ This repository contains two separate Google Apps Script projects synced via cla
 - **Premium feature**: Historical exchange rates ($5 one-time payment)
 - **MongoDB integration**: Stores currency exchange rates
 - **Stripe integration**: Processes payments
+- **Marketplace analytics tracking**: Daily scraping of install count, reviews, and ratings from Google Workspace Marketplace
 
 # Subscription Flow
 
@@ -38,10 +58,12 @@ This repository contains two separate Google Apps Script projects synced via cla
     5. All lookups tracked in `src/add-on/CurrencyConvertor.js` via `CurrencyRateService` class
 - **Subscriptions**: Tracked in spreadsheet with plans to move to MongoDB
   - Premium user emails stored with product ID and status
+- **Analytics**: Daily marketplace metrics stored in spreadsheet with duplicate prevention
+  - Install count, review count, and average rating tracked via `src/analytics/MarketplaceTracker.js`
 
 # Key Script Properties
 
-Both Apps Script projects rely on these script properties:
+Each Apps Script project relies on these script properties:
 
 - `add-on` project:
   - `STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID`: Identifier for the product in Stripe
@@ -58,6 +80,11 @@ Both Apps Script projects rely on these script properties:
   - `HEROKU_APP_URL`: URL of the Heroku app to keep awake
   - Various MongoDB connection properties
 
+- `analytics` project:
+  - `MARKETPLACE_ID`: Google Workspace Marketplace listing identifier
+  - `ANALYTICS_SPREADSHEET_ID`: Spreadsheet for storing marketplace metrics
+  - `INSTALLS_REVIEWS_SHEET_ID`: Sheet ID within analytics spreadsheet
+
 # Development Notes
 
 - Each project has its own `.clasp.json` file for syncing with Google Apps Script
@@ -66,6 +93,8 @@ Both Apps Script projects rely on these script properties:
 - MongoDB rates are updated in two ways:
   - Daily at ~16:45 CET via time-triggered execution of `src/event-handlers/mongoDailyRateUpdates.js`
   - On-demand when users convert currencies with dates not in the database
+- Marketplace analytics scraped daily via time-triggered execution, logging with "Marketplace Tracker" prefix
+- Analytics track install count, review count, and average rating since no public API exists
 - Heroku app (`https://instant-currency-bc58e484e25e.herokuapp.com`):
   - Pinged every 30 minutes by `src/event-handlers/keepHerokuAwake.js` to prevent cold starts
   - Needs to stay awake to handle Stripe checkout sessions quickly
