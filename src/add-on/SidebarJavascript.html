@@ -1,4 +1,15 @@
 <script>
+  let flagSupported = false;
+  
+  function supportsFlagEmoji() {
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = '32px Arial';
+    ctx.fillText('🇺🇸', 0, 32);
+    const data = ctx.getImageData(16, 16, 1, 1).data;
+    // If the pixel is not blank, assume the flag rendered
+    return data[0] !== 0 || data[1] !== 0 || data[2] !== 0 || data[3] !== 0;
+    }
+
    function fetchCurrencies() {
          google.script.run.withSuccessHandler(populateCurrencyDropdowns).getCurrencies();
      }
@@ -22,13 +33,13 @@
    }
    
    function createFormattedCurrencyOption(code, currencyName, defaultValue) {
-     const flagEmoji = currencyFlags[code] ? currencyFlags[code] + ' ' : '';
-     const option = document.createElement('option');
-     option.value = code;
-     option.text = code + ' ' + flagEmoji + ' (' + currencyName + ')';
-     if (code === defaultValue) option.selected = "selected";
-     return option;
-   }
+    const flagEmoji = flagSupported && currencyFlags[code] ? currencyFlags[code] + ' ' : '';
+    const option = document.createElement('option');
+    option.value = code;
+    option.text = code + ' ' + flagEmoji + '(' + currencyName + ')';
+    if (code === defaultValue) option.selected = "selected";
+    return option;
+    }
    
    function switchCurrencies() {
      const fromDropdown = document.getElementById('fromCurrency');
@@ -142,12 +153,13 @@
      google.script.run.showRateInfoModal();
    }
    document.addEventListener('DOMContentLoaded', function() {
-     fetchCurrencies();
-     addTooltipListeners();
-     updatePremiumFeatures();
-     setInterval(updatePremiumFeatures, 5 * 60 * 1000);
-     document.getElementById('spinnerImg').src = "data:image/gif;base64," + loadingSpinnerBase64;
-   });
+    flagSupported = supportsFlagEmoji();
+    fetchCurrencies();
+    addTooltipListeners();
+    updatePremiumFeatures();
+    setInterval(updatePremiumFeatures, 5 * 60 * 1000);
+    document.getElementById('spinnerImg').src = "data:image/gif;base64," + loadingSpinnerBase64;
+    });
    
    
    const currencyFlags = {
