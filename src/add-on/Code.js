@@ -83,6 +83,14 @@ function openCurrencySidebar() {
   const productId = props.getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID');
   const isPremium = isUserSubscribed(productId);
 
+  try {
+    Analytics.getInstance().track('Sidebar Opened', {
+      is_premium: isPremium
+    });
+  } catch (error) {
+    console.log('Analytics tracking failed in openCurrencySidebar:', error);
+  }
+
   const template = HtmlService.createTemplateFromFile('Sidebar');
   template.isPremium = isPremium;
   template.latestAvailableDate = latestDate;
@@ -118,6 +126,112 @@ function checkMembershipStatus() {
     openCurrencySidebar();
   } else {
     ui.alert("Free Version", "You're using the free version. Upgrade for historical exchange rates and more features.", ui.ButtonSet.OK);
+  }
+}
+
+// Analytics Service
+const Analytics = (() => {
+  let instance;
+  let anonymousId;
+  let projectToken;
+  let isProduction;
+
+  class AnalyticsService {
+    constructor() {
+      if (instance) return instance;
+      
+      projectToken = PropertiesService.getScriptProperties().getProperty('MIXPANEL_PROJECT_TOKEN');
+      isProduction = this.detectEnvironment();
+      instance = this;
+    }
+
+    detectEnvironment() {
+      const testSpreadsheetIds = PropertiesService.getScriptProperties().getProperty('TEST_SPREADSHEET_IDS');
+      if (testSpreadsheetIds) {
+        const currentId = SpreadsheetApp.getActiveSpreadsheet().getId();
+        return !testSpreadsheetIds.split(',').includes(currentId);
+      }
+      return true;
+    }
+
+    getAnonymousId() {
+      if (!anonymousId) {
+        const spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
+        anonymousId = 'anon_' + Utilities.computeDigest(
+          Utilities.DigestAlgorithm.MD5, 
+          spreadsheetId
+        ).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+      return anonymousId;
+    }
+
+    track(eventName, properties = {}) {
+      if (!projectToken || !isProduction) {
+        console.log('Analytics disabled:', { projectToken: !!projectToken, isProduction });
+        return;
+      }
+
+      const event = {
+        event: eventName,
+        properties: {
+          ...properties,
+          token: projectToken,
+          time: new Date().getTime(),
+          distinct_id: this.getAnonymousId(),
+          $lib: 'google-apps-script',
+          $lib_version: '1.0.0'
+        }
+      };
+
+      try {
+        const data = Utilities.base64Encode(JSON.stringify(event));
+        UrlFetchApp.fetch(`https://api.mixpanel.com/track?data=${data}`, {
+          method: 'GET'
+        });
+      } catch (error) {
+        console.error('Analytics tracking failed:', error);
+      }
+    }
+
+    trackBatch(events) {
+      if (!projectToken || !isProduction || events.length === 0) return;
+
+      try {
+        const batch = events.map(event => ({
+          event: event.name,
+          properties: {
+            ...event.properties,
+            token: projectToken,
+            time: new Date().getTime(),
+            distinct_id: this.getAnonymousId(),
+            $lib: 'google-apps-script'
+          }
+        }));
+
+        const data = Utilities.base64Encode(JSON.stringify(batch));
+        UrlFetchApp.fetch(`https://api.mixpanel.com/track?data=${data}`, {
+          method: 'GET'
+        });
+      } catch (error) {
+        console.error('Batch analytics tracking failed:', error);
+      }
+    }
+  }
+
+  return {
+    getInstance() {
+      if (!instance) instance = new AnalyticsService();
+      return instance;
+    }
+  };
+})();
+
+
+function trackAnalyticsEvent(eventName, properties = {}) {
+  try {
+    Analytics.getInstance().track(eventName, properties);
+  } catch (error) {
+    console.log('Analytics tracking failed:', error);
   }
 }
 
