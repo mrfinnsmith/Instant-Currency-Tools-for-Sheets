@@ -10,8 +10,6 @@ This repository contains three separate Google Apps Script projects synced via c
 
 ```
 ├── README.md
-├── docs
-│   └── PHASE_1_MARKETING_PLAN.md
 └── src
     ├── add-on
     │   ├── appsscript.json
