@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git log:*)",
+      "Bash(git rebase:*)",
+      "Bash(git filter-repo:*)",
+      "Bash(clasp status:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <base target="_top">
+      <?!= include('css'); ?>
+      <script>
+         // Make premium status available to sidebar JavaScript
+         const isPremium = <?= isPremium ?>;
+         const productId = "<?= PropertiesService.getScriptProperties().getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID') ?>";
+         const latestAvailableDate = "<?= latestAvailableDate ?>";
+      </script>
+   </head>
+   <body>
+      <div class="container">
+      <div class="content-box">
+         <div class="header">
+            <img id="logoImg" alt="Logo" class="logo">
+            <span>Instant Currency</span>
+         </div>
+         <div style="display: flex; gap: 10px; align-items: flex-start;">
+            <div style="flex: 1;">
+               <div class="form-group">
+                  <label class="label">From Currency</label>
+                  <select id="fromCurrency">
+                     <!-- Dropdown for "from currency" -->
+                  </select>
+               </div>
+               <div class="form-group">
+                  <label class="label">To Currency</label>
+                  <select id="toCurrency">
+                     <!-- Dropdown for "to currency" -->
+                  </select>
+               </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 24px;">
+               <button class="switch-icon-button" onclick="switchCurrencies()" title="Switch currencies">↑↓</button>
+               <span class="info-icon" onclick="showRateInfo()">ⓘ</span>
+            </div>
+         </div>
+         <button class="action-button" onclick="convert()">CONVERT</button>
+         <div id="loadingIndicator" style="text-align: center; margin: 10px 0; display: none;">
+            <img id="spinnerImg" alt="Loading" width="20" height="20">
+         </div>
+         <div id="conversionDateDisplay" class="setting-label"></div>
+         <div class="advanced-settings">
+            <div class="advanced-header">
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+               </svg>
+               <span>Advanced settings</span>
+            </div>
+            <div class="divider"></div>
+            <!--
+               <div class="setting-row">
+                  <div class="setting-label">Replace with new values</div>
+                  <label class="toggle">
+                     <input type="radio" id="hardcode" name="conversionType" value="hardcode" checked>
+                     <span class="slider"></span>
+                  </label>
+               </div>
+               -->
+            <!-- Change the GOOGLEFINANCE option from radio to checkbox -->
+            <div class="setting-row">
+               <div class="setting-label">Use Google Finance formula</div>
+               <label class="toggle">
+               <input type="checkbox" id="formula" name="conversionType" value="formula">
+               <span class="slider"></span>
+               </label>
+            </div>
+            <div class="setting-row">
+               <div class="setting-label">Convert entire sheet</div>
+               <label class="toggle">
+               <input type="checkbox" id="convertEntireSheet">
+               <span class="slider"></span>
+               </label>
+            </div>
+            <div id="historicalRatePicker" class="premium-feature setting-row">
+               <div class="setting-label">Pick a Date:</div>
+               <input type="date" id="datePicker" style="width: 150px;" disabled>
+            </div>
+            <div class="divider"></div>
+         </div>
+         <div class="footer">
+            <a href="https://instantcurrency.tools/contact/" target="_blank">Need help?</a> | 
+            <a href="https://instantcurrency.tools/pricing" target="_blank">Upgrade</a>
+         </div>
+      </div>
+      <?!= include('SidebarJavascript'); ?>
+      <?!= include('logoData'); ?>
+      <script>
+         document.getElementById('logoImg').src = "data:image/png;base64," + logoBase64;
+      </script>
+   </body>
+</html>
