@@ -1,0 +1,11 @@
+.clasp.json
+appsscript.json
+.gitignore
+instant-currency-tools-service-account-private-key.json
+node_modules/
+package-lock.json
+package.json
+firebase-project/
+firebaseStuff.js
+secrets/
+docs/
