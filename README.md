@@ -101,6 +101,38 @@ Each Apps Script project relies on these script properties:
   - "Formula": Inserts GOOGLEFINANCE formulas that update automatically
 - Update marketplace listing through Google Workspace Marketplace SDK
 
+## Testing Updates
+
+To test changes before deployment:
+
+1. In Google Apps Script IDE, go to **Deploy** → **Test deployments**
+2. If no test deployment exists, create one:
+   - Click **New test**
+   - Select **Editor Add-on** as type
+   - Choose a test spreadsheet
+3. Select the test deployment radio button
+4. Click **Execute** to test in the selected spreadsheet
+
+## Deploying Updates
+
+To deploy a new version to production:
+
+1. In Google Apps Script IDE, go to **Deploy** → **New deployment**
+2. Set type to **Add-on**
+3. Enter a descriptive version description
+4. Click **Deploy** and note the version number
+
+### Update Marketplace Listing
+
+After deploying a new version, update the marketplace listing:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Navigate to **Enabled APIs & Services** → **Google Workspace Marketplace SDK**
+3. In the submenu, click **App configuration**
+4. Update **"Sheets add-on script version"** to the new deployment version
+5. Go to **Store Listing** in the same submenu
+6. Click the **Publish** button at the bottom (should be enabled)
+
 # Future Plans
 
 - Switch to $5/month subscription model after reaching 20 paid users
