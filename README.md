@@ -56,8 +56,13 @@ This repository contains three separate Google Apps Script projects synced via c
     5. All lookups tracked in `src/add-on/CurrencyConvertor.js` via `CurrencyRateService` class
 - **Subscriptions**: Tracked in spreadsheet with plans to move to MongoDB
   - Premium user emails stored with product ID and status
-- **Analytics**: Daily marketplace metrics stored in spreadsheet with duplicate prevention
-  - Install count, review count, and average rating tracked via `src/analytics/MarketplaceTracker.js`
+- **Analytics**: Two types of analytics are collected:
+  - **Marketplace analytics**: Daily marketplace metrics stored in spreadsheet with duplicate prevention
+    - Install count, review count, and average rating tracked via `src/analytics/MarketplaceTracker.js`
+  - **User interaction analytics**: Event tracking via Mixpanel using spreadsheet-based identities
+    - Each spreadsheet gets a unique `distinct_id` generated from MD5 hash of spreadsheet ID
+    - Events tracked include sidebar opens, conversions, and feature usage
+    - Note: Mixpanel's "sessions" actually represent individual spreadsheets, not user sessions
 
 # Key Script Properties
 
@@ -69,6 +74,8 @@ Each Apps Script project relies on these script properties:
   - `MONGO-RATES-COLLECTION-NAME`: Collection storing currency rates
   - `MONGO-SUBSCRIPTION-COLLECTION-NAME`: Collection for subscription data
   - `ECB-RATES-DOCUMENT-ID`: MongoDB document ID for rates
+  - `MIXPANEL_PROJECT_TOKEN`: Token for Mixpanel analytics tracking
+  - `TEST_SPREADSHEET_IDS`: Comma-separated list of test spreadsheet IDs to exclude from analytics
 
 - `event-handlers` project:
   - `LOG_SPREADSHEET_ID`: ID of the spreadsheet tracking subscriptions
