@@ -56,6 +56,7 @@
    }
    
    function convert() {
+     const conversionStartTime = performance.now();
      document.getElementById('loadingIndicator').style.display = 'block';
    
      const fromCurrency = document.getElementById('fromCurrency').value;
@@ -110,13 +111,15 @@
                  dateDisplay.style.display = "none";
              }
              
-             // Track successful conversion completion
+             // Track successful conversion completion with timing
+             const conversionDuration = performance.now() - conversionStartTime;
              trackEvent('Conversion Completed', {
                from_currency: document.getElementById('fromCurrency').value,
                to_currency: document.getElementById('toCurrency').value,
                convert_entire_sheet: document.getElementById('convertEntireSheet').checked,
                conversion_type: document.getElementById('formula').checked ? "formula" : "hardcode",
-               historical_date: actualDateUsed !== latestAvailableDate
+               historical_date: actualDateUsed !== latestAvailableDate,
+               conversion_duration_ms: Math.round(conversionDuration)
              });
          })
          .withFailureHandler(function() {
@@ -130,7 +133,7 @@
                conversion_type: document.getElementById('formula').checked ? "formula" : "hardcode"
              });
          })
-         .convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate);
+         .convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate, conversionStartTime);
    }
    
    function addTooltipListeners() {

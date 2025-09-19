@@ -154,15 +154,35 @@ const Analytics = (() => {
       return true;
     }
 
-    getAnonymousId() {
+    getUserId() {
+      try {
+        const userEmail = Session.getActiveUser().getEmail();
+        if (!userEmail) {
+          return this.getSpreadsheetId(); // Fallback to spreadsheet ID if no user email
+        }
+        return 'user_' + Utilities.computeDigest(
+          Utilities.DigestAlgorithm.MD5, 
+          userEmail
+        ).map(b => b.toString(16).padStart(2, '0')).join('');
+      } catch (error) {
+        console.log('Unable to get user email, falling back to spreadsheet ID:', error);
+        return this.getSpreadsheetId();
+      }
+    }
+
+    getSpreadsheetId() {
       if (!anonymousId) {
         const spreadsheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
-        anonymousId = 'anon_' + Utilities.computeDigest(
+        anonymousId = 'sheet_' + Utilities.computeDigest(
           Utilities.DigestAlgorithm.MD5, 
           spreadsheetId
         ).map(b => b.toString(16).padStart(2, '0')).join('');
       }
       return anonymousId;
+    }
+
+    getAnonymousId() {
+      return this.getUserId();
     }
 
     track(eventName, properties = {}) {
@@ -178,6 +198,7 @@ const Analytics = (() => {
           token: projectToken,
           time: new Date().getTime(),
           distinct_id: this.getAnonymousId(),
+          spreadsheet_id: this.getSpreadsheetId(),
           $lib: 'google-apps-script',
           $lib_version: '1.0.0'
         }
@@ -204,6 +225,7 @@ const Analytics = (() => {
             token: projectToken,
             time: new Date().getTime(),
             distinct_id: this.getAnonymousId(),
+            spreadsheet_id: this.getSpreadsheetId(),
             $lib: 'google-apps-script'
           }
         }));

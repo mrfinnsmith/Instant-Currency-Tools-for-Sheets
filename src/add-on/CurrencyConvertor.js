@@ -4,7 +4,8 @@ function getScriptCache() {
   return CacheService.getScriptCache();
 }
 
-function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate) {
+function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate, frontendStartTime) {
+  const backendStartTime = new Date().getTime();
 
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   const range = convertEntireSheet ? spreadsheet.getActiveSheet().getDataRange() : spreadsheet.getActiveRange();
@@ -22,6 +23,11 @@ function convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireS
 
   // Apply formatting
   applyCurrencyFormatting(range, toCurrency);
+
+  // Calculate backend processing time for potential future use
+  const backendEndTime = new Date().getTime();
+  const backendProcessingTime = backendEndTime - backendStartTime;
+  console.log('Backend processing time:', backendProcessingTime, 'ms');
 
   return actualDateUsed;
 }
