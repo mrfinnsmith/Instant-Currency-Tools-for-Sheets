@@ -158,15 +158,15 @@ const Analytics = (() => {
       try {
         const userEmail = Session.getActiveUser().getEmail();
         if (!userEmail) {
-          return this.getSpreadsheetId(); // Fallback to spreadsheet ID if no user email
+          return null; // No fake user data
         }
         return 'user_' + Utilities.computeDigest(
           Utilities.DigestAlgorithm.MD5, 
           userEmail
         ).map(b => b.toString(16).padStart(2, '0')).join('');
       } catch (error) {
-        console.log('Unable to get user email, falling back to spreadsheet ID:', error);
-        return this.getSpreadsheetId();
+        console.log('Unable to get user email, no user tracking available:', error);
+        return null; // No fake user data
       }
     }
 
@@ -182,12 +182,18 @@ const Analytics = (() => {
     }
 
     getAnonymousId() {
-      return this.getUserId();
+      return this.getUserId(); // No fallback - returns null if no user email
     }
 
     track(eventName, properties = {}) {
       if (!projectToken || !isProduction) {
         console.log('Analytics disabled:', { projectToken: !!projectToken, isProduction });
+        return;
+      }
+
+      const userId = this.getUserId();
+      if (!userId) {
+        console.log('No user email available, skipping analytics tracking for:', eventName);
         return;
       }
 
@@ -197,7 +203,7 @@ const Analytics = (() => {
           ...properties,
           token: projectToken,
           time: new Date().getTime(),
-          distinct_id: this.getAnonymousId(),
+          distinct_id: userId,
           spreadsheet_id: this.getSpreadsheetId(),
           $lib: 'google-apps-script',
           $lib_version: '1.0.0'
@@ -217,6 +223,12 @@ const Analytics = (() => {
     trackBatch(events) {
       if (!projectToken || !isProduction || events.length === 0) return;
 
+      const userId = this.getUserId();
+      if (!userId) {
+        console.log('No user email available, skipping batch analytics tracking');
+        return;
+      }
+
       try {
         const batch = events.map(event => ({
           event: event.name,
@@ -224,7 +236,7 @@ const Analytics = (() => {
             ...event.properties,
             token: projectToken,
             time: new Date().getTime(),
-            distinct_id: this.getAnonymousId(),
+            distinct_id: userId,
             spreadsheet_id: this.getSpreadsheetId(),
             $lib: 'google-apps-script'
           }
