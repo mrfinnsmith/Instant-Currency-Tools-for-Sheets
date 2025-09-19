@@ -47,6 +47,12 @@
      const temp = fromDropdown.value;
      fromDropdown.value = toDropdown.value;
      toDropdown.value = temp;
+     
+     // Track currency switch
+     trackEvent('Currencies Switched', {
+       from_currency: fromDropdown.value,
+       to_currency: toDropdown.value
+     });
    }
    
    function convert() {
@@ -66,6 +72,14 @@
    
      // Check if formula checkbox is checked
      const conversionType = document.getElementById('formula').checked ? "formula" : "hardcode";
+
+     // Track conversion start with currency pair
+     trackEvent('Conversion Started', {
+       from_currency: fromCurrency,
+       to_currency: toCurrency,
+       convert_entire_sheet: convertEntireSheet,
+       conversion_type: conversionType
+     });
    
      google.script.run
          .withSuccessHandler(function(actualDateUsed) {
@@ -95,9 +109,26 @@
              } else {
                  dateDisplay.style.display = "none";
              }
+             
+             // Track successful conversion completion
+             trackEvent('Conversion Completed', {
+               from_currency: document.getElementById('fromCurrency').value,
+               to_currency: document.getElementById('toCurrency').value,
+               convert_entire_sheet: document.getElementById('convertEntireSheet').checked,
+               conversion_type: document.getElementById('formula').checked ? "formula" : "hardcode",
+               historical_date: actualDateUsed !== latestAvailableDate
+             });
          })
          .withFailureHandler(function() {
              document.getElementById('loadingIndicator').style.display = 'none';
+             
+             // Track conversion failure
+             trackEvent('Conversion Failed', {
+               from_currency: document.getElementById('fromCurrency').value,
+               to_currency: document.getElementById('toCurrency').value,
+               convert_entire_sheet: document.getElementById('convertEntireSheet').checked,
+               conversion_type: document.getElementById('formula').checked ? "formula" : "hardcode"
+             });
          })
          .convertCurrencyInSelectedRange(fromCurrency, toCurrency, convertEntireSheet, conversionType, date, latestAvailableDate);
    }
@@ -152,6 +183,50 @@
    function showRateInfo() {
      google.script.run.showRateInfoModal();
    }
+
+   // Analytics tracking function
+   function trackEvent(eventName, properties = {}) {
+     try {
+       // Get isPremium from the global scope (defined in Sidebar.html)
+       const isPremiumValue = (typeof isPremium !== 'undefined') ? isPremium : false;
+       const propertiesWithPremium = { ...properties, is_premium: isPremiumValue };
+       
+       google.script.run
+         .withFailureHandler(function(error) {
+           console.log('Analytics tracking failed:', error);
+         })
+         .trackAnalyticsEvent(eventName, propertiesWithPremium);
+     } catch (error) {
+       console.log('Analytics tracking failed:', error);
+     }
+   }
+
+   // Rage click detection
+   let clickCounts = {};
+   function trackRageClick(elementId, featureName) {
+     if (!clickCounts[elementId]) {
+       clickCounts[elementId] = { count: 0, lastClick: 0 };
+     }
+     
+     const now = Date.now();
+     const timeSinceLastClick = now - clickCounts[elementId].lastClick;
+     
+     if (timeSinceLastClick < 1000) { // Less than 1 second
+       clickCounts[elementId].count++;
+     } else {
+       clickCounts[elementId].count = 1;
+     }
+     
+     clickCounts[elementId].lastClick = now;
+     
+     if (clickCounts[elementId].count >= 3) {
+       trackEvent('Premium Feature Rage Clicked', {
+         feature: featureName,
+         click_count: clickCounts[elementId].count
+       });
+       clickCounts[elementId].count = 0; // Reset to avoid spam
+     }
+   }
    document.addEventListener('DOMContentLoaded', function() {
     flagSupported = supportsFlagEmoji();
     fetchCurrencies();
@@ -159,6 +234,52 @@
     updatePremiumFeatures();
     setInterval(updatePremiumFeatures, 5 * 60 * 1000);
     document.getElementById('spinnerImg').src = "data:image/gif;base64," + loadingSpinnerBase64;
+    
+    // Add analytics event listeners
+    try {
+      // Track currency dropdown changes
+      const fromDropdown = document.getElementById('fromCurrency');
+      const toDropdown = document.getElementById('toCurrency');
+      
+      if (fromDropdown) {
+        fromDropdown.addEventListener('change', function() {
+          trackEvent('From Currency Changed', {
+            currency: this.value
+          });
+        });
+      }
+      
+      if (toDropdown) {
+        toDropdown.addEventListener('change', function() {
+          trackEvent('To Currency Changed', {
+            currency: this.value
+          });
+        });
+      }
+
+      // Track premium feature rage clicks
+      const datePicker = document.getElementById('datePicker');
+      if (datePicker) {
+        datePicker.addEventListener('click', function() {
+          if (this.disabled) {
+            trackRageClick('datePicker', 'historical_date_picker');
+            trackEvent('Premium Feature Clicked', {
+              feature: 'historical_date_picker'
+            });
+          }
+        });
+      }
+
+      // Track upgrade link clicks
+      const upgradeLinks = document.querySelectorAll('a[href*="pricing"], a[href*="upgrade"]');
+      upgradeLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+          trackEvent('Upgrade Link Clicked');
+        });
+      });
+    } catch (error) {
+      console.log('Event listener setup failed:', error);
+    }
     });
    
    
