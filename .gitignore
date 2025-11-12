@@ -11,5 +11,6 @@ firebaseStuff.js
 secrets/
 docs/
 CLAUDE.md
+.claude/
 cloud-function/.env
 cloud-function/node_modules/
