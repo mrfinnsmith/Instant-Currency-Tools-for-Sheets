@@ -5,9 +5,11 @@ instant-currency-tools-service-account-private-key.json
 node_modules/
 package-lock.json
 package.json
+!cloud-function/package.json
 firebase-project/
 firebaseStuff.js
 secrets/
 docs/
 CLAUDE.md
 cloud-function/.env
+cloud-function/node_modules/
