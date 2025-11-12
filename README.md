@@ -6,18 +6,22 @@ This repository contains three separate Google Apps Script projects synced via c
 
 - `src/add-on/`: Main add-on code that runs in Google Sheets
 - `src/event-handlers/`: Background processes for subscription tracking and rate updates
-- `src/analytics/`: Marketplace analytics tracking for install and review metrics
+- `src/marketplace-analytics/`: Marketplace analytics tracking for install and review metrics
+- `cloud-function/`: Google Cloud Function proxy for MongoDB access
 
 ```
 ├── README.md
-└── src
-    ├── add-on
+├── cloud-function/           # Google Cloud Function (MongoDB proxy)
+│   ├── index.js
+│   └── package.json
+└── src/
+    ├── add-on/
     │   ├── appsscript.json
     │   └── [.js files]
-    ├── analytics
+    ├── marketplace-analytics/
     │   ├── appsscript.json
     │   └── [.js files]
-    └── event-handlers
+    └── event-handlers/
         ├── appsscript.json
         └── [.js files]
 ```
@@ -28,8 +32,8 @@ This repository contains three separate Google Apps Script projects synced via c
 
 - **One-click currency conversion**: Converts selected cells and applies proper formatting
 - **Premium feature**: Historical exchange rates ($5 one-time payment)
-- **MongoDB integration**: Stores currency exchange rates
-- **Stripe integration**: Processes payments
+- **MongoDB integration**: Stores currency exchange rates accessed via Google Cloud Function proxy
+- **Stripe integration**: Processes payments via Heroku app
 - **Marketplace analytics tracking**: Daily scraping of install count, reviews, and ratings from Google Workspace Marketplace
 
 # Subscription Flow
@@ -46,13 +50,16 @@ This repository contains three separate Google Apps Script projects synced via c
 
 # Data Storage & Rate Checking Flow
 
-- **Currency rates**: Stored in MongoDB
-  - Updated daily via `src/event-handlers/mongoDailyRateUpdates.js`
+- **Currency rates**: Stored in MongoDB Atlas
+  - Apps Script projects cannot directly access MongoDB (no native driver support)
+  - **Architecture**: Apps Script → Google Cloud Function (proxy) → MongoDB Atlas
+  - Cloud Function provides HTTP interface with IAM authentication
+  - Updated daily via `src/event-handlers/mongoDailyRateUpdates.js` (runs every 15 minutes, updates when new data available)
   - On-demand rate fetching process:
     1. When user selects currency pair and date, first checks script cache
-    2. If not in cache, checks MongoDB for the rate
+    2. If not in cache, calls Cloud Function to query MongoDB for the rate
     3. If not in MongoDB, calls Frankfurter API
-    4. Each successful lookup updates both cache and MongoDB
+    4. Each successful lookup updates both cache and MongoDB via Cloud Function
     5. All lookups tracked in `src/add-on/CurrencyConvertor.js` via `CurrencyRateService` class
 - **Subscriptions**: Tracked in spreadsheet with plans to move to MongoDB
   - Premium user emails stored with product ID and status
@@ -70,7 +77,8 @@ Each Apps Script project relies on these script properties:
 
 - `add-on` project:
   - `STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID`: Identifier for the product in Stripe
-  - `MONGO-API-KEY`, `MONGO-BASE-URL`, `MONGO-DB-NAME`: MongoDB connection details
+  - `CLOUD_FUNCTION_URL`: URL of Google Cloud Function for MongoDB access
+  - `MONGO-CLUSTER-NAME`, `MONGO-DB-NAME`: MongoDB connection details
   - `MONGO-RATES-COLLECTION-NAME`: Collection storing currency rates
   - `MONGO-SUBSCRIPTION-COLLECTION-NAME`: Collection for subscription data
   - `ECB-RATES-DOCUMENT-ID`: MongoDB document ID for rates
@@ -78,25 +86,32 @@ Each Apps Script project relies on these script properties:
   - `TEST_SPREADSHEET_IDS`: Comma-separated list of test spreadsheet IDs to exclude from analytics
 
 - `event-handlers` project:
+  - `CLOUD_FUNCTION_URL`: URL of Google Cloud Function for MongoDB access
   - `LOG_SPREADSHEET_ID`: ID of the spreadsheet tracking subscriptions
   - `LOG_SHEET_ID`: ID of the log sheet within the spreadsheet
   - `SUBSCRIPTION-SHEET-ID`: ID of the sheet tracking active subscriptions
   - `STRIPE_API_KEY`: For Stripe API calls
   - `HEROKU_APP_URL`: URL of the Heroku app to keep awake
-  - Various MongoDB connection properties
+  - `mongoDbClusterName`, `mongoDbDatabaseName`, `mongoDbCollectionName`, `ecbDocumentId`: MongoDB configuration
 
-- `analytics` project:
+- `marketplace-analytics` project:
   - `MARKETPLACE_ID`: Google Workspace Marketplace listing identifier
   - `ANALYTICS_SPREADSHEET_ID`: Spreadsheet for storing marketplace metrics
   - `INSTALLS_REVIEWS_SHEET_ID`: Sheet ID within analytics spreadsheet
 
 # Development Notes
 
-- Each project has its own `.clasp.json` file for syncing with Google Apps Script
-- GCP project name: "Instant Currency Sheets"
-  - Project ID is stored in the Google Apps Script IDE settings
+- Each Apps Script project has its own `.clasp.json` file for syncing with Google Apps Script IDE
+- **GCP Projects**:
+  - Add-on and marketplace-analytics: `instant-currency-tools-sheets` (Project #93228277435)
+  - Event-handlers: `teak-perigee-458918-t2` (Project #552432511640)
+  - Cloud Function deployed to event-handlers GCP project for IAM simplicity
+- **MongoDB Access**:
+  - Apps Script → Cloud Function (Node.js with MongoDB native driver) → MongoDB Atlas
+  - Cloud Function secured with IAM authentication using `ScriptApp.getIdentityToken()`
+  - Connection pooling prevents connection exhaustion in serverless environment
 - MongoDB rates are updated in two ways:
-  - Daily at ~16:45 CET via time-triggered execution of `src/event-handlers/mongoDailyRateUpdates.js`
+  - Every 15 minutes via time trigger (only updates when new data available from Frankfurter)
   - On-demand when users convert currencies with dates not in the database
 - Marketplace analytics scraped daily via time-triggered execution, logging with "Marketplace Tracker" prefix
 - Analytics track install count, review count, and average rating since no public API exists

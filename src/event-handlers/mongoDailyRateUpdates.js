@@ -278,43 +278,15 @@ function validateMongoConfig(config) {
 }
 
 function updateMongoDocument(config, updateOperations) {
-  const updateUrl = `${config.baseUrl}/action/updateOne`;
-
-  const updatePayload = {
-    dataSource: config.clusterName,
-    database: config.dbName,
-    collection: config.collectionName,
-    filter: { "_id": { "$oid": config.ecbDocumentId } },
-    update: {
-      $set: updateOperations
-    },
-    upsert: false
-  };
-
-  const options = {
-    method: "post",
-    payload: JSON.stringify(updatePayload),
-    contentType: "application/json",
-    muteHttpExceptions: true,
-    headers: {}
-  };
-
-  if (config.apiKey && config.apiKey.trim() !== "") {
-    options.headers["api-key"] = config.apiKey.trim();
-  }
-
   try {
-    const updateResponse = UrlFetchApp.fetch(updateUrl, options);
-    const statusCode = updateResponse.getResponseCode();
+    const filter = { "_id": { "$oid": config.ecbDocumentId } };
+    const update = { $set: updateOperations };
 
-    if (statusCode >= 200 && statusCode < 300) {
-      console.log(`MongoDB update successful with status code: ${statusCode}`);
-      return true;
-    } else {
-      console.error(`MongoDB update failed with status code: ${statusCode}`);
-      console.error(`Response content: ${updateResponse.getContentText()}`);
-      return false;
-    }
+    const result = mongoUpdateOne(filter, update, false); // eslint-disable-line no-undef
+
+    console.log(`MongoDB update successful: ${result.modifiedCount} documents modified`);
+    return true;
+
   } catch (error) {
     console.error(`MongoDB update error: ${error}`);
     return false;
@@ -322,32 +294,16 @@ function updateMongoDocument(config, updateOperations) {
 }
 
 function getExistingPairsForDate(config, date) {
-  const findUrl = `${config.baseUrl}/action/findOne`;
-
-  const findPayload = {
-    dataSource: config.clusterName,
-    database: config.dbName,
-    collection: config.collectionName,
-    filter: { "_id": { "$oid": config.ecbDocumentId } },
-    projection: { [`rates.${date}`]: 1 }
-  };
-
-  const options = {
-    method: "post",
-    contentType: "application/json",
-    headers: { "api-key": config.apiKey },
-    payload: JSON.stringify(findPayload),
-    muteHttpExceptions: true
-  };
-
   try {
-    const response = UrlFetchApp.fetch(findUrl, options);
-    const result = JSON.parse(response.getContentText());
+    const filter = { "_id": { "$oid": config.ecbDocumentId } };
+    const projection = { [`rates.${date}`]: 1 };
+
+    const result = mongoFindOne(filter, projection); // eslint-disable-line no-undef
 
     const existingPairs = new Set();
 
-    if (result.document && result.document.rates && result.document.rates[date]) {
-      const pairsForDate = result.document.rates[date];
+    if (result && result.rates && result.rates[date]) {
+      const pairsForDate = result.rates[date];
       for (const pairKey in pairsForDate) {
         existingPairs.add(pairKey);
       }

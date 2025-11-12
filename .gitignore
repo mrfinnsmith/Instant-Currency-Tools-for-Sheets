@@ -10,3 +10,4 @@ firebaseStuff.js
 secrets/
 docs/
 CLAUDE.md
+cloud-function/.env

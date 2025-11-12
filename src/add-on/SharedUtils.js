@@ -14,18 +14,12 @@ function getMongoDBProperties() {
 }
 
 function storeRateInMongoDB(from, to, rate, date) {
-  // Standardize date
   const standardDate = date.split('T')[0];
-
   const props = getMongoDBProperties();
-  const updateUrl = `${props.baseUrl}/action/updateOne`;
 
-  const updatePayload = {
-    dataSource: props.clusterName,
-    database: props.dbName,
-    collection: props.ratesCollectionName,
-    filter: { "_id": { "$oid": props.ecbRatesDocumentId } },
-    update: {
+  try {
+    const filter = { "_id": { "$oid": props.ecbRatesDocumentId } };
+    const update = {
       $set: {
         [`rates.${standardDate}.${from}_${to}`]: {
           rate: rate,
@@ -33,20 +27,10 @@ function storeRateInMongoDB(from, to, rate, date) {
           source: SOURCE
         }
       }
-    },
-    upsert: true
-  };
+    };
 
-  const options = {
-    method: "post",
-    contentType: "application/json",
-    headers: { "api-key": props.apiKey },
-    payload: JSON.stringify(updatePayload),
-    muteHttpExceptions: true
-  };
+    mongoUpdateOne(filter, update, true); // eslint-disable-line no-undef
 
-  try {
-    UrlFetchApp.fetch(updateUrl, options);
   } catch (error) {
     console.error("Failed to update MongoDB:", error.toString());
   }

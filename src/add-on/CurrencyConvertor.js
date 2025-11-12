@@ -158,39 +158,22 @@ function buildApiUrl(fromCurrency, toCurrency, date) {
 }
 
 function getRateFromMongoDB(fromCurrency, toCurrency, date) {
-  // Standardize date for consistent MongoDB queries
   const standardDate = date.split('T')[0];
 
-  const props = getMongoDBProperties();
-  const findUrl = `${props.baseUrl}/action/findOne`;
-
-  const findPayload = {
-    dataSource: props.clusterName,
-    database: props.dbName,
-    collection: props.ratesCollectionName,
-    filter: {
+  try {
+    const filter = {
       "_id": "exchange_rates",
       [`rates.${standardDate}.${fromCurrency}_${toCurrency}`]: { $exists: true }
-    },
-    projection: { [`rates.${standardDate}.${fromCurrency}_${toCurrency}.rate`]: 1 }
-  };
+    };
+    const projection = { [`rates.${standardDate}.${fromCurrency}_${toCurrency}.rate`]: 1 };
 
-  const options = {
-    method: "post",
-    contentType: "application/json",
-    headers: { "api-key": props.apiKey },
-    payload: JSON.stringify(findPayload),
-    muteHttpExceptions: true
-  };
+    const result = mongoFindOne(filter, projection); // eslint-disable-line no-undef
 
-  try {
-    const response = UrlFetchApp.fetch(findUrl, options);
-    const result = JSON.parse(response.getContentText());
-
-    if (result.document?.rates?.[standardDate]?.[`${fromCurrency}_${toCurrency}`]) {
-      return result.document.rates[standardDate][`${fromCurrency}_${toCurrency}`].rate;
+    if (result?.rates?.[standardDate]?.[`${fromCurrency}_${toCurrency}`]) {
+      return result.rates[standardDate][`${fromCurrency}_${toCurrency}`].rate;
     }
-    return null; // Not found in MongoDB
+    return null;
+
   } catch (error) {
     console.error("Failed to query MongoDB:", error.toString());
     return null;
