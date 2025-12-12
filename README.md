@@ -66,10 +66,12 @@ This repository contains three separate Google Apps Script projects synced via c
 - **Analytics**: Two types of analytics are collected:
   - **Marketplace analytics**: Daily marketplace metrics stored in spreadsheet with duplicate prevention
     - Install count, review count, and average rating tracked via `src/analytics/MarketplaceTracker.js`
-  - **User interaction analytics**: Event tracking via Mixpanel using spreadsheet-based identities
-    - Each spreadsheet gets a unique `distinct_id` generated from MD5 hash of spreadsheet ID
+  - **User interaction analytics**: Event tracking via Mixpanel using user-based identities
+    - `distinct_id` is MD5 hash of user email (format: `user_[hash]`)
+    - `spreadsheet_id` property tracks which spreadsheet (format: `sheet_[hash]`)
     - Events tracked include sidebar opens, conversions, and feature usage
-    - Note: Mixpanel's "sessions" actually represent individual spreadsheets, not user sessions
+    - Only users with available email addresses are tracked (no fallback/fake data)
+    - Sessions represent individual users, not spreadsheets
 
 # Key Script Properties
 
