@@ -1,4 +1,16 @@
 function onInstall(e) {
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const productId = props.getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID');
+    const isPremium = isUserSubscribed(productId);
+
+    Analytics.getInstance().track('Add-on Installed', {
+      is_premium: isPremium
+    });
+  } catch (error) {
+    console.log('Analytics tracking failed in onInstall:', error);
+  }
+
   onOpen(e);
 }
 
