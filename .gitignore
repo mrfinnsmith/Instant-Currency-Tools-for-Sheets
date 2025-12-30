@@ -6,6 +6,10 @@ node_modules/
 package-lock.json
 package.json
 !cloud-function/package.json
+!heroku-backend/package.json
+!heroku-backend/package-lock.json
+heroku-backend/.env
+heroku-backend/node_modules/
 firebase-project/
 firebaseStuff.js
 secrets/
