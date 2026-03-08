@@ -105,8 +105,7 @@ class CurrencyRateService {
     // Try MongoDB
     const mongoRate = getRateFromMongoDB(fromCurrency, toCurrency, date);
     if (mongoRate) {
-      // Store in cache
-      getScriptCache().put(cacheKey, rate.toString(), 21600)
+      getScriptCache().put(cacheKey, mongoRate.toString(), 21600);
       return mongoRate;
     }
 
@@ -159,18 +158,19 @@ function buildApiUrl(fromCurrency, toCurrency, date) {
 
 function getRateFromMongoDB(fromCurrency, toCurrency, date) {
   const standardDate = date.split('T')[0];
+  const props = getMongoDBProperties();
 
   try {
     const filter = {
-      "_id": "exchange_rates",
+      "_id": { "$oid": props.ecbRatesDocumentId },
       [`rates.${standardDate}.${fromCurrency}_${toCurrency}`]: { $exists: true }
     };
     const projection = { [`rates.${standardDate}.${fromCurrency}_${toCurrency}.rate`]: 1 };
 
-    const result = mongoFindOne(filter, projection); // eslint-disable-line no-undef
+    const document = mongoFindOne(filter, projection); // eslint-disable-line no-undef
 
-    if (result?.rates?.[standardDate]?.[`${fromCurrency}_${toCurrency}`]) {
-      return result.rates[standardDate][`${fromCurrency}_${toCurrency}`].rate;
+    if (document?.rates?.[standardDate]?.[`${fromCurrency}_${toCurrency}`]) {
+      return document.rates[standardDate][`${fromCurrency}_${toCurrency}`].rate;
     }
     return null;
 
@@ -219,42 +219,23 @@ function getCurrencyFormat(currencyString) {
 }
 
 function loadLatestRatesToCache() {
-  // Get the latest date from MongoDB
   const latestDate = getLatestDateInRates();
   if (!latestDate) {
     return null;
   }
 
-  // Standardize date format
   const standardDate = latestDate.split('T')[0];
-
   const props = getMongoDBProperties();
-  const findUrl = `${props.baseUrl}/action/findOne`;
-
-  const findPayload = {
-    dataSource: props.clusterName,
-    database: props.dbName,
-    collection: props.ratesCollectionName,
-    filter: { "_id": props.ecbRatesDocumentId },
-    projection: { [`rates.${standardDate}`]: 1 }
-  };
-
-  const options = {
-    method: "post",
-    contentType: "application/json",
-    headers: { "api-key": props.apiKey },
-    payload: JSON.stringify(findPayload),
-    muteHttpExceptions: true
-  };
 
   try {
-    const response = UrlFetchApp.fetch(findUrl, options);
-    const result = JSON.parse(response.getContentText());
+    const filter = { "_id": { "$oid": props.ecbRatesDocumentId } };
+    const projection = { [`rates.${standardDate}`]: 1 };
 
-    if (result.document?.rates?.[standardDate]) {
-      const ratePairs = result.document.rates[standardDate];
+    const document = mongoFindOne(filter, projection); // eslint-disable-line no-undef
 
-      // Load each rate into cache with 21600 seconds (6 hours) expiration for consistency
+    if (document?.rates?.[standardDate]) {
+      const ratePairs = document.rates[standardDate];
+
       for (const pairKey in ratePairs) {
         const rate = ratePairs[pairKey].rate;
         const [fromCurrency, toCurrency] = pairKey.split('_');

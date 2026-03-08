@@ -38,25 +38,12 @@ function storeRateInMongoDB(from, to, rate, date) {
 
 function getLatestDateInRates() {
   const props = getMongoDBProperties();
-  const findUrl = props.baseUrl + "/action/find";
-
-  const findPayload = {
-    dataSource: props.clusterName,
-    database: props.dbName,
-    collection: props.ratesCollectionName
-  };
-
-  const options = {
-    method: "post",
-    contentType: "application/json",
-    headers: { "api-key": props.apiKey },
-    payload: JSON.stringify(findPayload)
-  };
 
   try {
-    const response = UrlFetchApp.fetch(findUrl, options);
-    const result = JSON.parse(response.getContentText());
-    const document = result.documents[0];
+    const filter = { "_id": { "$oid": props.ecbRatesDocumentId } };
+    const projection = { "rates": 1 };
+
+    const document = mongoFindOne(filter, projection); // eslint-disable-line no-undef
 
     if (document && document.rates) {
       const dates = Object.keys(document.rates);
