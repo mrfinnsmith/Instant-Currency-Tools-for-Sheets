@@ -19,3 +19,4 @@ CLAUDE.md
 cloud-function/.env
 cloud-function/node_modules/
 memos/
+.mcp.json
