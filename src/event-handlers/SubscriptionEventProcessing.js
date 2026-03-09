@@ -34,6 +34,46 @@ function doPost(e) {
     } else {
       console.log('No data extracted for logging or database update due to previous errors.');
     }
+
+  } else if (event.type == 'customer.subscription.deleted' || event.type == 'customer.subscription.updated') {
+    console.log('Processing ' + event.type + ' for subscription:', event.data.object.id);
+    console.log('Full event data:', JSON.stringify(event));
+
+    let subscription = event.data.object;
+    let status = subscription.status; // "canceled", "active", "past_due", etc.
+    let customerId = subscription.customer;
+
+    // Look up customer email from Stripe
+    let customer = fetchStripeCustomer(customerId);
+    if (!customer || !customer.email) {
+      console.error('Could not retrieve customer email for customer:', customerId);
+      return;
+    }
+
+    let newStatus = (status === 'active') ? 'active' : 'inactive';
+
+    // Process each item in the subscription
+    let items = subscription.items && subscription.items.data ? subscription.items.data : [];
+    items.forEach(function(item) {
+      let productId = item.price.product;
+      let productData = [{
+        productId: productId,
+        productName: item.price.nickname || '',
+        eventType: event.type,
+        email: customer.email,
+        customerId: customerId,
+        amount: item.price.unit_amount ? item.price.unit_amount / 100 : null,
+        currency: subscription.currency ? subscription.currency.toUpperCase() : null,
+        transactionDate: new Date(),
+        paymentMethod: null,
+        data: JSON.stringify(event)
+      }];
+
+      logCheckoutEventToSheet(productData);
+      updateSubscriptionSheetStatus(customer.email, productId, newStatus);
+      updateMongoDBSubscriptionStatus(customer.email, productId, customerId, newStatus);
+    });
+
   } else {
     console.log('Event type not handled:', event.type);
   }
@@ -150,6 +190,117 @@ function logCheckoutEventToSheet(productsData) {
       product.data
     ]);
   });
+}
+
+function fetchStripeCustomer(customerId) {
+  const stripeApiKey = scriptProperties.getProperty('STRIPE_API_KEY');
+  const url = 'https://api.stripe.com/v1/customers/' + customerId;
+
+  const options = {
+    method: 'get',
+    headers: {
+      'Authorization': 'Bearer ' + stripeApiKey,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    muteHttpExceptions: true
+  };
+
+  try {
+    const response = UrlFetchApp.fetch(url, options);
+    if (response.getResponseCode() === 200) {
+      return JSON.parse(response.getContentText());
+    } else {
+      console.error('Failed to fetch customer:', response.getContentText());
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching customer:', error.toString());
+    return null;
+  }
+}
+
+function updateSubscriptionSheetStatus(email, productId, status) {
+  const scriptProperties = PropertiesService.getScriptProperties();
+  const logSsId = scriptProperties.getProperty('LOG_SPREADSHEET_ID');
+  const subSheetId = scriptProperties.getProperty('SUBSCRIPTION-SHEET-ID');
+
+  const spreadsheet = SpreadsheetApp.openById(logSsId);
+  let subSheet;
+
+  const sheets = spreadsheet.getSheets();
+  sheets.forEach(sheet => {
+    if (sheet.getSheetId() == subSheetId) {
+      subSheet = sheet;
+    }
+  });
+
+  if (!subSheet) {
+    console.error("Subscription sheet not found.");
+    return;
+  }
+
+  const colIndex = getProductColumnIndex(subSheet, productId);
+  if (colIndex === -1) {
+    console.error("Product column not found for:", productId);
+    return;
+  }
+
+  const data = subSheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === email) {
+      subSheet.getRange(i + 1, colIndex + 1).setValue(status);
+      subSheet.getRange(i + 1, colIndex + 2).setValue(new Date().toISOString());
+      console.log('Updated sheet status for ' + email + ' to ' + status);
+      return;
+    }
+  }
+  console.log('Email not found in subscription sheet:', email);
+}
+
+function updateMongoDBSubscriptionStatus(email, productId, customerId, status) {
+  const scriptProperties = PropertiesService.getScriptProperties();
+  const baseUrl = scriptProperties.getProperty('mongoDbBaseUrl');
+  const apiKey = scriptProperties.getProperty('mongoDbApiKey');
+  const clusterName = scriptProperties.getProperty('mongoDbClusterName');
+  const dbName = scriptProperties.getProperty('mongoDbDatabaseName');
+  const collectionName = scriptProperties.getProperty('mongoDbSubcriptionCollectionName');
+  const updateUrl = baseUrl + "/action/updateOne";
+
+  let updatePayload = {
+    dataSource: clusterName,
+    database: dbName,
+    collection: collectionName,
+    filter: { "email": email },
+    update: {
+      $set: {
+        ["products." + productId + ".stripeCustomerId"]: customerId,
+        ["products." + productId + ".status"]: status,
+        ["products." + productId + ".lastUpdated"]: new Date().toISOString()
+      }
+    }
+  };
+
+  let options = {
+    method: 'post',
+    contentType: 'application/json',
+    headers: {
+      'api-key': apiKey
+    },
+    payload: JSON.stringify(updatePayload),
+    muteHttpExceptions: true
+  };
+
+  try {
+    let response = UrlFetchApp.fetch(updateUrl, options);
+    let responseData = JSON.parse(response.getContentText());
+    if (responseData.ok) {
+      console.log('MongoDB subscription status updated to ' + status + ' for ' + email);
+    } else {
+      console.log('MongoDB update failed, check filter and data.');
+    }
+  } catch (error) {
+    console.error('Failed to update MongoDB subscription status:', error.toString());
+  }
 }
 
 function fetchExpandedCheckoutSession(sessionId) {
