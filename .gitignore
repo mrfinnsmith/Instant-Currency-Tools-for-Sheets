@@ -20,3 +20,11 @@ cloud-function/.env
 cloud-function/node_modules/
 memos/
 .mcp.json
+imagesforclaude/
+src/site/node_modules/
+src/site/.next/
+src/site/.env
+src/site/.env.local
+src/site/package-lock.json
+GEMINI.md
+.gemini/

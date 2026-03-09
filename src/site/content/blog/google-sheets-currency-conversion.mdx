@@ -1,0 +1,134 @@
+---
+title: "Google Sheets Currency Conversion: Get Live Exchange Rates with One Formula"
+description: "Learn how to use the GOOGLEFINANCE formula for live currency conversion in Google Sheets, and discover a faster alternative."
+date: "2025-06-25"
+---
+
+If you deal with different currencies in Google Sheets, you know that it can be a pain to look up exchange rates, paste them into your spreadsheet, then calculate the converted value. Luckily, there's a formula that makes this much easier. The GOOGLEFINANCE formula, beyond providing real-time information about stocks, can also give you exchange rates for dozens of currencies.
+
+By the end of this tutorial, you'll know how to use the GOOGLEFINANCE formula for live currency conversion and format cells with proper currency symbols.
+
+## What is GOOGLEFINANCE?
+
+GOOGLEFINANCE is a formula built into Google Sheets that offers current and past information from Google Finance directly in your spreadsheet. You can look up market information, prices on specific stocks, and historical or current currency rates. It's all free within Google Sheets and requires just a few steps to set up.
+
+## Can I use GOOGLEFINANCE in Excel?
+
+No, GOOGLEFINANCE is limited to Google Sheets. Excel has its own currency and market look-up tools, and two systems won't work together. If you download a Google Sheets spreadsheet with a GOOGLEFINANCE formula as XLSX, that formula will break when you open it in Excel. Similarly, if you upload an XLSX with Excel's currency tools into Google Sheets, it will either break entirely or simply hard code the values, losing the live connection.
+
+## How to convert currencies with GOOGLEFINANCE: A step-by-step guide
+
+In this example, we'll assume that you're already using Google Sheets and have currency amounts that you want to convert. If you want to try this out with a test spreadsheet, just go to sheets.new to create a dummy spreadsheet. That creates a spreadsheet in whichever Google account you're currently logged into.
+
+We'll be using the example of converting British Pounds to US dollars, but we'll also show you how to convert other currencies.
+
+### Step 1: Decide where you want the converted currency
+
+In this example, imagine that we need to make an expense report for a trip to London. We've got a list of amounts in pounds in column B.
+
+The thing you need to know about the GOOGLEFINANCE formula is that it won't replace the pound amount with the converted value in dollars. Like any other Sheets formula, you have your inputs in one place, then you'll put the formula where you want the output.
+
+![Spreadsheet with expense amounts in pounds](/blog/image-1.png)
+
+In this case, it makes sense to have the dollar amounts right next to their equivalent pound values, so we'll put the formulas in column C.
+
+### Step 2: Build the formula
+
+The basic structure of a GOOGLEFINANCE currency formula is this:
+
+```
+=GOOGLEFINANCE("CURRENCY:[original currency][target currency]")
+```
+
+There's no space space anywhere in the formula. In our example, to get the exchange from pounds to dollars, we'd use this:
+
+```
+=GOOGLEFINANCE("CURRENCY:GBPUSD")
+```
+
+![GOOGLEFINANCE formula in Google Sheets](/blog/image-2.png)
+
+Notice a few things:
+
+- The formula uses three-letter codes for currencies, not their names. Wikipedia has a helpful list of all currencies that use these codes.
+- Everything is squished together. In the middle of the formula you have GBPUSD.
+
+This formula gives you the exchange rate. If that's all you want, great. But if you want to convert specific values, the way we have in our example, you'll need to incorporate those amounts. Here's what we put in C2 to get the value in B2 converted to dollars:
+
+```
+=GOOGLEFINANCE("CURRENCY:GBPUSD")*B2
+```
+
+![Formula multiplied by cell value](/blog/image-12.png)
+
+And that's it to get the converted value. If you need the reverse, from dollars to pounds, then you only need to reverse the two codes in the formula:
+
+```
+=GOOGLEFINANCE("CURRENCY:USDGBP")
+```
+
+### Step 3: Correct the formatting
+
+The GOOGLEFINANCE formula will only get you the value of a currency exchange rate, not the formatting. Once you've set up your formula, you'll have to change the formatting manually.
+
+If you're in the US, you'll see a little $ in the menu. Clicking that changes the format of whatever cell you have selected to dollars.
+
+![Currency formatting diagram](/blog/image-3.png)
+
+If you don't see that in the menu, or if you want a different currency format, click on Format in the menu, then Number, then Custom Currency.
+
+![Format menu in Google Sheets](/blog/image-4.png)
+
+That opens up a menu where you can choose exactly the currency format you want. Just click Apply when you've found it.
+
+![Custom currency format picker](/blog/image-5.png)
+
+### (Optional) Step 4: Replace your original values
+
+If you don't want to keep your original amounts (in our case, the values in pounds), you can paste the converted values where the original amounts are. But because your formula is based on the first values, just pasting them in will paste the formula, not the value. In our case, that means that the formula in B2 now points to A2, which causes an error.
+
+![Formula error when pasting](/blog/image-6.png)
+
+To get around this, you need to paste values. First, copy your converted values (in our case, C2). Next, select the range where you want the converted values. Right click, then choose Paste special, then Values only.
+
+![Paste special values only menu](/blog/image-7.png)
+
+That will replace the original amount with the converted amount. If you haven't fixed the formatting yet, you can do that after pasting. Also be sure to update any labeling on your spreadsheet. In our example, column B was originally labeled Expenses (Pounds), so we've changed it to be less specific.
+
+![Updated spreadsheet with converted values](/blog/image-13.png)
+
+## Issues with GOOGLEFINANCE for currency
+
+The GOOGLEFINANCE formula works great for most cases, but there are some things you should be aware of.
+
+### GOOGLEFINANCE uses the current exchange rate by default
+
+In our case, you'll notice that we didn't give the formula a date. That means that GOOGLEFINANCE will use whatever the current exchange rate is. If you leave it like that, it will display a new, updated value whenever Google Finance has a new rate.
+
+if you don't want the formula to update with a new value all the time, you need to hard code the date that it uses. The format for this is:
+
+```
+=INDEX(GOOGLEFINANCE("CURRENCY:[original currency][target currency]", "price", "YYYY-MM-DD"), 2, 2)
+```
+
+As you can guess, YYYY is the year, MM is the month, and DD is the day. If you want the exchange rate of pounds to dollars on June 23, 2025, your formula is:
+
+```
+=INDEX(GOOGLEFINANCE("CURRENCY:GBPUSD", "price", "2025-06-23"), 2, 2)
+```
+
+### GOOGLEFINANCE sometimes doesn't work
+
+Occasionally, the GOOGLEFINANCE formula will just fail for certain dates. It isn't clear why, and the issues normally resolve themselves after a day or so, but you may get an #N/A error.
+
+![N/A error in Google Sheets](/blog/image-11.png)
+
+### GOOGLEFINANCE doesn't update formatting
+
+In our example above, we did manual formatting to get around this. But if you have a lot of conversion to do, it can be a pain to construct the formula, then adjust the formatting.
+
+## Instant Currency: An Alternative to GOOGLEFINANCE
+
+Skip the multi-step GOOGLEFINANCE process entirely. [Instant Currency](https://workspace.google.com/marketplace/app/instant_currency/93228277435) converts currencies and formats cells in one click, with reliable historical rates that work even when Google's data fails.
+
+If you have any questions about converting currencies in Google Sheets, [drop us a line](/contact) — we'd love to help you figure it out!
