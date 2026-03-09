@@ -68,8 +68,9 @@ export default function Pricing() {
           <p className="mt-1 text-[13px] text-faint">Cancel anytime</p>
 
           <CheckoutButton />
+          <p className="mt-2 text-[12px] text-faint">Use the same email you use with Google Sheets.</p>
 
-          <ul className="mt-8 space-y-3">
+          <ul className="mt-6 space-y-3">
             {[
               "Everything in the free plan",
               "Historical exchange rates for any date",
@@ -90,7 +91,7 @@ export default function Pricing() {
       <section className="border-t border-rule py-10">
         <p className="text-[13px] text-faint">
           Already subscribed?{" "}
-          <a href="/api/portal" className="text-teal hover:text-teal-dark underline underline-offset-2">
+          <a href="https://billing.stripe.com/p/login/3cI00idzqeHZ8NT2MRfMA00" className="text-teal hover:text-teal-dark underline underline-offset-2">
             Manage your subscription
           </a>
         </p>
