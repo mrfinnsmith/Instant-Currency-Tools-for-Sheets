@@ -27,6 +27,9 @@ export const metadata: Metadata = {
   description:
     "Convert currencies in Google Sheets with a single click. No formulas, no copy-pasting, no formatting hassle.",
   metadataBase: new URL("https://instantcurrency.tools"),
+  icons: {
+    icon: "/favicon.ico",
+  },
   openGraph: {
     title: "Instant Currency — Currency Conversion for Google Sheets",
     description:
@@ -44,9 +47,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-      </head>
       <body
         className={`${sourceSerif.variable} ${ibmPlex.variable} antialiased`}
       >
