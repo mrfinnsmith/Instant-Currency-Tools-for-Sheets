@@ -26,6 +26,7 @@ export const metadata: Metadata = {
   },
   description:
     "Convert currencies in Google Sheets with a single click. No formulas, no copy-pasting, no formatting hassle.",
+  icons: { icon: "/favicon.ico" },
   metadataBase: new URL("https://instantcurrency.tools"),
   openGraph: {
     title: "Instant Currency — Currency Conversion for Google Sheets",
