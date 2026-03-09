@@ -13,7 +13,7 @@ export async function POST() {
         },
       ],
       mode: "subscription",
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/pricing?success=true`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/pricing/success`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/pricing`,
     });
 
