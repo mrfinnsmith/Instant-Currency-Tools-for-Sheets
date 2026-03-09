@@ -1,8 +1,6 @@
 function onInstall(e) {
   try {
-    const props = PropertiesService.getScriptProperties();
-    const productId = props.getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID');
-    const isPremium = isUserSubscribed(productId);
+    const isPremium = isUserSubscribed();
 
     Analytics.getInstance().track('Add-on Installed', {
       is_premium: isPremium
@@ -91,9 +89,7 @@ function showAboutPrompt() {
 function openCurrencySidebar() {
   const latestDate = loadLatestRatesToCache();
 
-  const props = PropertiesService.getScriptProperties();
-  const productId = props.getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID');
-  const isPremium = isUserSubscribed(productId);
+  const isPremium = isUserSubscribed();
 
   try {
     Analytics.getInstance().track('Sidebar Opened', {
@@ -130,7 +126,7 @@ function showRateInfoModal() {
 }
 
 function checkMembershipStatus() {
-  const isPremium = isUserSubscribed(PropertiesService.getScriptProperties().getProperty('STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID'));
+  const isPremium = isUserSubscribed();
   const ui = SpreadsheetApp.getUi();
 
   if (isPremium) {
