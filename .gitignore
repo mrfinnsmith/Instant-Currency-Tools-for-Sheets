@@ -29,3 +29,4 @@ src/site/.env.local
 src/site/package-lock.json
 GEMINI.md
 .gemini/
+.vercel
