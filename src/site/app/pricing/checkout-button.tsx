@@ -12,6 +12,8 @@ export function CheckoutButton() {
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        setLoading(false);
       }
     } catch {
       setLoading(false);
