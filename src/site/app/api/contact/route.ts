@@ -23,11 +23,11 @@ export async function POST(request: Request) {
           Authorization: `Bearer ${resendKey}`,
         },
         body: JSON.stringify({
-          from: "Instant Currency <noreply@instantcurrency.tools>",
-          to: "hi@instantcurrency.tools",
-          subject: `Contact form: ${name}`,
+          from: "onboarding@resend.dev",
+          to: "finnbarsmith@gmail.com",
+          subject: `[Instant Currency] ${name}`,
           reply_to: email,
-          text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+          text: `New message from instantcurrency.tools/contact\n\nName: ${name}\nEmail: ${email}\n\n${message}`,
         }),
       });
 
