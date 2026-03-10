@@ -5,15 +5,15 @@ function getCache() {
 function checkSubscriptionCache(email) {
   const cacheKey = "sub-" + email;
   const cached = getCache().get(cacheKey);
-  if (cached !== null) {
-    return cached === "true";
+  if (cached === "true") {
+    return true;
   }
   return null;
 }
 
-function cacheSubscriptionStatus(email, isActive) {
+function cacheSubscriptionStatus(email) {
   const cacheKey = "sub-" + email;
-  getCache().put(cacheKey, isActive ? "true" : "false", 21600);
+  getCache().put(cacheKey, "true", 21600);
 }
 
 function checkStripeSubscriptionStatus(email) {
@@ -67,8 +67,25 @@ function checkStripeSubscriptionStatus(email) {
   }
 }
 
+function getUserEmail() {
+  var email = Session.getActiveUser().getEmail();
+  if (email) return email;
+
+  try {
+    var token = ScriptApp.getIdentityToken();
+    if (token) {
+      var parts = token.split('.');
+      var payload = JSON.parse(Utilities.newBlob(Utilities.base64DecodeWebSafe(parts[1])).getDataAsString());
+      return payload.email || '';
+    }
+  } catch (e) {
+    console.error("Failed to get email from identity token:", e.toString());
+  }
+  return '';
+}
+
 function isUserSubscribed() {
-  const email = Session.getActiveUser().getEmail();
+  const email = getUserEmail();
   if (!email) {
     return false;
   }
@@ -80,7 +97,9 @@ function isUserSubscribed() {
     }
 
     var isActive = checkStripeSubscriptionStatus(email);
-    cacheSubscriptionStatus(email, isActive);
+    if (isActive) {
+      cacheSubscriptionStatus(email);
+    }
     return isActive;
   } catch (error) {
     console.error("Subscription check error:", error.toString());

@@ -164,7 +164,7 @@ const Analytics = (() => {
 
     getUserId() {
       try {
-        const userEmail = Session.getActiveUser().getEmail();
+        const userEmail = getUserEmail();
         if (!userEmail) {
           return null; // No fake user data
         }
