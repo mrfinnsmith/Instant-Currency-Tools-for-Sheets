@@ -52,16 +52,12 @@ function validateAndGetActualDate(selectedDate, latestAvailableDate) {
 }
 
 function applyHardcodedConversion(range, fromCurrency, toCurrency, date) {
-  try {
-    const conversionRate = getConversionRate(fromCurrency, toCurrency, date);
-    const values = range.getValues();
-    const updatedValues = values.map(row =>
-      row.map(cell => typeof cell === 'number' ? cell * conversionRate : cell)
-    );
-    range.setValues(updatedValues);
-  } catch (error) {
-    // Error already shown to user by getConversionRate
-  }
+  const conversionRate = getConversionRate(fromCurrency, toCurrency, date);
+  const values = range.getValues();
+  const updatedValues = values.map(row =>
+    row.map(cell => typeof cell === 'number' ? cell * conversionRate : cell)
+  );
+  range.setValues(updatedValues);
 }
 
 function applyFormulaConversion(range, fromCurrency, toCurrency, date) {
@@ -143,8 +139,13 @@ function getConversionRate(fromCurrencyCode, toCurrencyCode, date) {
       day: 'numeric',
       year: 'numeric'
     });
-    SpreadsheetApp.getActiveSpreadsheet().toast(`Rate not available for ${formattedDate}. Try a different date.`, "Currency Conversion Error");
-    throw new Error(`Rate not available for ${formattedDate}`);
+    SpreadsheetApp.getActiveSpreadsheet().toast(
+      `Conversion failed for ${fromCurrencyCode} to ${toCurrencyCode} on ${formattedDate}. Please try again or select a different date.`,
+      "Conversion Failed"
+    );
+    const error = new Error(`Rate unavailable: ${fromCurrencyCode}->${toCurrencyCode} on ${date}`);
+    console.error(error);
+    throw error;
   }
 
   return rate;
