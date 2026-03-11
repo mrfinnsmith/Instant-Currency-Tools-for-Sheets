@@ -11,6 +11,10 @@
     "success": {
       "title": "Proへようこそ — Instant Currency",
       "description": "Instant Currency Proサブスクリプションが有効になりました。"
+    },
+    "contact": {
+      "title": "お問い合わせ — Instant Currency",
+      "description": "Instant Currencyチームへのお問い合わせはこちらから。"
     }
   },
   "header": {
@@ -116,6 +120,23 @@
     "manage": {
       "text": "サブスクリプションの管理が必要ですか？",
       "link": "請求ポータルを開く"
+    }
+  },
+  "contact": {
+    "label": "お問い合わせ",
+    "title": "ご連絡ください",
+    "subtitle": "ご質問、不具合の報告、機能のリクエストなど、お気軽にメッセージをお送りください。折り返しご連絡いたします。",
+    "form": {
+      "name": "お名前",
+      "email": "メールアドレス",
+      "message": "メッセージ",
+      "send": "送信する",
+      "sending": "送信中...",
+      "error": "送信に失敗しました。もう一度お試しください。"
+    },
+    "sent": {
+      "title": "送信完了",
+      "body": "折り返しご連絡いたします。"
     }
   }
 }

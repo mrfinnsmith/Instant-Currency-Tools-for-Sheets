@@ -2,7 +2,24 @@
 
 import { useState, type FormEvent } from "react";
 
-export function ContactForm({ locale }: { locale: string }) {
+interface ContactFormLabels {
+  name: string;
+  email: string;
+  message: string;
+  send: string;
+  sending: string;
+  error: string;
+  sentTitle: string;
+  sentBody: string;
+}
+
+export function ContactForm({
+  locale,
+  labels,
+}: {
+  locale: string;
+  labels: ContactFormLabels;
+}) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -37,8 +54,8 @@ export function ContactForm({ locale }: { locale: string }) {
   if (status === "sent") {
     return (
       <div className="rounded-xl border border-teal/20 bg-teal-light p-8">
-        <p className="text-[15px] font-600 text-fg">Message sent.</p>
-        <p className="mt-2 text-[14px] text-muted">We&apos;ll get back to you soon.</p>
+        <p className="text-[15px] font-600 text-fg">{labels.sentTitle}</p>
+        <p className="mt-2 text-[14px] text-muted">{labels.sentBody}</p>
       </div>
     );
   }
@@ -49,20 +66,20 @@ export function ContactForm({ locale }: { locale: string }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label htmlFor="name" className="text-[14px] font-500 text-fg">Name</label>
+        <label htmlFor="name" className="text-[14px] font-500 text-fg">{labels.name}</label>
         <input type="text" id="name" name="name" required className={inputClass} />
       </div>
       <div>
-        <label htmlFor="email" className="text-[14px] font-500 text-fg">Email</label>
+        <label htmlFor="email" className="text-[14px] font-500 text-fg">{labels.email}</label>
         <input type="email" id="email" name="email" required className={inputClass} />
       </div>
       <div>
-        <label htmlFor="message" className="text-[14px] font-500 text-fg">Message</label>
+        <label htmlFor="message" className="text-[14px] font-500 text-fg">{labels.message}</label>
         <textarea id="message" name="message" required rows={5} className={`${inputClass} resize-none`} />
       </div>
 
       {status === "error" && (
-        <p className="text-[13px] text-red-600">Something went wrong. Please try again.</p>
+        <p className="text-[13px] text-red-600">{labels.error}</p>
       )}
 
       <button
@@ -70,7 +87,7 @@ export function ContactForm({ locale }: { locale: string }) {
         disabled={status === "sending"}
         className="rounded-lg bg-teal px-6 py-2.5 text-[14px] font-500 text-white shadow-sm shadow-teal/20 hover:bg-teal-dark transition-all duration-150 disabled:opacity-50"
       >
-        {status === "sending" ? "Sending..." : "Send message"}
+        {status === "sending" ? labels.sending : labels.send}
       </button>
     </form>
   );

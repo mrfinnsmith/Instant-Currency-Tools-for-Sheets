@@ -11,6 +11,10 @@
     "success": {
       "title": "Willkommen bei Pro — Instant Currency",
       "description": "Ihr Instant Currency Pro-Abonnement ist aktiv."
+    },
+    "contact": {
+      "title": "Kontakt — Instant Currency",
+      "description": "Nehmen Sie Kontakt mit dem Instant Currency Team auf."
     }
   },
   "header": {
@@ -116,6 +120,23 @@
     "manage": {
       "text": "Abonnement verwalten?",
       "link": "Abrechnungsportal öffnen"
+    }
+  },
+  "contact": {
+    "label": "Kontakt",
+    "title": "Schreiben Sie uns",
+    "subtitle": "Haben Sie eine Frage, einen Fehler gefunden oder einen Verbesserungsvorschlag? Senden Sie uns eine Nachricht und wir melden uns bei Ihnen.",
+    "form": {
+      "name": "Name",
+      "email": "E-Mail",
+      "message": "Nachricht",
+      "send": "Nachricht senden",
+      "sending": "Wird gesendet...",
+      "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut."
+    },
+    "sent": {
+      "title": "Nachricht gesendet.",
+      "body": "Wir melden uns in Kürze bei Ihnen."
     }
   }
 }

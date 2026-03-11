@@ -11,6 +11,10 @@
     "success": {
       "title": "Bienvenido a Pro — Instant Currency",
       "description": "Tu suscripción a Instant Currency Pro está activa."
+    },
+    "contact": {
+      "title": "Contacto — Instant Currency",
+      "description": "Ponte en contacto con el equipo de Instant Currency."
     }
   },
   "header": {
@@ -116,6 +120,23 @@
     "manage": {
       "text": "¿Necesitas administrar tu suscripción?",
       "link": "Abrir portal de facturación"
+    }
+  },
+  "contact": {
+    "label": "Contacto",
+    "title": "Escríbenos",
+    "subtitle": "¿Tienes una pregunta, un error que reportar o una idea para mejorar? Envíanos un mensaje y te responderemos pronto.",
+    "form": {
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "message": "Mensaje",
+      "send": "Enviar mensaje",
+      "sending": "Enviando...",
+      "error": "Algo salió mal. Por favor intenta de nuevo."
+    },
+    "sent": {
+      "title": "Mensaje enviado.",
+      "body": "Te responderemos pronto."
     }
   }
 }

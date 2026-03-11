@@ -11,6 +11,10 @@
     "success": {
       "title": "Bienvenue dans Pro — Instant Currency",
       "description": "Votre abonnement Instant Currency Pro est actif."
+    },
+    "contact": {
+      "title": "Contact — Instant Currency",
+      "description": "Contactez l'équipe Instant Currency."
     }
   },
   "header": {
@@ -116,6 +120,23 @@
     "manage": {
       "text": "Besoin de gérer votre abonnement ?",
       "link": "Ouvrir le portail de facturation"
+    }
+  },
+  "contact": {
+    "label": "Contact",
+    "title": "Écrivez-nous",
+    "subtitle": "Une question, un bug à signaler ou une suggestion ? Envoyez-nous un message et nous vous répondrons rapidement.",
+    "form": {
+      "name": "Nom",
+      "email": "E-mail",
+      "message": "Message",
+      "send": "Envoyer",
+      "sending": "Envoi en cours...",
+      "error": "Un problème est survenu. Veuillez réessayer."
+    },
+    "sent": {
+      "title": "Message envoyé.",
+      "body": "Nous vous répondrons dans les meilleurs délais."
     }
   }
 }
