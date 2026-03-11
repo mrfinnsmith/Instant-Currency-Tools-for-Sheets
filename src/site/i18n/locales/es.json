@@ -3,6 +3,14 @@
     "home": {
       "title": "Instant Currency — Conversión de divisas para Hojas de cálculo de Google",
       "description": "Convierte divisas en Hojas de cálculo de Google con un solo clic. Sin fórmulas, sin copiar y pegar, sin problemas de formato."
+    },
+    "pricing": {
+      "title": "Precios — Instant Currency",
+      "description": "Instant Currency es gratis para siempre. Pasa a Pro para obtener tasas históricas y soporte prioritario."
+    },
+    "success": {
+      "title": "Bienvenido a Pro — Instant Currency",
+      "description": "Tu suscripción a Instant Currency Pro está activa."
     }
   },
   "header": {
@@ -64,6 +72,50 @@
       "title": "Prueba Instant Currency",
       "body": "Instala desde Google Workspace Marketplace. Gratis, sin cuenta ni registro. Convierte tu primera celda en menos de un minuto.",
       "button": "Instalar para Hojas de cálculo de Google"
+    }
+  },
+  "pricing": {
+    "label": "Precios",
+    "title": "Gratis, sin límites de conversión",
+    "subtitle": "El complemento base es completamente gratis. Pro agrega tipos de cambio históricos y soporte prioritario por $5/mes, cancela cuando quieras.",
+    "free": {
+      "tier": "Gratis",
+      "note": "Sin límites, sin fecha de vencimiento",
+      "button": "Instalar gratis",
+      "feature1": "Conversión de divisas con un clic",
+      "feature2": "Más de 160 divisas disponibles",
+      "feature3": "Valores fijos, no fórmulas",
+      "feature4": "Formato de divisa automático",
+      "feature5": "Convierte celdas seleccionadas u hojas completas"
+    },
+    "pro": {
+      "tier": "Pro",
+      "perMonth": "/mes",
+      "note": "Cancela cuando quieras",
+      "button": "Suscribirse a Pro",
+      "buttonLoading": "Redirigiendo...",
+      "emailHint": "Usa el mismo correo que usas con Hojas de cálculo de Google.",
+      "feature1": "Todo lo del plan gratuito",
+      "feature2": "Tipos de cambio históricos para cualquier fecha",
+      "feature3": "Soporte prioritario",
+      "feature4": "Más funciones próximamente"
+    },
+    "manage": {
+      "text": "¿Ya tienes suscripción?",
+      "link": "Administrar tu suscripción"
+    }
+  },
+  "success": {
+    "title": "Todo listo",
+    "subtitle": "Tu suscripción a Pro está activa. Los tipos de cambio históricos y el soporte prioritario ya están disponibles.",
+    "gettingStarted": "Para comenzar",
+    "step1": "Regresa a tu hoja de cálculo en Hojas de cálculo de Google",
+    "step2": "Cierra la barra lateral de Instant Currency si está abierta",
+    "step3": "Vuelve a abrirla desde Extensiones \u2192 Instant Currency \u2192 Open sidebar",
+    "step4": "El selector de fecha para tasas históricas estará habilitado",
+    "manage": {
+      "text": "¿Necesitas administrar tu suscripción?",
+      "link": "Abrir portal de facturación"
     }
   }
 }

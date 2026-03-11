@@ -3,6 +3,14 @@
     "home": {
       "title": "Instant Currency — Currency Conversion for Google Sheets",
       "description": "Convert currencies in Google Sheets with a single click. No formulas, no copy-pasting, no formatting hassle."
+    },
+    "pricing": {
+      "title": "Pricing — Instant Currency",
+      "description": "Instant Currency is free forever. Upgrade to Pro for historical rates and premium support."
+    },
+    "success": {
+      "title": "Welcome to Pro — Instant Currency",
+      "description": "Your Instant Currency Pro subscription is active."
     }
   },
   "header": {
@@ -64,6 +72,50 @@
       "title": "Try Instant Currency",
       "body": "Install from the Google Workspace Marketplace. Free with no account or sign-up required. Convert your first cell in under a minute.",
       "button": "Install for Google Sheets"
+    }
+  },
+  "pricing": {
+    "label": "Pricing",
+    "title": "Free to use, with no conversion limits",
+    "subtitle": "The core add-on is completely free. Pro adds historical exchange rates and priority support for $5/month, cancel anytime.",
+    "free": {
+      "tier": "Free",
+      "note": "No limits, no expiration",
+      "button": "Install free",
+      "feature1": "One-click currency conversion",
+      "feature2": "160+ currencies supported",
+      "feature3": "Hardcoded values, not formulas",
+      "feature4": "Automatic currency formatting",
+      "feature5": "Convert selected cells or entire sheets"
+    },
+    "pro": {
+      "tier": "Pro",
+      "perMonth": "/mo",
+      "note": "Cancel anytime",
+      "button": "Upgrade to Pro",
+      "buttonLoading": "Redirecting...",
+      "emailHint": "Use the same email you use with Google Sheets.",
+      "feature1": "Everything in the free plan",
+      "feature2": "Historical exchange rates for any date",
+      "feature3": "Priority support",
+      "feature4": "More features coming soon"
+    },
+    "manage": {
+      "text": "Already subscribed?",
+      "link": "Manage your subscription"
+    }
+  },
+  "success": {
+    "title": "You're all set",
+    "subtitle": "Your Pro subscription is active. Historical exchange rates and priority support are now available.",
+    "gettingStarted": "To get started",
+    "step1": "Go back to your Google Sheets spreadsheet",
+    "step2": "Close the Instant Currency sidebar if it's open",
+    "step3": "Reopen it from Extensions \u2192 Instant Currency \u2192 Open sidebar",
+    "step4": "The date picker for historical rates will now be enabled",
+    "manage": {
+      "text": "Need to manage your subscription?",
+      "link": "Open billing portal"
     }
   }
 }

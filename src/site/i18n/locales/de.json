@@ -3,6 +3,14 @@
     "home": {
       "title": "Instant Currency — Währungsumrechnung für Google Sheets",
       "description": "Rechnen Sie Währungen in Google Sheets mit einem Klick um. Keine Formeln, kein Kopieren, keine Formatierungsprobleme."
+    },
+    "pricing": {
+      "title": "Preise — Instant Currency",
+      "description": "Instant Currency ist für immer kostenlos. Upgraden Sie auf Pro für historische Kurse und bevorzugten Support."
+    },
+    "success": {
+      "title": "Willkommen bei Pro — Instant Currency",
+      "description": "Ihr Instant Currency Pro-Abonnement ist aktiv."
     }
   },
   "header": {
@@ -64,6 +72,50 @@
       "title": "Testen Sie Instant Currency",
       "body": "Installieren Sie es über den Google Workspace Marketplace. Kostenlos, ohne Konto und ohne Registrierung. Rechnen Sie Ihre erste Zelle in unter einer Minute um.",
       "button": "Für Google Sheets installieren"
+    }
+  },
+  "pricing": {
+    "label": "Preise",
+    "title": "Kostenlos, ohne Konvertierungslimits",
+    "subtitle": "Das Basis-Add-on ist völlig kostenlos. Pro bietet historische Wechselkurse und bevorzugten Support für 5 $/Monat, jederzeit kündbar.",
+    "free": {
+      "tier": "Kostenlos",
+      "note": "Ohne Limits, ohne Ablaufdatum",
+      "button": "Kostenlos installieren",
+      "feature1": "Währungsumrechnung mit einem Klick",
+      "feature2": "Über 160 Währungen unterstützt",
+      "feature3": "Feste Werte statt Formeln",
+      "feature4": "Automatische Währungsformatierung",
+      "feature5": "Ausgewählte Zellen oder ganze Blätter umrechnen"
+    },
+    "pro": {
+      "tier": "Pro",
+      "perMonth": "/Monat",
+      "note": "Jederzeit kündbar",
+      "button": "Auf Pro upgraden",
+      "buttonLoading": "Weiterleitung...",
+      "emailHint": "Verwenden Sie dieselbe E-Mail-Adresse wie für Google Sheets.",
+      "feature1": "Alles aus dem kostenlosen Plan",
+      "feature2": "Historische Wechselkurse für jedes Datum",
+      "feature3": "Bevorzugter Support",
+      "feature4": "Weitere Funktionen in Kürze"
+    },
+    "manage": {
+      "text": "Bereits abonniert?",
+      "link": "Abonnement verwalten"
+    }
+  },
+  "success": {
+    "title": "Alles bereit",
+    "subtitle": "Ihr Pro-Abonnement ist aktiv. Historische Wechselkurse und bevorzugter Support stehen jetzt zur Verfügung.",
+    "gettingStarted": "So starten Sie",
+    "step1": "Gehen Sie zurück zu Ihrem Google Sheets Dokument",
+    "step2": "Schließen Sie die Instant Currency Seitenleiste, falls sie geöffnet ist",
+    "step3": "Öffnen Sie sie erneut über Erweiterungen \u2192 Instant Currency \u2192 Open sidebar",
+    "step4": "Die Datumsauswahl für historische Kurse ist jetzt verfügbar",
+    "manage": {
+      "text": "Abonnement verwalten?",
+      "link": "Abrechnungsportal öffnen"
     }
   }
 }

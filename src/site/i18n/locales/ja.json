@@ -3,6 +3,14 @@
     "home": {
       "title": "Instant Currency — Google スプレッドシートの通貨換算アドオン",
       "description": "Google スプレッドシートでワンクリック通貨換算。数式不要、コピペ不要、書式設定の手間もなし。"
+    },
+    "pricing": {
+      "title": "料金プラン — Instant Currency",
+      "description": "Instant Currencyはずっと無料。Proにアップグレードすると過去の為替レートや優先サポートが利用可能に。"
+    },
+    "success": {
+      "title": "Proへようこそ — Instant Currency",
+      "description": "Instant Currency Proサブスクリプションが有効になりました。"
     }
   },
   "header": {
@@ -64,6 +72,50 @@
       "title": "Instant Currencyを試す",
       "body": "Google Workspace Marketplaceからインストール。無料、アカウント登録不要。1分以内に最初のセルを換算できます。",
       "button": "Google スプレッドシートにインストール"
+    }
+  },
+  "pricing": {
+    "label": "料金",
+    "title": "無料で使える、換算回数の制限なし",
+    "subtitle": "基本アドオンは完全無料です。Proでは過去の為替レートと優先サポートが月額$5で利用可能。いつでも解約できます。",
+    "free": {
+      "tier": "無料",
+      "note": "制限なし、有効期限なし",
+      "button": "無料でインストール",
+      "feature1": "ワンクリックで通貨換算",
+      "feature2": "160以上の通貨に対応",
+      "feature3": "数式ではなく確定値を入力",
+      "feature4": "通貨書式の自動適用",
+      "feature5": "選択セルまたはシート全体を換算"
+    },
+    "pro": {
+      "tier": "Pro",
+      "perMonth": "/月",
+      "note": "いつでも解約可能",
+      "button": "Proにアップグレード",
+      "buttonLoading": "リダイレクト中...",
+      "emailHint": "Google スプレッドシートで使用しているメールアドレスを入力してください。",
+      "feature1": "無料プランの全機能",
+      "feature2": "任意の日付の過去の為替レート",
+      "feature3": "優先サポート",
+      "feature4": "今後さらに機能追加予定"
+    },
+    "manage": {
+      "text": "すでにご契約中ですか？",
+      "link": "サブスクリプションを管理"
+    }
+  },
+  "success": {
+    "title": "準備完了",
+    "subtitle": "Proサブスクリプションが有効になりました。過去の為替レートと優先サポートをご利用いただけます。",
+    "gettingStarted": "はじめに",
+    "step1": "Google スプレッドシートに戻ります",
+    "step2": "Instant Currencyのサイドバーが開いている場合は閉じます",
+    "step3": "拡張機能 \u2192 Instant Currency \u2192 Open sidebar から再度開きます",
+    "step4": "過去のレート用の日付ピッカーが有効になっています",
+    "manage": {
+      "text": "サブスクリプションの管理が必要ですか？",
+      "link": "請求ポータルを開く"
     }
   }
 }

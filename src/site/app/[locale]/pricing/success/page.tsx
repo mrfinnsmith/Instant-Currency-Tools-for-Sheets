@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getLanguageAlternates } from "@/i18n/hreflang";
 import { ogLocales, type Locale } from "@/i18n/config";
+import { getMetadata } from "@/i18n/metadata";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export async function generateMetadata({
   params,
@@ -8,16 +10,17 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const meta = getMetadata(locale as Locale);
   return {
-    title: "Welcome to Pro",
-    description: "Your Instant Currency Pro subscription is active.",
+    title: meta.success.title,
+    description: meta.success.description,
     alternates: {
       canonical: `/${locale}/pricing/success`,
       languages: getLanguageAlternates("/pricing/success"),
     },
     openGraph: {
-      title: "Welcome to Pro",
-      description: "Your Instant Currency Pro subscription is active.",
+      title: meta.success.title,
+      description: meta.success.description,
       url: `https://instantcurrency.tools/${locale}/pricing/success`,
       locale: ogLocales[locale as Locale],
     },
@@ -27,7 +30,17 @@ export async function generateMetadata({
 const PORTAL_URL =
   "https://billing.stripe.com/p/login/3cI00idzqeHZ8NT2MRfMA00";
 
-export default async function Success() {
+export default async function Success({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "success" });
+
+  const steps = [t("step1"), t("step2"), t("step3"), t("step4")];
+
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
       <section className="pt-16 pb-6 md:pt-24 max-w-lg">
@@ -48,23 +61,17 @@ export default async function Success() {
         </div>
 
         <h1 className="mt-6 font-[family-name:var(--font-heading)] text-3xl font-700 text-fg md:text-4xl">
-          You&apos;re all set
+          {t("title")}
         </h1>
         <p className="mt-4 text-[15px] leading-[1.7] text-muted">
-          Your Pro subscription is active. Historical exchange rates and
-          priority support are now available.
+          {t("subtitle")}
         </p>
       </section>
 
       <section className="py-10 max-w-lg">
-        <h2 className="text-[14px] font-600 text-fg">To get started</h2>
+        <h2 className="text-[14px] font-600 text-fg">{t("gettingStarted")}</h2>
         <ol className="mt-4 space-y-4">
-          {[
-            "Go back to your Google Sheets spreadsheet",
-            "Close the Instant Currency sidebar if it\u2019s open",
-            "Reopen it from Extensions \u2192 Instant Currency \u2192 Open sidebar",
-            "The date picker for historical rates will now be enabled",
-          ].map((step, i) => (
+          {steps.map((step, i) => (
             <li
               key={i}
               className="flex items-start gap-3 text-[14px] text-muted"
@@ -80,12 +87,12 @@ export default async function Success() {
 
       <section className="border-t border-rule py-10">
         <p className="text-[13px] text-faint">
-          Need to manage your subscription?{" "}
+          {t("manage.text")}{" "}
           <a
             href={PORTAL_URL}
             className="text-teal hover:text-teal-dark underline underline-offset-2"
           >
-            Open billing portal
+            {t("manage.link")}
           </a>
         </p>
       </section>

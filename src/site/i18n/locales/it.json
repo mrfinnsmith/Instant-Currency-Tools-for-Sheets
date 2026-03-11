@@ -3,6 +3,14 @@
     "home": {
       "title": "Instant Currency — Conversione valute per Fogli Google",
       "description": "Converti le valute in Fogli Google con un solo clic. Niente formule, niente copia e incolla, niente problemi di formattazione."
+    },
+    "pricing": {
+      "title": "Prezzi — Instant Currency",
+      "description": "Instant Currency è gratis per sempre. Passa a Pro per tassi storici e supporto prioritario."
+    },
+    "success": {
+      "title": "Benvenuto in Pro — Instant Currency",
+      "description": "Il tuo abbonamento a Instant Currency Pro è attivo."
     }
   },
   "header": {
@@ -64,6 +72,50 @@
       "title": "Prova Instant Currency",
       "body": "Installa da Google Workspace Marketplace. Gratuito, senza account e senza registrazione. Converti la tua prima cella in meno di un minuto.",
       "button": "Installa per Fogli Google"
+    }
+  },
+  "pricing": {
+    "label": "Prezzi",
+    "title": "Gratis, senza limiti di conversione",
+    "subtitle": "Il componente aggiuntivo base è completamente gratuito. Pro aggiunge tassi di cambio storici e supporto prioritario a $5/mese, cancella quando vuoi.",
+    "free": {
+      "tier": "Gratis",
+      "note": "Senza limiti, senza scadenza",
+      "button": "Installa gratis",
+      "feature1": "Conversione valute con un clic",
+      "feature2": "Oltre 160 valute supportate",
+      "feature3": "Valori fissi, non formule",
+      "feature4": "Formattazione valuta automatica",
+      "feature5": "Converti celle selezionate o interi fogli"
+    },
+    "pro": {
+      "tier": "Pro",
+      "perMonth": "/mese",
+      "note": "Cancella quando vuoi",
+      "button": "Passa a Pro",
+      "buttonLoading": "Reindirizzamento...",
+      "emailHint": "Usa lo stesso indirizzo email che usi con Fogli Google.",
+      "feature1": "Tutto del piano gratuito",
+      "feature2": "Tassi di cambio storici per qualsiasi data",
+      "feature3": "Supporto prioritario",
+      "feature4": "Altre funzionalità in arrivo"
+    },
+    "manage": {
+      "text": "Già abbonato?",
+      "link": "Gestisci il tuo abbonamento"
+    }
+  },
+  "success": {
+    "title": "Tutto pronto",
+    "subtitle": "Il tuo abbonamento Pro è attivo. I tassi di cambio storici e il supporto prioritario sono ora disponibili.",
+    "gettingStarted": "Per iniziare",
+    "step1": "Torna al tuo foglio di calcolo in Fogli Google",
+    "step2": "Chiudi la barra laterale di Instant Currency se è aperta",
+    "step3": "Riaprila da Estensioni \u2192 Instant Currency \u2192 Open sidebar",
+    "step4": "Il selettore di date per i tassi storici sarà abilitato",
+    "manage": {
+      "text": "Devi gestire il tuo abbonamento?",
+      "link": "Apri il portale di fatturazione"
     }
   }
 }

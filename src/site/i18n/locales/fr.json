@@ -3,6 +3,14 @@
     "home": {
       "title": "Instant Currency — Conversion de devises pour Google Sheets",
       "description": "Convertissez des devises dans Google Sheets en un clic. Sans formules, sans copier-coller, sans souci de formatage."
+    },
+    "pricing": {
+      "title": "Tarifs — Instant Currency",
+      "description": "Instant Currency est gratuit pour toujours. Passez à Pro pour les taux historiques et le support prioritaire."
+    },
+    "success": {
+      "title": "Bienvenue dans Pro — Instant Currency",
+      "description": "Votre abonnement Instant Currency Pro est actif."
     }
   },
   "header": {
@@ -64,6 +72,50 @@
       "title": "Essayez Instant Currency",
       "body": "Installez depuis Google Workspace Marketplace. Gratuit, sans compte ni inscription. Convertissez votre première cellule en moins d'une minute.",
       "button": "Installer pour Google Sheets"
+    }
+  },
+  "pricing": {
+    "label": "Tarifs",
+    "title": "Gratuit, sans limite de conversions",
+    "subtitle": "Le module complémentaire de base est entièrement gratuit. Pro ajoute les taux de change historiques et le support prioritaire pour 5 $/mois, résiliable à tout moment.",
+    "free": {
+      "tier": "Gratuit",
+      "note": "Sans limite, sans expiration",
+      "button": "Installer gratuitement",
+      "feature1": "Conversion de devises en un clic",
+      "feature2": "Plus de 160 devises prises en charge",
+      "feature3": "Valeurs fixes, pas de formules",
+      "feature4": "Formatage automatique des devises",
+      "feature5": "Convertissez des cellules ou des feuilles entières"
+    },
+    "pro": {
+      "tier": "Pro",
+      "perMonth": "/mois",
+      "note": "Résiliable à tout moment",
+      "button": "Passer à Pro",
+      "buttonLoading": "Redirection...",
+      "emailHint": "Utilisez la même adresse e-mail que pour Google Sheets.",
+      "feature1": "Tout du plan gratuit",
+      "feature2": "Taux de change historiques pour toute date",
+      "feature3": "Support prioritaire",
+      "feature4": "D'autres fonctionnalités à venir"
+    },
+    "manage": {
+      "text": "Déjà abonné ?",
+      "link": "Gérer votre abonnement"
+    }
+  },
+  "success": {
+    "title": "Vous êtes prêt",
+    "subtitle": "Votre abonnement Pro est actif. Les taux de change historiques et le support prioritaire sont maintenant disponibles.",
+    "gettingStarted": "Pour commencer",
+    "step1": "Retournez dans votre feuille de calcul Google Sheets",
+    "step2": "Fermez le panneau latéral d'Instant Currency s'il est ouvert",
+    "step3": "Rouvrez-le depuis Extensions \u2192 Instant Currency \u2192 Open sidebar",
+    "step4": "Le sélecteur de date pour les taux historiques sera activé",
+    "manage": {
+      "text": "Besoin de gérer votre abonnement ?",
+      "link": "Ouvrir le portail de facturation"
     }
   }
 }
