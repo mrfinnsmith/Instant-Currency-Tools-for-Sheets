@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+# Pre-commit hook: lint + doc-staleness reminders
+
+set -euo pipefail
+
+SITE_DIR="src/site"
+STAGED=$(git diff --cached --name-only --diff-filter=ACM)
+
+# ── 1. Lint staged site files ──────────────────────────────────────────
+
+SITE_FILES=$(echo "$STAGED" | grep "^${SITE_DIR}/.*\.\(ts\|tsx\|js\|jsx\)$" || true)
+
+if [ -n "$SITE_FILES" ]; then
+  echo "Running lint..."
+  (cd "$SITE_DIR" && npm run lint --silent) || {
+    echo ""
+    echo "Lint failed. Fix errors before committing."
+    exit 1
+  }
+fi
+
+# ── 2. Doc-staleness reminders (non-blocking) ──────────────────────────
+
+WARNINGS=""
+
+# New or changed pages/routes
+ROUTE_CHANGES=$(echo "$STAGED" | grep "^${SITE_DIR}/app/\[locale\]/" || true)
+if [ -n "$ROUTE_CHANGES" ]; then
+  # Check if docs are also staged
+  README_STAGED=$(echo "$STAGED" | grep "^README.md$" || true)
+  LLMS_STAGED=$(echo "$STAGED" | grep "^${SITE_DIR}/public/llms.txt$" || true)
+
+  if [ -z "$README_STAGED" ]; then
+    WARNINGS="${WARNINGS}\n  - README.md"
+  fi
+  if [ -z "$LLMS_STAGED" ]; then
+    WARNINGS="${WARNINGS}\n  - src/site/public/llms.txt"
+  fi
+fi
+
+# Sitemap changes
+SITEMAP_CHANGED=$(echo "$STAGED" | grep "^${SITE_DIR}/app/sitemap.ts$" || true)
+if [ -n "$SITEMAP_CHANGED" ]; then
+  LLMS_STAGED=$(echo "$STAGED" | grep "^${SITE_DIR}/public/llms.txt$" || true)
+  if [ -z "$LLMS_STAGED" ]; then
+    WARNINGS="${WARNINGS}\n  - src/site/public/llms.txt (sitemap changed)"
+  fi
+fi
+
+if [ -n "$WARNINGS" ]; then
+  echo ""
+  echo "Reminder: routes or sitemap changed. Check if these need updating:"
+  echo -e "$WARNINGS"
+  echo ""
+fi
+
+exit 0
