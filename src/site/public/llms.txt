@@ -1,0 +1,30 @@
+# Instant Currency
+
+> Instant Currency is a Google Sheets add-on that converts currencies with one click. It writes plain values (not formulas) directly to cells and applies correct currency formatting automatically. 160+ currencies supported. Free tier available; Pro tier is $5/month for historical exchange rates and priority support. The site is available in English, Spanish, Italian, French, German, and Japanese.
+
+Instant Currency replaces manual GOOGLEFINANCE formulas with a sidebar interface that lets users select currencies, highlight cells, and convert in one click. Converted values are hardcoded numbers, so they never break when sheets are shared, copied, or exported. The add-on formats each currency correctly: zero decimals for yen, apostrophe separators for Swiss francs, and so on.
+
+Users can convert individual selections or toggle whole-sheet mode. A formula mode is also available for users who prefer live-updating GOOGLEFINANCE formulas instead of static values.
+
+Pro subscribers can convert at historical exchange rates for any past date.
+
+## Key pages
+
+- [Homepage](https://instantcurrency.tools/en): Product overview, feature highlights, and target use cases
+- [Pricing](https://instantcurrency.tools/en/pricing): Free vs Pro plan comparison and subscription checkout
+- [Blog](https://instantcurrency.tools/en/blog): Guides and tutorials for currency conversion in Google Sheets
+- [Google Sheets Currency Conversion Guide](https://instantcurrency.tools/en/blog/google-sheets-currency-conversion): How to use GOOGLEFINANCE for live exchange rates, and how Instant Currency simplifies the process
+- [Privacy Policy](https://instantcurrency.tools/en/privacy): Data collection, analytics, and Google API compliance
+- [Terms of Service](https://instantcurrency.tools/en/terms): Subscription terms, exchange rate disclaimers, and liability
+
+## Install
+
+- [Google Workspace Marketplace](https://workspace.google.com/marketplace/app/instant_currency/93228277435): Install the add-on for Google Sheets
+
+## Contact
+
+- [Contact form](https://instantcurrency.tools/en/contact): Reach the team at hi@instantcurrency.tools
+
+## Optional
+
+- [Blog post: Google Sheets Currency Conversion](https://instantcurrency.tools/en/blog/google-sheets-currency-conversion): In-depth tutorial on GOOGLEFINANCE formulas and currency conversion workflows
