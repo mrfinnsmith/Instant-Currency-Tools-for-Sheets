@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "home": {
+      "title": "Instant Currency — Währungsumrechnung für Google Sheets",
+      "description": "Rechnen Sie Währungen in Google Sheets mit einem Klick um. Keine Formeln, kein Kopieren, keine Formatierungsprobleme."
+    }
+  },
+  "header": {
+    "pricing": "Preise",
+    "blog": "Blog",
+    "contact": "Kontakt",
+    "installForSheets": "Für Sheets installieren",
+    "menu": "Menü",
+    "language": "Sprache"
+  },
+  "footer": {
+    "tagline": "Ein Google Sheets Add-on zur Währungsumrechnung. Kostenlos installierbar, kein Konto erforderlich.",
+    "product": "Produkt",
+    "marketplace": "Marketplace",
+    "support": "Support",
+    "privacyPolicy": "Datenschutzerklärung",
+    "copyright": "Instant Currency. Alle Rechte vorbehalten."
+  },
+  "home": {
+    "hero": {
+      "label": "Google Sheets Add-on",
+      "title": "Rechnen Sie Währungen in Ihrer Tabelle um, ganz ohne Aufwand",
+      "body": "Instant Currency schreibt die umgerechneten Werte direkt in Ihre Zellen mit korrekter Formatierung. Über 160 Währungen. Historische Kurse über Jahrzehnte zurück. Keine Formeln zu pflegen.",
+      "installFree": "Kostenlos installieren",
+      "viewPricing": "Preise ansehen",
+      "screenshotAlt": "Die Instant Currency Seitenleiste in Google Sheets, die USD-Beträge in mehrere Währungen umrechnet, darunter EUR, GBP, JPY, BRL, MXN und ILS"
+    },
+    "showcase": {
+      "formattingAlt": "Tabelle mit automatischer Währungsformatierung für Yen, Dollar, Rupien, Euro, Pfund, Schweizer Franken und Koreanischen Won",
+      "datePickerAlt": "Instant Currency Datumsauswahl für historische Wechselkurse, mit dem Kalender für Februar 2024"
+    },
+    "capabilities": {
+      "label": "Was Sie bekommen",
+      "title": "Alles, was die GOOGLEFINANCE-Funktion hätte sein sollen",
+      "valuesTitle": "Werte statt Formeln",
+      "valuesBody": "Umgerechnete Beträge werden als einfache Zahlen eingetragen. Sie aktualisieren sich nicht unbemerkt, erzeugen keine zufälligen Fehler und gehen nicht kaputt, wenn Sie ein Blatt kopieren.",
+      "formattingTitle": "Korrekte Währungsformatierung",
+      "formattingBody": "Yen ohne Dezimalstellen. Schweizer Franken mit Apostroph-Trennzeichen. Rupien im Lakh-System. Die Anzeigeregeln jeder Währung werden auf die Zelle angewendet.",
+      "currenciesTitle": "Über 160 Währungen",
+      "currenciesBody": "Alle wichtigen und die meisten kleineren Währungen. Wenn sie einen ISO-4217-Code und eine zuverlässige Wechselkursquelle hat, ist sie in der Liste.",
+      "historicalTitle": "Historische Wechselkurse",
+      "historicalBody": "Wählen Sie ein beliebiges Datum über Jahrzehnte zurück und rechnen Sie zum Kurs dieses Tages um. Nützlich für Spesenabrechnungen, Prüfungen und Rechnungsabstimmung.",
+      "sheetTitle": "Ganzes Blatt umrechnen",
+      "sheetBody": "Rechnen Sie eine Zellenauswahl um oder aktivieren Sie den Modus für das gesamte Blatt, um alle Werte auf einmal umzurechnen.",
+      "formulaTitle": "Google Finance Formelmodus",
+      "formulaBody": "Bevorzugen Sie Formeln, die sich laufend aktualisieren? Aktivieren Sie die GOOGLEFINANCE-Option, um Formeln statt fester Werte einzufügen."
+    },
+    "personas": {
+      "label": "Entwickelt für",
+      "title": "Menschen, die über Grenzen hinweg arbeiten",
+      "pmTitle": "Projektmanager",
+      "pmBody": "Budgets, Lieferantenangebote und Spesenabrechnungen kommen in verschiedenen Währungen. Sie brauchen alles in einer Basiswährung für das Stakeholder-Reporting. Das erledigt sich hier in Sekunden.",
+      "financeTitle": "Finanzteams",
+      "financeBody": "Monatsabschluss mit internationalen Tochtergesellschaften. Konsolidierung von Rechnungen, Gehältern und Lieferantenzahlungen in verschiedenen Währungen in einer einzigen Arbeitsmappe.",
+      "travelTitle": "Internationale Reisende",
+      "travelBody": "Reisekosten in verschiedenen Ländern erfassen. Kosten in lokaler Währung notieren und in Ihre Heimatwährung umrechnen, um die tatsächlichen Ausgaben zu sehen."
+    },
+    "cta": {
+      "title": "Testen Sie Instant Currency",
+      "body": "Installieren Sie es über den Google Workspace Marketplace. Kostenlos, ohne Konto und ohne Registrierung. Rechnen Sie Ihre erste Zelle in unter einer Minute um.",
+      "button": "Für Google Sheets installieren"
+    }
+  }
+}

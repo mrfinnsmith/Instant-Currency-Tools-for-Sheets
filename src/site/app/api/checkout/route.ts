@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
+    const body = await request.json().catch(() => ({}));
+    const locale = body.locale || "en";
     const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -13,8 +15,8 @@ export async function POST() {
         },
       ],
       mode: "subscription",
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/pricing/success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/pricing`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/${locale}/pricing/success`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/${locale}/pricing`,
     });
 
     return NextResponse.json({ url: session.url });

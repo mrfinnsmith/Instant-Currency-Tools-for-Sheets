@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "home": {
+      "title": "Instant Currency — Conversion de devises pour Google Sheets",
+      "description": "Convertissez des devises dans Google Sheets en un clic. Sans formules, sans copier-coller, sans souci de formatage."
+    }
+  },
+  "header": {
+    "pricing": "Tarifs",
+    "blog": "Blog",
+    "contact": "Contact",
+    "installForSheets": "Installer pour Sheets",
+    "menu": "Menu",
+    "language": "Langue"
+  },
+  "footer": {
+    "tagline": "Un module complémentaire Google Sheets pour la conversion de devises. Installation gratuite, aucun compte requis.",
+    "product": "Produit",
+    "marketplace": "Marketplace",
+    "support": "Assistance",
+    "privacyPolicy": "Politique de confidentialité",
+    "copyright": "Instant Currency. Tous droits réservés."
+  },
+  "home": {
+    "hero": {
+      "label": "Module complémentaire Google Sheets",
+      "title": "Convertissez les devises dans votre feuille de calcul sans effort",
+      "body": "Instant Currency inscrit les valeurs converties directement dans vos cellules avec le bon formatage. Plus de 160 devises. Taux de change historiques sur plusieurs décennies. Aucune formule à maintenir.",
+      "installFree": "Installer gratuitement",
+      "viewPricing": "Voir les tarifs",
+      "screenshotAlt": "Le panneau latéral d'Instant Currency ouvert dans Google Sheets, convertissant des montants en USD vers plusieurs devises dont EUR, GBP, JPY, BRL, MXN et ILS"
+    },
+    "showcase": {
+      "formattingAlt": "Feuille de calcul avec formatage automatique des devises pour le yen, le dollar, la roupie, l'euro, la livre sterling, le franc suisse et le won coréen",
+      "datePickerAlt": "Sélecteur de date d'Instant Currency pour choisir des taux de change historiques, affichant le calendrier de février 2024"
+    },
+    "capabilities": {
+      "label": "Ce que vous obtenez",
+      "title": "Tout ce que la fonction GOOGLEFINANCE aurait dû être",
+      "valuesTitle": "Des valeurs, pas des formules",
+      "valuesBody": "Les montants convertis sont inscrits sous forme de nombres simples. Ils ne se mettent pas à jour dans votre dos, ne génèrent pas d'erreurs aléatoires et ne cassent pas quand vous copiez une feuille.",
+      "formattingTitle": "Formatage correct des devises",
+      "formattingBody": "Le yen n'a pas de décimales. Le franc suisse utilise l'apostrophe comme séparateur. La roupie utilise le système lakh. Les règles d'affichage de chaque devise sont appliquées à la cellule.",
+      "currenciesTitle": "Plus de 160 devises",
+      "currenciesBody": "Toutes les devises majeures et la plupart des devises mineures. Si elle possède un code ISO 4217 et une source de taux fiable, elle figure dans la liste.",
+      "historicalTitle": "Taux de change historiques",
+      "historicalBody": "Choisissez n'importe quelle date sur plusieurs décennies et convertissez au taux du jour. Idéal pour les notes de frais, les audits et le rapprochement de factures.",
+      "sheetTitle": "Conversion de la feuille entière",
+      "sheetBody": "Convertissez une sélection de cellules ou activez le mode feuille entière pour convertir toutes les valeurs de la feuille active en une seule opération.",
+      "formulaTitle": "Mode formule Google Finance",
+      "formulaBody": "Vous préférez des formules qui se mettent à jour en temps réel ? Activez l'option GOOGLEFINANCE pour insérer des formules au lieu de valeurs fixes."
+    },
+    "personas": {
+      "label": "Conçu pour",
+      "title": "Ceux qui travaillent à l'international",
+      "pmTitle": "Chefs de projet",
+      "pmBody": "Budgets, devis fournisseurs et notes de frais arrivent dans différentes devises. Vous avez besoin de tout dans une seule devise de référence pour vos rapports. C'est fait en quelques secondes.",
+      "financeTitle": "Équipes financières",
+      "financeBody": "Clôture mensuelle avec des filiales internationales. Consolidation des factures, de la paie et des paiements fournisseurs en différentes devises dans un seul classeur.",
+      "travelTitle": "Voyageurs internationaux",
+      "travelBody": "Suivi des dépenses de voyage dans plusieurs pays. Enregistrez les coûts en devise locale et convertissez-les dans votre devise de référence pour voir vos dépenses réelles."
+    },
+    "cta": {
+      "title": "Essayez Instant Currency",
+      "body": "Installez depuis Google Workspace Marketplace. Gratuit, sans compte ni inscription. Convertissez votre première cellule en moins d'une minute.",
+      "button": "Installer pour Google Sheets"
+    }
+  }
+}

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { name, email, message } = await request.json();
+    const { name, email, message, locale } = await request.json();
 
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
           to: "finnbarsmith@gmail.com",
           subject: `[Instant Currency] ${name}`,
           reply_to: email,
-          text: `New message from instantcurrency.tools/contact\n\nName: ${name}\nEmail: ${email}\n\n${message}`,
+          text: `New message from instantcurrency.tools/contact\n\nName: ${name}\nEmail: ${email}\nLocale: ${locale || "en"}\n\n${message}`,
         }),
       });
 

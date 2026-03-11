@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "home": {
+      "title": "Instant Currency — Conversión de divisas para Hojas de cálculo de Google",
+      "description": "Convierte divisas en Hojas de cálculo de Google con un solo clic. Sin fórmulas, sin copiar y pegar, sin problemas de formato."
+    }
+  },
+  "header": {
+    "pricing": "Precios",
+    "blog": "Blog",
+    "contact": "Contacto",
+    "installForSheets": "Instalar para Hojas de cálculo",
+    "menu": "Menú",
+    "language": "Idioma"
+  },
+  "footer": {
+    "tagline": "Un complemento de Hojas de cálculo de Google para conversión de divisas. Instalación gratuita, sin necesidad de cuenta.",
+    "product": "Producto",
+    "marketplace": "Marketplace",
+    "support": "Soporte",
+    "privacyPolicy": "Política de privacidad",
+    "copyright": "Instant Currency. Todos los derechos reservados."
+  },
+  "home": {
+    "hero": {
+      "label": "Complemento para Hojas de cálculo de Google",
+      "title": "Convierte divisas en tu hoja de cálculo sin complicaciones",
+      "body": "Instant Currency escribe los valores convertidos directamente en tus celdas con el formato correcto. Más de 160 divisas. Tipos de cambio históricos de décadas anteriores. Sin fórmulas que mantener.",
+      "installFree": "Instalar gratis",
+      "viewPricing": "Ver precios",
+      "screenshotAlt": "La barra lateral de Instant Currency abierta en Hojas de cálculo de Google, convirtiendo montos en USD a varias divisas como EUR, GBP, JPY, BRL, MXN e ILS"
+    },
+    "showcase": {
+      "formattingAlt": "Hoja de cálculo con formato automático de divisas aplicado a yenes, dólares, rupias, euros, libras, francos suizos y won coreano",
+      "datePickerAlt": "Selector de fecha de Instant Currency para elegir tipos de cambio históricos, mostrando el calendario de febrero 2024"
+    },
+    "capabilities": {
+      "label": "Qué incluye",
+      "title": "Todo lo que la función GOOGLEFINANCE debió haber sido",
+      "valuesTitle": "Valores, no fórmulas",
+      "valuesBody": "Los montos convertidos se escriben como números simples. No se actualizan a tus espaldas, no generan errores aleatorios ni se rompen al copiar una hoja.",
+      "formattingTitle": "Formato de divisa correcto",
+      "formattingBody": "El yen no lleva decimales. Los francos suizos usan apóstrofos como separadores. Las rupias usan el sistema lakh. Las reglas de formato de cada divisa se aplican a la celda.",
+      "currenciesTitle": "Más de 160 divisas",
+      "currenciesBody": "Todas las divisas principales y la mayoría de las menores. Si tiene un código ISO 4217 y una fuente confiable de tipo de cambio, está en la lista.",
+      "historicalTitle": "Tipos de cambio históricos",
+      "historicalBody": "Elige cualquier fecha de décadas anteriores y convierte con el tipo de cambio de ese día. Ideal para reportes de gastos, auditorías y conciliación de facturas.",
+      "sheetTitle": "Conversión de hoja completa",
+      "sheetBody": "Convierte una selección de celdas o activa el modo de hoja completa para convertir todos los valores de la hoja activa de una sola vez.",
+      "formulaTitle": "Modo de fórmulas Google Finance",
+      "formulaBody": "¿Prefieres fórmulas que se actualicen en tiempo real? Activa la opción GOOGLEFINANCE para insertar fórmulas en lugar de valores fijos."
+    },
+    "personas": {
+      "label": "Diseñado para",
+      "title": "Personas que trabajan entre países",
+      "pmTitle": "Project managers",
+      "pmBody": "Presupuestos, cotizaciones de proveedores y reportes de gastos llegan en diferentes divisas. Necesitas todo en una sola divisa base para reportar a las partes interesadas. Esto lo resuelve en segundos.",
+      "financeTitle": "Equipos de finanzas",
+      "financeBody": "Cierre mensual con subsidiarias internacionales. Consolidación de facturas, nómina y pagos a proveedores en diferentes divisas en un solo libro de trabajo.",
+      "travelTitle": "Viajeros internacionales",
+      "travelBody": "Registro de gastos de viaje en varios países. Anota costos en moneda local y conviértelos a tu divisa base para ver el gasto real."
+    },
+    "cta": {
+      "title": "Prueba Instant Currency",
+      "body": "Instala desde Google Workspace Marketplace. Gratis, sin cuenta ni registro. Convierte tu primera celda en menos de un minuto.",
+      "button": "Instalar para Hojas de cálculo de Google"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "home": {
+      "title": "Instant Currency — Currency Conversion for Google Sheets",
+      "description": "Convert currencies in Google Sheets with a single click. No formulas, no copy-pasting, no formatting hassle."
+    }
+  },
+  "header": {
+    "pricing": "Pricing",
+    "blog": "Blog",
+    "contact": "Contact",
+    "installForSheets": "Install for Sheets",
+    "menu": "Menu",
+    "language": "Language"
+  },
+  "footer": {
+    "tagline": "A Google Sheets add-on for currency conversion. Free to install, no account needed.",
+    "product": "Product",
+    "marketplace": "Marketplace",
+    "support": "Support",
+    "privacyPolicy": "Privacy Policy",
+    "copyright": "Instant Currency. All rights reserved."
+  },
+  "home": {
+    "hero": {
+      "label": "Google Sheets Add-on",
+      "title": "Convert currencies in your spreadsheet without the busywork",
+      "body": "Instant Currency writes converted values directly into your cells with correct formatting. 160+ currencies. Historical rates going back decades. No formulas to maintain.",
+      "installFree": "Install free",
+      "viewPricing": "View pricing",
+      "screenshotAlt": "The Instant Currency sidebar open in Google Sheets, converting USD amounts to multiple currencies including EUR, GBP, JPY, BRL, MXN, and ILS"
+    },
+    "showcase": {
+      "formattingAlt": "Spreadsheet with automatic currency formatting applied to yen, dollars, rupees, euros, pounds, Swiss francs, and Korean won",
+      "datePickerAlt": "Instant Currency date picker for selecting historical exchange rates, showing February 2024 calendar"
+    },
+    "capabilities": {
+      "label": "What you get",
+      "title": "Everything the GOOGLEFINANCE function should have been",
+      "valuesTitle": "Values, not formulas",
+      "valuesBody": "Converted amounts are written as plain numbers. They don't update behind your back, error out randomly, or break when you copy a sheet.",
+      "formattingTitle": "Correct currency formatting",
+      "formattingBody": "Yen gets zero decimals. Swiss francs get apostrophe separators. Rupees use the lakh system. Each currency's display rules are applied to the cell.",
+      "currenciesTitle": "160+ currencies",
+      "currenciesBody": "Every major currency and most minor ones. If it has an ISO 4217 code and a reliable exchange rate source, it's in the list.",
+      "historicalTitle": "Historical rates",
+      "historicalBody": "Pick any date going back decades and convert at that day's exchange rate. Useful for expense reports, audits, and invoice reconciliation.",
+      "sheetTitle": "Entire sheet conversion",
+      "sheetBody": "Convert a selection of cells or toggle on whole-sheet mode to convert every value in the active sheet at once.",
+      "formulaTitle": "Google Finance formula mode",
+      "formulaBody": "Prefer live-updating formulas? Toggle the GOOGLEFINANCE option to insert formulas instead of hardcoded values."
+    },
+    "personas": {
+      "label": "Built for",
+      "title": "People who work across borders",
+      "pmTitle": "Project managers",
+      "pmBody": "Budgets, vendor quotes, and expense reports arrive in different currencies. You need everything in one base currency for stakeholder reporting. This does that in seconds.",
+      "financeTitle": "Finance teams",
+      "financeBody": "Month-end close with international subsidiaries. Consolidating invoices, payroll, and vendor payments across currencies into a single reporting workbook.",
+      "travelTitle": "International travelers",
+      "travelBody": "Tracking trip expenses across countries. Logging costs in local currencies and converting them to your home currency to see actual spending."
+    },
+    "cta": {
+      "title": "Try Instant Currency",
+      "body": "Install from the Google Workspace Marketplace. Free with no account or sign-up required. Convert your first cell in under a minute.",
+      "button": "Install for Google Sheets"
+    }
+  }
+}

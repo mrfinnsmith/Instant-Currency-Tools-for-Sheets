@@ -1,16 +1,42 @@
 import type { Metadata } from "next";
+import { getLanguageAlternates } from "@/i18n/hreflang";
+import { ogLocales, type Locale } from "@/i18n/config";
 import { CheckoutButton } from "./checkout-button";
 
-export const metadata: Metadata = {
-  title: "Pricing",
-  description:
-    "Instant Currency is free forever. Upgrade to Pro for historical rates and premium support.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Pricing",
+    description:
+      "Instant Currency is free forever. Upgrade to Pro for historical rates and premium support.",
+    alternates: {
+      canonical: `/${locale}/pricing`,
+      languages: getLanguageAlternates("/pricing"),
+    },
+    openGraph: {
+      title: "Pricing",
+      description:
+        "Instant Currency is free forever. Upgrade to Pro for historical rates and premium support.",
+      url: `https://instantcurrency.tools/${locale}/pricing`,
+      locale: ogLocales[locale as Locale],
+    },
+  };
+}
 
 const MARKETPLACE_URL =
   "https://workspace.google.com/marketplace/app/instant_currency/93228277435";
 
-export default function Pricing() {
+export default async function Pricing({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
       <section className="pt-16 pb-6 md:pt-24">
@@ -67,7 +93,7 @@ export default function Pricing() {
           </p>
           <p className="mt-1 text-[13px] text-faint">Cancel anytime</p>
 
-          <CheckoutButton />
+          <CheckoutButton locale={locale} />
           <p className="mt-2 text-[12px] text-faint">Use the same email you use with Google Sheets.</p>
 
           <ul className="mt-6 space-y-3">

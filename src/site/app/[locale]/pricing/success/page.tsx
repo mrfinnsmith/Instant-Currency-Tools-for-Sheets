@@ -1,14 +1,33 @@
 import type { Metadata } from "next";
+import { getLanguageAlternates } from "@/i18n/hreflang";
+import { ogLocales, type Locale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Welcome to Pro",
-  description: "Your Instant Currency Pro subscription is active.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Welcome to Pro",
+    description: "Your Instant Currency Pro subscription is active.",
+    alternates: {
+      canonical: `/${locale}/pricing/success`,
+      languages: getLanguageAlternates("/pricing/success"),
+    },
+    openGraph: {
+      title: "Welcome to Pro",
+      description: "Your Instant Currency Pro subscription is active.",
+      url: `https://instantcurrency.tools/${locale}/pricing/success`,
+      locale: ogLocales[locale as Locale],
+    },
+  };
+}
 
 const PORTAL_URL =
   "https://billing.stripe.com/p/login/3cI00idzqeHZ8NT2MRfMA00";
 
-export default function Success() {
+export default async function Success() {
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
       <section className="pt-16 pb-6 md:pt-24 max-w-lg">

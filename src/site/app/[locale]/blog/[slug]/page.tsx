@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPost } from "@/lib/blog";
 import { MDXContent } from "@/components/mdx-content";
+import { getLanguageAlternates } from "@/i18n/hreflang";
+import { ogLocales, type Locale } from "@/i18n/config";
 
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateStaticParams() {
@@ -12,10 +14,24 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const post = getPost(slug);
   if (!post) return {};
-  return { title: post.title, description: post.description };
+  return {
+    title: post.title,
+    description: post.description,
+    alternates: {
+      canonical: `/${locale}/blog/${slug}`,
+      languages: getLanguageAlternates(`/blog/${slug}`),
+    },
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      url: `https://instantcurrency.tools/${locale}/blog/${slug}`,
+      type: "article",
+      locale: ogLocales[locale as Locale],
+    },
+  };
 }
 
 export default async function BlogPost({ params }: Props) {

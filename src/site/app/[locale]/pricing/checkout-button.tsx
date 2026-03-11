@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 
-export function CheckoutButton() {
+export function CheckoutButton({ locale }: { locale: string }) {
   const [loading, setLoading] = useState(false);
 
   async function handleCheckout() {
     setLoading(true);
     try {
-      const res = await fetch("/api/checkout", { method: "POST" });
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale }),
+      });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;

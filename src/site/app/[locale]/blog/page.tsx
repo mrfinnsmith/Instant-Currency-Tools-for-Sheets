@@ -1,13 +1,37 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/blog";
+import { getLanguageAlternates } from "@/i18n/hreflang";
+import { ogLocales, type Locale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Blog",
-  description: "Tips and guides for currency conversion in Google Sheets.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Blog",
+    description: "Tips and guides for currency conversion in Google Sheets.",
+    alternates: {
+      canonical: `/${locale}/blog`,
+      languages: getLanguageAlternates("/blog"),
+    },
+    openGraph: {
+      title: "Blog",
+      description: "Tips and guides for currency conversion in Google Sheets.",
+      url: `https://instantcurrency.tools/${locale}/blog`,
+      locale: ogLocales[locale as Locale],
+    },
+  };
+}
 
-export default function Blog() {
+export default async function Blog({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const posts = getAllPosts();
 
   return (
@@ -25,7 +49,7 @@ export default function Blog() {
           <div className="divide-y divide-rule">
             {posts.map((post) => (
               <article key={post.slug} className="py-8 first:pt-4">
-                <Link href={`/blog/${post.slug}`} className="group block">
+                <Link href={`/${locale}/blog/${post.slug}`} className="group block">
                   <time className="text-[12px] text-faint tracking-wide">
                     {new Date(post.date).toLocaleDateString("en-US", {
                       year: "numeric",

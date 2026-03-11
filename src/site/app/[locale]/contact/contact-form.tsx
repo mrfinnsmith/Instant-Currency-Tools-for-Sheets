@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 
-export function ContactForm() {
+export function ContactForm({ locale }: { locale: string }) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -14,6 +14,7 @@ export function ContactForm() {
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
       email: (form.elements.namedItem("email") as HTMLInputElement).value,
       message: (form.elements.namedItem("message") as HTMLTextAreaElement).value,
+      locale,
     };
 
     try {

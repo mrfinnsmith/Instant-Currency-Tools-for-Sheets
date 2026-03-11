@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "home": {
+      "title": "Instant Currency — Conversione valute per Fogli Google",
+      "description": "Converti le valute in Fogli Google con un solo clic. Niente formule, niente copia e incolla, niente problemi di formattazione."
+    }
+  },
+  "header": {
+    "pricing": "Prezzi",
+    "blog": "Blog",
+    "contact": "Contatti",
+    "installForSheets": "Installa per Fogli Google",
+    "menu": "Menu",
+    "language": "Lingua"
+  },
+  "footer": {
+    "tagline": "Un componente aggiuntivo di Fogli Google per la conversione valute. Installazione gratuita, nessun account necessario.",
+    "product": "Prodotto",
+    "marketplace": "Marketplace",
+    "support": "Supporto",
+    "privacyPolicy": "Informativa sulla privacy",
+    "copyright": "Instant Currency. Tutti i diritti riservati."
+  },
+  "home": {
+    "hero": {
+      "label": "Componente aggiuntivo per Fogli Google",
+      "title": "Converti le valute nel tuo foglio di calcolo senza perdite di tempo",
+      "body": "Instant Currency scrive i valori convertiti direttamente nelle celle con la formattazione corretta. Oltre 160 valute. Tassi di cambio storici di decenni passati. Nessuna formula da gestire.",
+      "installFree": "Installa gratis",
+      "viewPricing": "Vedi i prezzi",
+      "screenshotAlt": "La barra laterale di Instant Currency aperta in Fogli Google, che converte importi in USD in più valute tra cui EUR, GBP, JPY, BRL, MXN e ILS"
+    },
+    "showcase": {
+      "formattingAlt": "Foglio di calcolo con formattazione automatica delle valute applicata a yen, dollari, rupie, euro, sterline, franchi svizzeri e won coreano",
+      "datePickerAlt": "Selettore di date di Instant Currency per scegliere tassi di cambio storici, con il calendario di febbraio 2024"
+    },
+    "capabilities": {
+      "label": "Cosa offre",
+      "title": "Tutto quello che la funzione GOOGLEFINANCE avrebbe dovuto essere",
+      "valuesTitle": "Valori, non formule",
+      "valuesBody": "Gli importi convertiti vengono scritti come numeri semplici. Non si aggiornano di nascosto, non generano errori casuali e non si rompono quando copi un foglio.",
+      "formattingTitle": "Formattazione valuta corretta",
+      "formattingBody": "Lo yen non ha decimali. I franchi svizzeri usano gli apostrofi come separatori. Le rupie usano il sistema lakh. Le regole di visualizzazione di ogni valuta vengono applicate alla cella.",
+      "currenciesTitle": "Oltre 160 valute",
+      "currenciesBody": "Tutte le valute principali e la maggior parte di quelle minori. Se ha un codice ISO 4217 e una fonte affidabile per il tasso di cambio, è nella lista.",
+      "historicalTitle": "Tassi di cambio storici",
+      "historicalBody": "Scegli qualsiasi data di decenni passati e converti al tasso di cambio di quel giorno. Utile per note spese, revisioni contabili e riconciliazione fatture.",
+      "sheetTitle": "Conversione dell'intero foglio",
+      "sheetBody": "Converti una selezione di celle o attiva la modalità foglio intero per convertire tutti i valori del foglio attivo in un colpo solo.",
+      "formulaTitle": "Modalità formula Google Finance",
+      "formulaBody": "Preferisci formule che si aggiornano in tempo reale? Attiva l'opzione GOOGLEFINANCE per inserire formule al posto di valori fissi."
+    },
+    "personas": {
+      "label": "Pensato per",
+      "title": "Chi lavora oltre i confini",
+      "pmTitle": "Project manager",
+      "pmBody": "Budget, preventivi dei fornitori e note spese arrivano in valute diverse. Serve tutto in un'unica valuta base per i report agli stakeholder. Con questo strumento bastano pochi secondi.",
+      "financeTitle": "Team finanziari",
+      "financeBody": "Chiusura mensile con filiali internazionali. Consolidamento di fatture, buste paga e pagamenti ai fornitori in diverse valute in un unico foglio di lavoro.",
+      "travelTitle": "Viaggiatori internazionali",
+      "travelBody": "Monitoraggio delle spese di viaggio in più paesi. Registra i costi in valuta locale e convertili nella tua valuta base per vedere la spesa effettiva."
+    },
+    "cta": {
+      "title": "Prova Instant Currency",
+      "body": "Installa da Google Workspace Marketplace. Gratuito, senza account e senza registrazione. Converti la tua prima cella in meno di un minuto.",
+      "button": "Installa per Fogli Google"
+    }
+  }
+}

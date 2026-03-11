@@ -1,11 +1,37 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { getLanguageAlternates } from "@/i18n/hreflang";
+import { ogLocales, type Locale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Terms of Service",
-  description: "Terms of service for the Instant Currency Google Sheets add-on.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Terms of Service",
+    description: "Terms of service for the Instant Currency Google Sheets add-on.",
+    alternates: {
+      canonical: `/${locale}/terms`,
+      languages: getLanguageAlternates("/terms"),
+    },
+    openGraph: {
+      title: "Terms of Service",
+      description: "Terms of service for the Instant Currency Google Sheets add-on.",
+      url: `https://instantcurrency.tools/${locale}/terms`,
+      locale: ogLocales[locale as Locale],
+    },
+  };
+}
 
-export default function Terms() {
+export default async function Terms({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
       <section className="pt-16 pb-6 md:pt-24">
@@ -50,7 +76,7 @@ export default function Terms() {
           Instant Currency accesses your spreadsheet data solely to perform currency
           conversions. We do not store, transmit, or share your spreadsheet content.
           See our{" "}
-          <a href="/privacy">Privacy Policy</a> for full details on data handling.
+          <Link href={`/${locale}/privacy`}>Privacy Policy</Link> for full details on data handling.
         </p>
 
         <h2>Availability</h2>

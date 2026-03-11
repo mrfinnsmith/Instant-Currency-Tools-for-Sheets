@@ -1,23 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
-import { Source_Serif_4, IBM_Plex_Sans } from "next/font/google";
-import "./globals.css";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-
-const GA_ID = "G-DXJ8HSBLSE";
-
-const sourceSerif = Source_Serif_4({
-  variable: "--font-source-serif",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
-const ibmPlex = IBM_Plex_Sans({
-  variable: "--font-ibm-plex",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -38,6 +19,12 @@ export const metadata: Metadata = {
     siteName: "Instant Currency",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Instant Currency — Currency Conversion for Google Sheets",
+    description:
+      "Convert currencies in Google Sheets with a single click. No formulas, no copy-pasting, no formatting hassle.",
+  },
 };
 
 export default function RootLayout({
@@ -45,22 +32,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${sourceSerif.variable} ${ibmPlex.variable} antialiased`}
-      >
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="gtag-init" strategy="afterInteractive">
-          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
-        </Script>
-        <Header />
-        <main>{children}</main>
-        <Footer />
-      </body>
-    </html>
-  );
+  return children as React.ReactElement;
 }

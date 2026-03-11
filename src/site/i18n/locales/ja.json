@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "home": {
+      "title": "Instant Currency — Google スプレッドシートの通貨換算アドオン",
+      "description": "Google スプレッドシートでワンクリック通貨換算。数式不要、コピペ不要、書式設定の手間もなし。"
+    }
+  },
+  "header": {
+    "pricing": "料金",
+    "blog": "ブログ",
+    "contact": "お問い合わせ",
+    "installForSheets": "スプレッドシートにインストール",
+    "menu": "メニュー",
+    "language": "言語"
+  },
+  "footer": {
+    "tagline": "Google スプレッドシート用の通貨換算アドオン。無料でインストール、アカウント登録不要。",
+    "product": "製品",
+    "marketplace": "Marketplace",
+    "support": "サポート",
+    "privacyPolicy": "プライバシーポリシー",
+    "copyright": "Instant Currency. All rights reserved."
+  },
+  "home": {
+    "hero": {
+      "label": "Google スプレッドシートアドオン",
+      "title": "スプレッドシートの通貨換算を手間なく完了",
+      "body": "Instant Currencyは換算結果を正しい書式でセルに直接書き込みます。160以上の通貨に対応。過去数十年の為替レートも利用可能。数式の管理は不要です。",
+      "installFree": "無料でインストール",
+      "viewPricing": "料金を見る",
+      "screenshotAlt": "Google スプレッドシートでInstant Currencyのサイドバーを開き、USD金額をEUR、GBP、JPY、BRL、MXN、ILSなどに換算している画面"
+    },
+    "showcase": {
+      "formattingAlt": "円、ドル、ルピー、ユーロ、ポンド、スイスフラン、韓国ウォンの自動通貨書式が適用されたスプレッドシート",
+      "datePickerAlt": "過去の為替レートを選択するためのInstant Currency日付ピッカー、2024年2月のカレンダーを表示"
+    },
+    "capabilities": {
+      "label": "特長",
+      "title": "GOOGLEFINANCE関数が本来あるべきだった姿",
+      "valuesTitle": "数式ではなく確定値",
+      "valuesBody": "換算結果は数値として書き込まれます。知らないうちに更新されたり、突然エラーになったり、シートのコピー時に壊れたりしません。",
+      "formattingTitle": "通貨ごとの正しい書式",
+      "formattingBody": "円は小数点なし。スイスフランはアポストロフィ区切り。ルピーはラーク表記。各通貨の表示ルールがセルに自動適用されます。",
+      "currenciesTitle": "160以上の通貨",
+      "currenciesBody": "主要通貨はすべて、マイナー通貨もほぼ網羅。ISO 4217コードがあり、信頼できる為替レートのソースがあれば対応しています。",
+      "historicalTitle": "過去の為替レート",
+      "historicalBody": "数十年前まで遡って任意の日付を選び、その日のレートで換算できます。経費精算、監査、請求書の照合に便利です。",
+      "sheetTitle": "シート全体の一括換算",
+      "sheetBody": "セル範囲を選んで換算するか、シート全体モードをオンにしてアクティブシートの全値を一度に換算できます。",
+      "formulaTitle": "Google Finance数式モード",
+      "formulaBody": "リアルタイム更新の数式がお好みですか？GOOGLEFINANCE オプションをオンにすれば、固定値の代わりに数式を挿入できます。"
+    },
+    "personas": {
+      "label": "こんな方に",
+      "title": "国境を越えて働く人のために",
+      "pmTitle": "プロジェクトマネージャー",
+      "pmBody": "予算、見積、経費報告が複数の通貨で届く。ステークホルダー向けレポートには基準通貨への統一が必要。このツールなら数秒で完了します。",
+      "financeTitle": "経理・財務チーム",
+      "financeBody": "海外子会社との月次決算。請求書、給与、仕入先への支払いを複数通貨からひとつのワークブックに集約。",
+      "travelTitle": "海外出張・旅行者",
+      "travelBody": "複数の国での旅費を記録。現地通貨で入力し、自国通貨に換算して実際の支出を把握できます。"
+    },
+    "cta": {
+      "title": "Instant Currencyを試す",
+      "body": "Google Workspace Marketplaceからインストール。無料、アカウント登録不要。1分以内に最初のセルを換算できます。",
+      "button": "Google スプレッドシートにインストール"
+    }
+  }
+}

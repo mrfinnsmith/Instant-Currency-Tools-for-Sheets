@@ -1,11 +1,30 @@
 import type { Metadata } from "next";
+import { getLanguageAlternates } from "@/i18n/hreflang";
+import { ogLocales, type Locale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description: "Privacy policy for the Instant Currency Google Sheets add-on.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Privacy Policy",
+    description: "Privacy policy for the Instant Currency Google Sheets add-on.",
+    alternates: {
+      canonical: `/${locale}/privacy`,
+      languages: getLanguageAlternates("/privacy"),
+    },
+    openGraph: {
+      title: "Privacy Policy",
+      description: "Privacy policy for the Instant Currency Google Sheets add-on.",
+      url: `https://instantcurrency.tools/${locale}/privacy`,
+      locale: ogLocales[locale as Locale],
+    },
+  };
+}
 
-export default function Privacy() {
+export default async function Privacy() {
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
       <section className="pt-16 pb-6 md:pt-24">
