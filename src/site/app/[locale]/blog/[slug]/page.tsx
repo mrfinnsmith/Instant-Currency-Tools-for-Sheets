@@ -40,8 +40,27 @@ export default async function BlogPost({ params }: Props) {
   if (!post) notFound();
   const dateLocale = ogLocales[locale as Locale].replace("_", "-");
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    url: `https://instantcurrency.tools/${locale}/blog/${slug}`,
+    inLanguage: locale,
+    publisher: {
+      "@type": "Organization",
+      name: "Instant Currency",
+      url: "https://instantcurrency.tools",
+    },
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <article className="pt-16 pb-20 md:pt-24 max-w-3xl">
         <header>
           <time className="text-[12px] text-faint tracking-wide">
