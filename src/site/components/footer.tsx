@@ -43,6 +43,7 @@ export function Footer() {
               <ul className="mt-4 space-y-2.5">
                 <li><Link href={`/${locale}/contact`} className="text-[13px] text-muted hover:text-fg transition-colors">{th("contact")}</Link></li>
                 <li><Link href={`/${locale}/privacy`} className="text-[13px] text-muted hover:text-fg transition-colors">{t("privacyPolicy")}</Link></li>
+                <li><Link href={`/${locale}/terms`} className="text-[13px] text-muted hover:text-fg transition-colors">{t("termsOfService")}</Link></li>
               </ul>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getLanguageAlternates } from "@/i18n/hreflang";
 import { ogLocales, type Locale } from "@/i18n/config";
 
@@ -24,7 +25,12 @@ export async function generateMetadata({
   };
 }
 
-export default async function Privacy() {
+export default async function Privacy({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
       <section className="pt-16 pb-6 md:pt-24">
@@ -106,6 +112,10 @@ export default async function Privacy() {
         <p>
           If you have questions about this privacy policy, contact us at{" "}
           <a href="mailto:hi@instantcurrency.tools">hi@instantcurrency.tools</a>.
+        </p>
+
+        <p>
+          See also our <Link href={`/${locale}/terms`}>Terms of Service</Link>.
         </p>
       </section>
     </div>
