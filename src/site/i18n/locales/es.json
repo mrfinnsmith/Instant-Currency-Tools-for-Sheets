@@ -15,6 +15,10 @@
     "contact": {
       "title": "Contacto — Instant Currency",
       "description": "Ponte en contacto con el equipo de Instant Currency."
+    },
+    "blog": {
+      "title": "Blog — Instant Currency",
+      "description": "Consejos y guías para convertir divisas en Hojas de cálculo de Google."
     }
   },
   "header": {
@@ -121,6 +125,10 @@
       "text": "¿Necesitas administrar tu suscripción?",
       "link": "Abrir portal de facturación"
     }
+  },
+  "blog": {
+    "title": "Blog",
+    "empty": "Aún no hay publicaciones."
   },
   "contact": {
     "label": "Contacto",

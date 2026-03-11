@@ -1,0 +1,134 @@
+---
+title: "Conversion de devises dans Google Sheets : des taux de change en direct avec une seule formule"
+description: "Apprenez à utiliser la formule GOOGLEFINANCE pour convertir des devises dans Google Sheets, et découvrez une alternative plus rapide."
+date: "2025-06-25"
+---
+
+Si vous travaillez avec plusieurs devises dans Google Sheets, vous savez à quel point il est fastidieux de chercher les taux de change, de les coller dans votre feuille puis de calculer les montants convertis. Heureusement, il existe une formule qui simplifie tout. GOOGLEFINANCE, en plus de fournir des données boursières en temps réel, permet aussi d'obtenir des taux de change pour des dizaines de devises.
+
+À la fin de ce tutoriel, vous saurez comment utiliser GOOGLEFINANCE pour convertir des devises en temps réel et comment formater vos cellules avec les bons symboles monétaires.
+
+## Qu'est-ce que GOOGLEFINANCE ?
+
+GOOGLEFINANCE est une formule intégrée à Google Sheets qui récupère des données actuelles et historiques depuis Google Finance, directement dans votre feuille de calcul. Vous pouvez consulter des informations de marché, des cours d'actions et des taux de change actuels ou passés. C'est entièrement gratuit dans Google Sheets et la mise en place ne prend que quelques étapes.
+
+## GOOGLEFINANCE fonctionne-t-il dans Excel ?
+
+Non, GOOGLEFINANCE n'est disponible que dans Google Sheets. Excel possède ses propres outils de consultation de devises et de marchés, et les deux systèmes ne sont pas compatibles. Si vous téléchargez une feuille Google contenant une formule GOOGLEFINANCE au format XLSX, cette formule cessera de fonctionner dans Excel. De même, si vous importez un fichier XLSX utilisant les outils monétaires d'Excel dans Google Sheets, ils seront soit inutilisables, soit figés en valeurs fixes, sans connexion en temps réel.
+
+## Comment convertir des devises avec GOOGLEFINANCE : guide étape par étape
+
+Dans cet exemple, nous partons du principe que vous utilisez déjà Google Sheets et que vous avez des montants à convertir. Si vous souhaitez tester avec une feuille vierge, rendez-vous sur sheets.new pour en créer une. Elle sera créée dans le compte Google avec lequel vous êtes connecté.
+
+Nous prendrons l'exemple d'une conversion de livres sterling en dollars américains, mais nous vous montrerons aussi comment faire avec d'autres devises.
+
+### Étape 1 : Choisissez où afficher le résultat
+
+Dans cet exemple, imaginez que vous devez préparer une note de frais pour un voyage à Londres. Vous avez une liste de montants en livres dans la colonne B.
+
+Ce qu'il faut savoir sur GOOGLEFINANCE, c'est que la formule ne remplace pas le montant d'origine par la valeur convertie. Comme toute formule dans Sheets, vos données source sont à un endroit et vous placez la formule là où vous voulez le résultat.
+
+![Feuille de calcul avec des montants de dépenses en livres](/blog/image-1.png)
+
+Ici, il est logique de placer les montants en dollars juste à côté de leurs équivalents en livres. Nous mettrons donc les formules dans la colonne C.
+
+### Étape 2 : Construisez la formule
+
+La structure de base d'une formule GOOGLEFINANCE pour les devises est :
+
+```
+=GOOGLEFINANCE("CURRENCY:[devise source][devise cible]")
+```
+
+Il n'y a aucun espace dans la formule. Dans notre exemple, pour obtenir le taux de change livres vers dollars, on utilise :
+
+```
+=GOOGLEFINANCE("CURRENCY:GBPUSD")
+```
+
+![Formule GOOGLEFINANCE dans Google Sheets](/blog/image-2.png)
+
+Quelques points à noter :
+
+- La formule utilise des codes à trois lettres pour les devises, pas leurs noms. Wikipédia propose une liste complète de tous les codes de devises.
+- Tout est collé. Au milieu de la formule, on trouve GBPUSD.
+
+Cette formule renvoie le taux de change. Si c'est tout ce dont vous avez besoin, c'est terminé. Mais si vous voulez convertir des montants précis, comme dans notre exemple, il faut multiplier par ces valeurs. Voici ce que nous mettons en C2 pour convertir le montant de B2 en dollars :
+
+```
+=GOOGLEFINANCE("CURRENCY:GBPUSD")*B2
+```
+
+![Formule multipliée par la valeur de la cellule](/blog/image-12.png)
+
+Et voilà, le montant converti s'affiche. Pour la conversion inverse, de dollars en livres, il suffit d'inverser les deux codes dans la formule :
+
+```
+=GOOGLEFINANCE("CURRENCY:USDGBP")
+```
+
+### Étape 3 : Corrigez le formatage
+
+GOOGLEFINANCE ne renvoie que la valeur numérique du taux de change, sans mise en forme. Une fois votre formule en place, vous devrez ajuster le format manuellement.
+
+Si vous êtes aux États-Unis, vous verrez un petit $ dans la barre d'outils. En cliquant dessus, vous changez le format de la cellule sélectionnée en dollars.
+
+![Schéma de formatage de devise](/blog/image-3.png)
+
+Si ce bouton n'apparaît pas, ou si vous souhaitez un autre format monétaire, cliquez sur Format dans le menu, puis Nombre, puis Devise personnalisée.
+
+![Menu Format dans Google Sheets](/blog/image-4.png)
+
+Un menu s'ouvrira pour choisir le format de devise souhaité. Cliquez sur Appliquer une fois votre choix fait.
+
+![Sélecteur de format de devise personnalisé](/blog/image-5.png)
+
+### (Facultatif) Étape 4 : Remplacez les valeurs d'origine
+
+Si vous n'avez pas besoin de conserver les montants d'origine (dans notre cas, les valeurs en livres), vous pouvez coller les valeurs converties à leur place. Mais comme votre formule est basée sur les valeurs initiales, un simple collage insérera la formule et non le résultat. Dans notre cas, la formule en B2 pointerait alors vers A2, ce qui provoquerait une erreur.
+
+![Erreur de formule lors du collage](/blog/image-6.png)
+
+Pour contourner ce problème, il faut coller uniquement les valeurs. Commencez par copier les valeurs converties (dans notre cas, C2). Sélectionnez ensuite la plage de destination. Faites un clic droit et choisissez Collage spécial, puis Valeurs uniquement.
+
+![Menu Collage spécial valeurs uniquement](/blog/image-7.png)
+
+Le montant d'origine sera remplacé par le montant converti. Si vous n'avez pas encore corrigé le formatage, vous pouvez le faire après le collage. Pensez aussi à mettre à jour les intitulés de votre feuille. Dans notre exemple, la colonne B s'intitulait Dépenses (Livres), nous l'avons donc rendue plus générique.
+
+![Feuille mise à jour avec les valeurs converties](/blog/image-13.png)
+
+## Limites de GOOGLEFINANCE pour les devises
+
+GOOGLEFINANCE fonctionne bien dans la plupart des cas, mais il y a quelques points à connaître.
+
+### GOOGLEFINANCE utilise le taux de change actuel par défaut
+
+Dans notre exemple, nous n'avons pas précisé de date dans la formule. GOOGLEFINANCE utilise donc le taux du moment. Si vous le laissez tel quel, la valeur se mettra à jour à chaque nouveau taux publié par Google Finance.
+
+Si vous ne souhaitez pas que la formule change en permanence, vous devez fixer la date. Le format est le suivant :
+
+```
+=INDEX(GOOGLEFINANCE("CURRENCY:[devise source][devise cible]", "price", "AAAA-MM-JJ"), 2, 2)
+```
+
+AAAA correspond à l'année, MM au mois et JJ au jour. Pour obtenir le taux livres-dollars du 23 juin 2025, la formule est :
+
+```
+=INDEX(GOOGLEFINANCE("CURRENCY:GBPUSD", "price", "2025-06-23"), 2, 2)
+```
+
+### GOOGLEFINANCE ne fonctionne pas toujours
+
+Il arrive que GOOGLEFINANCE renvoie une erreur pour certaines dates, sans raison apparente. Le problème se résout généralement de lui-même en un jour ou deux, mais vous pourriez obtenir une erreur #N/A.
+
+![Erreur N/A dans Google Sheets](/blog/image-11.png)
+
+### GOOGLEFINANCE ne met pas à jour le formatage
+
+Dans l'exemple précédent, nous avons ajusté le formatage à la main. Mais si vous avez beaucoup de conversions à effectuer, construire la formule puis corriger le format à chaque fois peut vite devenir pénible.
+
+## Instant Currency : une alternative à GOOGLEFINANCE
+
+Épargnez-vous toutes les étapes de GOOGLEFINANCE. [Instant Currency](https://workspace.google.com/marketplace/app/instant_currency/93228277435) convertit les devises et formate les cellules en un seul clic, avec des taux de change historiques fiables qui fonctionnent même quand les données de Google font défaut.
+
+Une question sur la conversion de devises dans Google Sheets ? [Écrivez-nous](/fr/contact), nous serons ravis de vous aider.

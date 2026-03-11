@@ -1,0 +1,134 @@
+---
+title: "Währungsumrechnung in Google Sheets: Live-Wechselkurse mit einer einzigen Formel"
+description: "So nutzen Sie die GOOGLEFINANCE-Formel zur Währungsumrechnung in Google Sheets und lernen eine schnellere Alternative kennen."
+date: "2025-06-25"
+---
+
+Wenn Sie in Google Sheets mit verschiedenen Währungen arbeiten, kennen Sie das Problem: Wechselkurse nachschlagen, in die Tabelle einfügen, dann den umgerechneten Betrag berechnen. Zum Glück gibt es eine Formel, die das deutlich einfacher macht. GOOGLEFINANCE liefert nicht nur Börsendaten in Echtzeit, sondern auch Wechselkurse für Dutzende von Währungen.
+
+Am Ende dieses Tutorials wissen Sie, wie Sie mit GOOGLEFINANCE Währungen in Echtzeit umrechnen und Zellen mit dem richtigen Währungssymbol formatieren.
+
+## Was ist GOOGLEFINANCE?
+
+GOOGLEFINANCE ist eine in Google Sheets integrierte Formel, die aktuelle und historische Daten von Google Finance direkt in Ihre Tabelle holt. Sie können Marktdaten, Aktienkurse und aktuelle oder vergangene Wechselkurse abfragen. Das alles ist in Google Sheets kostenlos und in wenigen Schritten eingerichtet.
+
+## Funktioniert GOOGLEFINANCE in Excel?
+
+Nein, GOOGLEFINANCE gibt es nur in Google Sheets. Excel hat eigene Tools für Währungs- und Marktdaten, und die beiden Systeme sind nicht kompatibel. Wenn Sie eine Google-Tabelle mit einer GOOGLEFINANCE-Formel als XLSX herunterladen, funktioniert die Formel in Excel nicht mehr. Umgekehrt gilt: Laden Sie eine XLSX-Datei mit Excels Währungs-Tools in Google Sheets hoch, gehen die Funktionen entweder kaputt oder die Werte werden fest eingetragen, ohne Live-Verbindung.
+
+## Währungen mit GOOGLEFINANCE umrechnen: Schritt-für-Schritt-Anleitung
+
+In diesem Beispiel gehen wir davon aus, dass Sie bereits Google Sheets verwenden und Beträge haben, die Sie umrechnen möchten. Wenn Sie das Ganze mit einer Testdatei ausprobieren wollen, gehen Sie einfach auf sheets.new. Damit wird eine Tabelle in dem Google-Konto erstellt, in dem Sie gerade angemeldet sind.
+
+Wir nehmen die Umrechnung von britischen Pfund in US-Dollar als Beispiel, zeigen aber auch, wie es mit anderen Währungen funktioniert.
+
+### Schritt 1: Legen Sie fest, wo das Ergebnis erscheinen soll
+
+Stellen Sie sich vor, Sie müssen eine Spesenabrechnung für eine Reise nach London erstellen. In Spalte B stehen Beträge in Pfund.
+
+Wichtig bei GOOGLEFINANCE: Die Formel ersetzt nicht den Originalbetrag durch den umgerechneten Wert. Wie bei jeder anderen Sheets-Formel haben Sie die Eingabedaten an einer Stelle und setzen die Formel dorthin, wo Sie das Ergebnis haben möchten.
+
+![Tabelle mit Ausgabenbeträgen in Pfund](/blog/image-1.png)
+
+Hier bietet es sich an, die Dollar-Beträge direkt neben den Pfund-Werten einzutragen. Die Formeln kommen also in Spalte C.
+
+### Schritt 2: Erstellen Sie die Formel
+
+Die Grundstruktur einer GOOGLEFINANCE-Währungsformel sieht so aus:
+
+```
+=GOOGLEFINANCE("CURRENCY:[Ausgangswährung][Zielwährung]")
+```
+
+Nirgendwo in der Formel steht ein Leerzeichen. In unserem Beispiel lautet die Formel für den Wechselkurs von Pfund zu Dollar:
+
+```
+=GOOGLEFINANCE("CURRENCY:GBPUSD")
+```
+
+![GOOGLEFINANCE-Formel in Google Sheets](/blog/image-2.png)
+
+Ein paar Dinge fallen auf:
+
+- Die Formel verwendet dreibuchstabige Codes für die Währungen, nicht deren Namen. Auf Wikipedia finden Sie eine vollständige Liste aller Währungscodes.
+- Alles steht ohne Leerzeichen hintereinander. In der Mitte der Formel steht GBPUSD.
+
+Diese Formel liefert den Wechselkurs. Wenn das alles ist, was Sie brauchen, sind Sie fertig. Wenn Sie aber bestimmte Beträge umrechnen wollen, wie in unserem Beispiel, müssen Sie mit diesen Werten multiplizieren. In C2 geben wir Folgendes ein, um den Wert in B2 in Dollar umzurechnen:
+
+```
+=GOOGLEFINANCE("CURRENCY:GBPUSD")*B2
+```
+
+![Formel multipliziert mit dem Zellenwert](/blog/image-12.png)
+
+Das war's, der umgerechnete Betrag steht in der Zelle. Für die umgekehrte Richtung, von Dollar zu Pfund, tauschen Sie einfach die beiden Codes in der Formel:
+
+```
+=GOOGLEFINANCE("CURRENCY:USDGBP")
+```
+
+### Schritt 3: Korrigieren Sie die Formatierung
+
+GOOGLEFINANCE liefert nur den numerischen Wert des Wechselkurses, ohne Formatierung. Nachdem Sie die Formel eingerichtet haben, müssen Sie das Zahlenformat manuell anpassen.
+
+In den USA sehen Sie ein kleines $ in der Symbolleiste. Ein Klick darauf formatiert die ausgewählte Zelle als Dollar.
+
+![Währungsformatierung](/blog/image-3.png)
+
+Falls dieses Symbol nicht angezeigt wird oder Sie ein anderes Währungsformat benötigen, klicken Sie im Menü auf Format, dann Zahl, dann Benutzerdefinierte Währung.
+
+![Format-Menü in Google Sheets](/blog/image-4.png)
+
+Es öffnet sich ein Menü, in dem Sie genau das gewünschte Währungsformat auswählen können. Klicken Sie auf Anwenden, wenn Sie fündig geworden sind.
+
+![Auswahl benutzerdefinierter Währungsformate](/blog/image-5.png)
+
+### (Optional) Schritt 4: Ersetzen Sie die Originalwerte
+
+Wenn Sie die Originalbeträge nicht behalten möchten (in unserem Fall die Pfund-Werte), können Sie die umgerechneten Werte an deren Stelle einfügen. Da Ihre Formel aber auf den ursprünglichen Werten basiert, wird beim normalen Einfügen die Formel übertragen, nicht der Wert. In unserem Fall würde die Formel in B2 dann auf A2 verweisen und einen Fehler verursachen.
+
+![Formelfehler beim Einfügen](/blog/image-6.png)
+
+Um das zu vermeiden, müssen Sie nur die Werte einfügen. Kopieren Sie zunächst die umgerechneten Werte (in unserem Fall C2). Markieren Sie dann den Zielbereich. Klicken Sie mit der rechten Maustaste und wählen Sie Inhalte einfügen, dann Nur Werte.
+
+![Menü Inhalte einfügen nur Werte](/blog/image-7.png)
+
+Damit wird der Originalbetrag durch den umgerechneten Betrag ersetzt. Falls Sie die Formatierung noch nicht angepasst haben, können Sie das im Anschluss tun. Denken Sie auch daran, die Beschriftungen in Ihrer Tabelle zu aktualisieren. In unserem Beispiel hieß Spalte B ursprünglich Ausgaben (Pfund), daher haben wir die Bezeichnung allgemeiner gefasst.
+
+![Aktualisierte Tabelle mit umgerechneten Werten](/blog/image-13.png)
+
+## Probleme mit GOOGLEFINANCE bei Währungen
+
+GOOGLEFINANCE funktioniert in den meisten Fällen gut, aber es gibt einige Punkte, die Sie kennen sollten.
+
+### GOOGLEFINANCE verwendet standardmäßig den aktuellen Wechselkurs
+
+In unserem Beispiel haben wir der Formel kein Datum mitgegeben. Das bedeutet, dass GOOGLEFINANCE den jeweils aktuellen Kurs verwendet. Wenn Sie die Formel so belassen, zeigt sie bei jedem neuen Kurs von Google Finance einen aktualisierten Wert an.
+
+Wenn Sie nicht möchten, dass sich die Formel ständig ändert, müssen Sie das Datum festlegen. Das Format dafür ist:
+
+```
+=INDEX(GOOGLEFINANCE("CURRENCY:[Ausgangswährung][Zielwährung]", "price", "JJJJ-MM-TT"), 2, 2)
+```
+
+Wie Sie sich denken können, steht JJJJ für das Jahr, MM für den Monat und TT für den Tag. Für den Wechselkurs Pfund zu Dollar am 23. Juni 2025 lautet die Formel:
+
+```
+=INDEX(GOOGLEFINANCE("CURRENCY:GBPUSD", "price", "2025-06-23"), 2, 2)
+```
+
+### GOOGLEFINANCE funktioniert manchmal nicht
+
+Gelegentlich gibt GOOGLEFINANCE für bestimmte Daten einfach einen Fehler zurück. Warum genau, ist unklar. Das Problem löst sich normalerweise nach ein bis zwei Tagen von selbst, aber es kann passieren, dass Sie einen #N/A-Fehler erhalten.
+
+![N/A-Fehler in Google Sheets](/blog/image-11.png)
+
+### GOOGLEFINANCE aktualisiert die Formatierung nicht
+
+Im Beispiel oben haben wir die Formatierung manuell angepasst. Wenn Sie aber viele Umrechnungen durchführen müssen, wird es schnell umständlich, jedes Mal die Formel zu erstellen und anschließend das Format zu korrigieren.
+
+## Instant Currency: eine Alternative zu GOOGLEFINANCE
+
+Sparen Sie sich den gesamten GOOGLEFINANCE-Prozess. [Instant Currency](https://workspace.google.com/marketplace/app/instant_currency/93228277435) rechnet Währungen um und formatiert die Zellen mit einem einzigen Klick. Historische Wechselkurse sind zuverlässig verfügbar, auch wenn die Daten von Google einmal aussetzen.
+
+Haben Sie Fragen zur Währungsumrechnung in Google Sheets? [Schreiben Sie uns](/de/contact), wir helfen Ihnen gerne weiter.

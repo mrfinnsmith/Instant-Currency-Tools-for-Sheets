@@ -1,0 +1,134 @@
+---
+title: "Conversione valute in Fogli Google: tassi di cambio in tempo reale con una sola formula"
+description: "Scopri come usare la formula GOOGLEFINANCE per convertire valute in Fogli Google e conosci un'alternativa più veloce."
+date: "2025-06-25"
+---
+
+Se lavori con valute diverse in Fogli Google, sai quanto può essere noioso cercare i tassi di cambio, incollarli nel foglio e calcolare il valore convertito. Per fortuna esiste una formula che semplifica tutto. GOOGLEFINANCE, oltre a fornire dati di borsa in tempo reale, permette anche di ottenere tassi di cambio per decine di valute.
+
+Alla fine di questo tutorial saprai come usare GOOGLEFINANCE per convertire valute in tempo reale e come formattare le celle con il simbolo della valuta corretto.
+
+## Cos'è GOOGLEFINANCE?
+
+GOOGLEFINANCE è una formula integrata in Fogli Google che porta informazioni attuali e storiche da Google Finance direttamente nel tuo foglio di calcolo. Puoi consultare dati di mercato, quotazioni di singole azioni e tassi di cambio attuali o passati. È tutto gratuito all'interno di Fogli Google e richiede pochi passaggi per la configurazione.
+
+## Posso usare GOOGLEFINANCE in Excel?
+
+No, GOOGLEFINANCE è disponibile solo in Fogli Google. Excel ha i propri strumenti per valute e mercati, e i due sistemi non sono compatibili. Se scarichi un foglio Google con una formula GOOGLEFINANCE in formato XLSX, la formula smetterà di funzionare una volta aperto il file in Excel. Allo stesso modo, se carichi un file XLSX con gli strumenti valutari di Excel in Fogli Google, si romperà del tutto oppure i valori diventeranno fissi, perdendo il collegamento in tempo reale.
+
+## Come convertire valute con GOOGLEFINANCE: guida passo passo
+
+In questo esempio partiamo dal presupposto che tu stia già usando Fogli Google e abbia degli importi da convertire. Se vuoi fare una prova con un foglio di test, vai su sheets.new per crearne uno vuoto. Verrà creato nell'account Google con cui hai effettuato l'accesso.
+
+Useremo l'esempio della conversione da sterline britanniche a dollari americani, ma ti mostreremo anche come funziona con altre valute.
+
+### Passaggio 1: Decidi dove vuoi il risultato
+
+In questo esempio, immagina di dover preparare una nota spese per un viaggio a Londra. Hai una lista di importi in sterline nella colonna B.
+
+Quello che devi sapere su GOOGLEFINANCE è che non sovrascrive l'importo originale con il valore convertito. Come qualsiasi altra formula di Fogli Google, hai i dati di input in un punto e metti la formula dove vuoi l'output.
+
+![Foglio di calcolo con importi di spesa in sterline](/blog/image-1.png)
+
+In questo caso ha senso mettere gli importi in dollari accanto ai corrispondenti valori in sterline, quindi inseriremo le formule nella colonna C.
+
+### Passaggio 2: Costruisci la formula
+
+La struttura base di una formula GOOGLEFINANCE per le valute è:
+
+```
+=GOOGLEFINANCE("CURRENCY:[valuta di origine][valuta di destinazione]")
+```
+
+Non ci sono spazi in nessun punto della formula. Nel nostro esempio, per ottenere il tasso di cambio da sterline a dollari, usiamo:
+
+```
+=GOOGLEFINANCE("CURRENCY:GBPUSD")
+```
+
+![Formula GOOGLEFINANCE in Fogli Google](/blog/image-2.png)
+
+Alcune cose da notare:
+
+- La formula usa codici a tre lettere per le valute, non i nomi. Su Wikipedia trovi un elenco completo di tutti i codici valuta.
+- È tutto attaccato. Al centro della formula trovi GBPUSD.
+
+Questa formula restituisce il tasso di cambio. Se è tutto quello che ti serve, perfetto. Ma se vuoi convertire importi specifici, come nel nostro esempio, devi moltiplicare per quei valori. Ecco cosa inseriamo in C2 per convertire il valore di B2 in dollari:
+
+```
+=GOOGLEFINANCE("CURRENCY:GBPUSD")*B2
+```
+
+![Formula moltiplicata per il valore della cella](/blog/image-12.png)
+
+Fatto: questo è il valore convertito. Se ti serve il contrario, da dollari a sterline, basta invertire i due codici nella formula:
+
+```
+=GOOGLEFINANCE("CURRENCY:USDGBP")
+```
+
+### Passaggio 3: Correggi la formattazione
+
+GOOGLEFINANCE restituisce solo il valore numerico del tasso di cambio, senza formattazione. Dopo aver impostato la formula, dovrai cambiare il formato manualmente.
+
+Se sei negli Stati Uniti, vedrai un piccolo $ nella barra degli strumenti. Cliccandolo, cambi il formato della cella selezionata in dollari.
+
+![Schema di formattazione valuta](/blog/image-3.png)
+
+Se non vedi quel pulsante, o se vuoi un formato diverso, clicca su Formato nel menu, poi Numero, poi Valuta personalizzata.
+
+![Menu Formato in Fogli Google](/blog/image-4.png)
+
+Si aprirà un menu dove scegliere il formato valuta desiderato. Clicca Applica quando lo hai trovato.
+
+![Selettore formato valuta personalizzato](/blog/image-5.png)
+
+### (Facoltativo) Passaggio 4: Sostituisci i valori originali
+
+Se non hai bisogno di conservare gli importi originali (nel nostro caso, i valori in sterline), puoi incollare i valori convertiti al loro posto. Ma siccome la formula si basa sui valori iniziali, un semplice incolla inserirà la formula, non il valore. Nel nostro caso, la formula in B2 punterebbe ora ad A2, causando un errore.
+
+![Errore formula durante l'incollaggio](/blog/image-6.png)
+
+Per aggirare il problema, devi incollare solo i valori. Per prima cosa, copia i valori convertiti (nel nostro caso, C2). Poi seleziona l'intervallo di destinazione. Fai clic destro e scegli Incolla speciale, poi Solo valori.
+
+![Menu Incolla speciale solo valori](/blog/image-7.png)
+
+Così sostituirai l'importo originale con quello convertito. Se non hai ancora sistemato la formattazione, puoi farlo dopo l'incollaggio. Ricordati anche di aggiornare le etichette nel foglio. Nel nostro esempio, la colonna B era originariamente etichettata Spese (Sterline), quindi l'abbiamo resa più generica.
+
+![Foglio aggiornato con valori convertiti](/blog/image-13.png)
+
+## Problemi di GOOGLEFINANCE con le valute
+
+GOOGLEFINANCE funziona bene nella maggior parte dei casi, ma ci sono alcune cose da tenere presenti.
+
+### GOOGLEFINANCE usa il tasso di cambio corrente per impostazione predefinita
+
+Nel nostro esempio non abbiamo specificato una data nella formula. Questo significa che GOOGLEFINANCE userà il tasso di cambio del momento. Se lo lasci così, mostrerà un valore aggiornato ogni volta che Google Finance avrà un nuovo dato.
+
+Se non vuoi che la formula si aggiorni continuamente, devi fissare la data. Il formato è:
+
+```
+=INDEX(GOOGLEFINANCE("CURRENCY:[valuta di origine][valuta di destinazione]", "price", "AAAA-MM-GG"), 2, 2)
+```
+
+Come puoi immaginare, AAAA è l'anno, MM è il mese e GG è il giorno. Se vuoi il tasso di cambio sterline-dollari del 23 giugno 2025, la formula è:
+
+```
+=INDEX(GOOGLEFINANCE("CURRENCY:GBPUSD", "price", "2025-06-23"), 2, 2)
+```
+
+### GOOGLEFINANCE a volte non funziona
+
+Occasionalmente, GOOGLEFINANCE restituisce un errore per determinate date senza un motivo chiaro. Il problema di solito si risolve da solo in un giorno o due, ma potresti ritrovarti con un errore #N/A.
+
+![Errore N/A in Fogli Google](/blog/image-11.png)
+
+### GOOGLEFINANCE non aggiorna la formattazione
+
+Nell'esempio precedente abbiamo sistemato la formattazione manualmente. Ma se hai molte conversioni da fare, costruire la formula e poi aggiustare il formato ogni volta può diventare parecchio scomodo.
+
+## Instant Currency: un'alternativa a GOOGLEFINANCE
+
+Risparmia tutti i passaggi di GOOGLEFINANCE. [Instant Currency](https://workspace.google.com/marketplace/app/instant_currency/93228277435) converte valute e formatta le celle in un solo clic, con tassi di cambio storici affidabili che funzionano anche quando i dati di Google non collaborano.
+
+Hai domande sulla conversione di valute in Fogli Google? [Scrivici](/it/contact), saremo felici di aiutarti.

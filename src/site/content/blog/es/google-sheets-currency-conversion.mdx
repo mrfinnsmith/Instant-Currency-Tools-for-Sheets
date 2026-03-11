@@ -1,0 +1,134 @@
+---
+title: "Conversión de divisas en Hojas de cálculo de Google: tipos de cambio en vivo con una sola fórmula"
+description: "Aprende a usar la fórmula GOOGLEFINANCE para convertir divisas en Hojas de cálculo de Google y conoce una alternativa más rápida."
+date: "2025-06-25"
+---
+
+Si trabajas con diferentes divisas en Hojas de cálculo de Google, sabes lo tedioso que puede ser buscar tipos de cambio, pegarlos en tu hoja y calcular el valor convertido. Por suerte, hay una fórmula que simplifica todo esto. GOOGLEFINANCE, además de ofrecer información bursátil en tiempo real, también puede darte tipos de cambio para decenas de divisas.
+
+Al terminar este tutorial, sabrás cómo usar GOOGLEFINANCE para convertir divisas en tiempo real y cómo darle formato de divisa a tus celdas.
+
+## ¿Qué es GOOGLEFINANCE?
+
+GOOGLEFINANCE es una fórmula integrada en Hojas de cálculo de Google que trae información actualizada e histórica de Google Finance directamente a tu hoja de cálculo. Puedes consultar datos del mercado, precios de acciones y tipos de cambio actuales o pasados. Es completamente gratis dentro de Hojas de cálculo de Google y se configura en unos pocos pasos.
+
+## ¿Puedo usar GOOGLEFINANCE en Excel?
+
+No, GOOGLEFINANCE solo funciona en Hojas de cálculo de Google. Excel tiene sus propias herramientas de consulta de divisas y mercados, y los dos sistemas no son compatibles. Si descargas una hoja con una fórmula GOOGLEFINANCE como archivo XLSX, esa fórmula dejará de funcionar al abrirla en Excel. Del mismo modo, si subes un archivo XLSX con herramientas de divisas de Excel a Hojas de cálculo de Google, se romperá o simplemente quedará como valor fijo, perdiendo la conexión en vivo.
+
+## Cómo convertir divisas con GOOGLEFINANCE: guía paso a paso
+
+En este ejemplo, asumimos que ya estás usando Hojas de cálculo de Google y tienes montos en una divisa que quieres convertir. Si quieres practicar con una hoja de prueba, ve a sheets.new para crear una hoja en blanco. Se creará en la cuenta de Google en la que tengas la sesión iniciada.
+
+Usaremos el ejemplo de convertir libras esterlinas a dólares estadounidenses, pero también te mostraremos cómo hacerlo con otras divisas.
+
+### Paso 1: Decide dónde quieres el resultado
+
+En este ejemplo, imagina que necesitas hacer un reporte de gastos de un viaje a Londres. Tienes una lista de montos en libras en la columna B.
+
+Lo que debes saber sobre GOOGLEFINANCE es que no reemplaza el monto original con el valor convertido. Como cualquier otra fórmula de Hojas de cálculo, tienes los datos de entrada en un lugar y pones la fórmula donde quieres el resultado.
+
+![Hoja de cálculo con montos de gastos en libras](/blog/image-1.png)
+
+En este caso, tiene sentido poner los montos en dólares junto a sus equivalentes en libras, así que colocaremos las fórmulas en la columna C.
+
+### Paso 2: Construye la fórmula
+
+La estructura básica de una fórmula de divisas con GOOGLEFINANCE es:
+
+```
+=GOOGLEFINANCE("CURRENCY:[divisa origen][divisa destino]")
+```
+
+No hay espacios en ninguna parte de la fórmula. En nuestro ejemplo, para obtener el tipo de cambio de libras a dólares, usamos:
+
+```
+=GOOGLEFINANCE("CURRENCY:GBPUSD")
+```
+
+![Fórmula GOOGLEFINANCE en Hojas de cálculo de Google](/blog/image-2.png)
+
+Algunos puntos a notar:
+
+- La fórmula usa códigos de tres letras para las divisas, no sus nombres. Wikipedia tiene una lista útil con todos los códigos de divisas.
+- Todo va pegado. En el medio de la fórmula aparece GBPUSD.
+
+Esta fórmula te da el tipo de cambio. Si eso es lo único que necesitas, perfecto. Pero si quieres convertir montos específicos, como en nuestro ejemplo, necesitas multiplicar por esos valores. Esto es lo que ponemos en C2 para convertir el valor de B2 a dólares:
+
+```
+=GOOGLEFINANCE("CURRENCY:GBPUSD")*B2
+```
+
+![Fórmula multiplicada por el valor de la celda](/blog/image-12.png)
+
+Y eso es todo para obtener el valor convertido. Si necesitas lo contrario, de dólares a libras, solo invierte los dos códigos en la fórmula:
+
+```
+=GOOGLEFINANCE("CURRENCY:USDGBP")
+```
+
+### Paso 3: Corrige el formato
+
+GOOGLEFINANCE solo devuelve el valor numérico del tipo de cambio, sin formato de divisa. Una vez que hayas configurado tu fórmula, tendrás que cambiar el formato manualmente.
+
+Si estás en Estados Unidos, verás un pequeño $ en la barra de herramientas. Al hacer clic, cambia el formato de la celda seleccionada a dólares.
+
+![Diagrama de formato de divisa](/blog/image-3.png)
+
+Si no ves ese botón, o si quieres un formato de divisa diferente, haz clic en Formato en el menú, luego en Número y después en Moneda personalizada.
+
+![Menú de formato en Hojas de cálculo de Google](/blog/image-4.png)
+
+Eso abre un menú donde puedes elegir el formato de divisa exacto que necesitas. Solo haz clic en Aplicar cuando lo encuentres.
+
+![Selector de formato de divisa personalizado](/blog/image-5.png)
+
+### (Opcional) Paso 4: Reemplaza los valores originales
+
+Si no necesitas conservar los montos originales (en nuestro caso, los valores en libras), puedes pegar los valores convertidos en su lugar. Pero como tu fórmula se basa en los primeros valores, al pegar se pegará la fórmula, no el valor. En nuestro caso, la fórmula en B2 ahora apuntaría a A2, lo que causa un error.
+
+![Error de fórmula al pegar](/blog/image-6.png)
+
+Para evitar esto, necesitas pegar solo los valores. Primero, copia los valores convertidos (en nuestro caso, C2). Luego, selecciona el rango donde los quieres. Haz clic derecho y elige Pegado especial, luego Solo valores.
+
+![Menú de pegado especial solo valores](/blog/image-7.png)
+
+Eso reemplazará el monto original con el monto convertido. Si aún no has corregido el formato, puedes hacerlo después de pegar. También asegúrate de actualizar las etiquetas en tu hoja. En nuestro ejemplo, la columna B originalmente decía Gastos (Libras), así que la cambiamos a algo más genérico.
+
+![Hoja actualizada con valores convertidos](/blog/image-13.png)
+
+## Problemas con GOOGLEFINANCE para divisas
+
+GOOGLEFINANCE funciona bien en la mayoría de los casos, pero hay algunas cosas que conviene saber.
+
+### GOOGLEFINANCE usa el tipo de cambio actual por defecto
+
+En nuestro ejemplo, no le dimos una fecha a la fórmula. Eso significa que GOOGLEFINANCE usará el tipo de cambio vigente en ese momento. Si lo dejas así, mostrará un valor actualizado cada vez que Google Finance tenga un nuevo dato.
+
+Si no quieres que la fórmula se actualice constantemente, necesitas fijar la fecha que utiliza. El formato es:
+
+```
+=INDEX(GOOGLEFINANCE("CURRENCY:[divisa origen][divisa destino]", "price", "AAAA-MM-DD"), 2, 2)
+```
+
+Como puedes suponer, AAAA es el año, MM es el mes y DD es el día. Si quieres el tipo de cambio de libras a dólares del 23 de junio de 2025, tu fórmula es:
+
+```
+=INDEX(GOOGLEFINANCE("CURRENCY:GBPUSD", "price", "2025-06-23"), 2, 2)
+```
+
+### GOOGLEFINANCE a veces no funciona
+
+De vez en cuando, GOOGLEFINANCE simplemente falla para ciertas fechas. No está claro por qué, y normalmente se resuelve solo después de uno o dos días, pero puede que te aparezca un error #N/A.
+
+![Error N/A en Hojas de cálculo de Google](/blog/image-11.png)
+
+### GOOGLEFINANCE no actualiza el formato
+
+En el ejemplo anterior, ajustamos el formato manualmente. Pero si tienes muchas conversiones por hacer, puede ser bastante molesto construir la fórmula y luego ajustar el formato de cada celda.
+
+## Instant Currency: una alternativa a GOOGLEFINANCE
+
+Ahórrate todo el proceso de GOOGLEFINANCE. [Instant Currency](https://workspace.google.com/marketplace/app/instant_currency/93228277435) convierte divisas y da formato a las celdas en un solo clic, con tipos de cambio históricos confiables que funcionan incluso cuando los datos de Google fallan.
+
+Si tienes alguna pregunta sobre conversión de divisas en Hojas de cálculo de Google, [escríbenos](/es/contact). Con gusto te ayudamos.

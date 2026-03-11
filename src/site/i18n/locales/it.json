@@ -15,6 +15,10 @@
     "contact": {
       "title": "Contatti — Instant Currency",
       "description": "Contatta il team di Instant Currency."
+    },
+    "blog": {
+      "title": "Blog — Instant Currency",
+      "description": "Consigli e guide per la conversione valute in Fogli Google."
     }
   },
   "header": {
@@ -121,6 +125,10 @@
       "text": "Devi gestire il tuo abbonamento?",
       "link": "Apri il portale di fatturazione"
     }
+  },
+  "blog": {
+    "title": "Blog",
+    "empty": "Ancora nessun articolo."
   },
   "contact": {
     "label": "Contatti",

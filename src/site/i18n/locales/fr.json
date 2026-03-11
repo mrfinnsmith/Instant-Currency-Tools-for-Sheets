@@ -15,6 +15,10 @@
     "contact": {
       "title": "Contact — Instant Currency",
       "description": "Contactez l'équipe Instant Currency."
+    },
+    "blog": {
+      "title": "Blog — Instant Currency",
+      "description": "Conseils et guides pour convertir des devises dans Google Sheets."
     }
   },
   "header": {
@@ -121,6 +125,10 @@
       "text": "Besoin de gérer votre abonnement ?",
       "link": "Ouvrir le portail de facturation"
     }
+  },
+  "blog": {
+    "title": "Blog",
+    "empty": "Rien ici pour l'instant."
   },
   "contact": {
     "label": "Contact",

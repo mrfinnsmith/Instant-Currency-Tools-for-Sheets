@@ -15,6 +15,10 @@
     "contact": {
       "title": "Contact — Instant Currency",
       "description": "Get in touch with the Instant Currency team."
+    },
+    "blog": {
+      "title": "Blog — Instant Currency",
+      "description": "Tips and guides for currency conversion in Google Sheets."
     }
   },
   "header": {
@@ -121,6 +125,10 @@
       "text": "Need to manage your subscription?",
       "link": "Open billing portal"
     }
+  },
+  "blog": {
+    "title": "Blog",
+    "empty": "Nothing here yet."
   },
   "contact": {
     "label": "Contact",

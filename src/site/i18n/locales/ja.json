@@ -15,6 +15,10 @@
     "contact": {
       "title": "お問い合わせ — Instant Currency",
       "description": "Instant Currencyチームへのお問い合わせはこちらから。"
+    },
+    "blog": {
+      "title": "ブログ — Instant Currency",
+      "description": "Google スプレッドシートでの通貨換算に役立つヒントとガイド。"
     }
   },
   "header": {
@@ -121,6 +125,10 @@
       "text": "サブスクリプションの管理が必要ですか？",
       "link": "請求ポータルを開く"
     }
+  },
+  "blog": {
+    "title": "ブログ",
+    "empty": "まだ記事がありません。"
   },
   "contact": {
     "label": "お問い合わせ",

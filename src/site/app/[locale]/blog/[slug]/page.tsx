@@ -15,7 +15,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
-  const post = getPost(slug);
+  const post = getPost(slug, locale);
   if (!post) return {};
   return {
     title: post.title,
@@ -35,16 +35,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPost({ params }: Props) {
-  const { slug } = await params;
-  const post = getPost(slug);
+  const { locale, slug } = await params;
+  const post = getPost(slug, locale);
   if (!post) notFound();
+  const dateLocale = ogLocales[locale as Locale].replace("_", "-");
 
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
       <article className="pt-16 pb-20 md:pt-24 max-w-3xl">
         <header>
           <time className="text-[12px] text-faint tracking-wide">
-            {new Date(post.date).toLocaleDateString("en-US", {
+            {new Date(post.date).toLocaleDateString(dateLocale, {
               year: "numeric",
               month: "long",
               day: "numeric",
