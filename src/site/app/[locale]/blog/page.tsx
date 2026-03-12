@@ -40,8 +40,28 @@ export default async function Blog({
   const posts = getAllPosts(locale);
   const dateLocale = ogLocales[locale as Locale].replace("_", "-");
 
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: t("title"),
+    url: `https://instantcurrency.tools/${locale}/blog`,
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: posts.map((post, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `https://instantcurrency.tools/${locale}/blog/${post.slug}`,
+        name: post.title,
+      })),
+    },
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+      />
       <section className="pt-16 pb-6 md:pt-24">
         <h1 className="font-[family-name:var(--font-heading)] text-3xl font-700 text-fg md:text-4xl">
           {t("title")}

@@ -53,6 +53,23 @@ export default async function LocaleLayout({
         <Script id="gtag-init" strategy="afterInteractive">
           {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
         </Script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Instant Currency",
+              url: "https://instantcurrency.tools",
+              logo: "https://instantcurrency.tools/logo.png",
+              contactPoint: {
+                "@type": "ContactPoint",
+                url: `https://instantcurrency.tools/${locale}/contact`,
+                contactType: "customer support",
+              },
+            }),
+          }}
+        />
         <NextIntlClientProvider messages={messages} locale={locale}>
           <Header />
           <main>{children}</main>

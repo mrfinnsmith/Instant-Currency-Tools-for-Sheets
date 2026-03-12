@@ -39,6 +39,7 @@ export default async function Pricing({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "pricing" });
+  const meta = getMetadata(locale as Locale);
 
   const freeFeatures = [
     t("free.feature1"),
@@ -55,8 +56,48 @@ export default async function Pricing({
     t("pro.feature4"),
   ];
 
+  const pricingJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "Instant Currency",
+    description: meta.pricing.description,
+    url: `https://instantcurrency.tools/${locale}/pricing`,
+    brand: {
+      "@type": "Organization",
+      name: "Instant Currency",
+    },
+    offers: [
+      {
+        "@type": "Offer",
+        name: t("free.tier"),
+        price: "0",
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        url: MARKETPLACE_URL,
+      },
+      {
+        "@type": "Offer",
+        name: t("pro.tier"),
+        price: "5.00",
+        priceCurrency: "USD",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price: "5.00",
+          priceCurrency: "USD",
+          billingDuration: "P1M",
+        },
+        availability: "https://schema.org/InStock",
+        url: `https://instantcurrency.tools/${locale}/pricing`,
+      },
+    ],
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pricingJsonLd) }}
+      />
       <section className="pt-16 pb-6 md:pt-24">
         <p className="text-teal text-[13px] font-600 tracking-wide uppercase">{t("label")}</p>
         <h1 className="mt-3 font-[family-name:var(--font-heading)] text-3xl font-700 text-fg md:text-4xl max-w-lg">

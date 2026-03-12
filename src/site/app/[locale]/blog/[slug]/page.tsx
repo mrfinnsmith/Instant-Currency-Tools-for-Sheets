@@ -40,26 +40,66 @@ export default async function BlogPost({ params }: Props) {
   if (!post) notFound();
   const dateLocale = ogLocales[locale as Locale].replace("_", "-");
 
-  const jsonLd = {
+  const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
     description: post.description,
     datePublished: post.date,
+    dateModified: post.date,
     url: `https://instantcurrency.tools/${locale}/blog/${slug}`,
     inLanguage: locale,
-    publisher: {
+    image: "https://instantcurrency.tools/blog/image-1.png",
+    author: {
       "@type": "Organization",
       name: "Instant Currency",
       url: "https://instantcurrency.tools",
     },
+    publisher: {
+      "@type": "Organization",
+      name: "Instant Currency",
+      url: "https://instantcurrency.tools",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://instantcurrency.tools/logo.png",
+      },
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: `https://instantcurrency.tools/${locale}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: `https://instantcurrency.tools/${locale}/blog`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: `https://instantcurrency.tools/${locale}/blog/${slug}`,
+      },
+    ],
   };
 
   return (
     <div className="mx-auto max-w-6xl px-6 lg:px-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <article className="pt-16 pb-20 md:pt-24 max-w-3xl">
         <header>

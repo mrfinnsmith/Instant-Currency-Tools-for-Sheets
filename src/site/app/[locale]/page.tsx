@@ -64,10 +64,14 @@ function JsonLd() {
     url: "https://instantcurrency.tools",
     installUrl: MARKETPLACE_URL,
     softwareRequirements: "Google Sheets",
+    image: "https://instantcurrency.tools/marketing1.png",
+    screenshot: "https://instantcurrency.tools/marketing1.png",
+    datePublished: "2024-01-01",
     publisher: {
       "@type": "Organization",
       name: "Instant Currency",
       url: "https://instantcurrency.tools",
+      logo: "https://instantcurrency.tools/logo.png",
     },
   };
 
