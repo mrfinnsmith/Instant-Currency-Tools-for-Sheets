@@ -131,6 +131,17 @@
     "title": "Blog",
     "empty": "Ancora nessun articolo."
   },
+  "notFound": {
+    "heading": "Questa pagina non esiste",
+    "body": "L'URL potrebbe essere cambiato o contenere un errore. Qui non c'\u00e8 nulla da convertire, ma nella homepage troverai molto.",
+    "home": "Torna alla homepage",
+    "demo": {
+      "sheetTab": "Conversione",
+      "step1": "Seleziona celle",
+      "step2": "Conversione in corso...",
+      "step3": "USD \u2192 EUR"
+    }
+  },
   "contact": {
     "label": "Contatti",
     "title": "Scrivici",

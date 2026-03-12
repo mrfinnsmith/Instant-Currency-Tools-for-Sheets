@@ -131,6 +131,17 @@
     "title": "Blog",
     "empty": "Noch keine Beiträge."
   },
+  "notFound": {
+    "heading": "Diese Seite existiert nicht",
+    "body": "Die URL ist m\u00f6glicherweise veraltet oder falsch geschrieben. Hier gibt es nichts umzurechnen, aber auf der Startseite schon.",
+    "home": "Zur Startseite",
+    "demo": {
+      "sheetTab": "Umrechnung",
+      "step1": "Zellen ausw\u00e4hlen",
+      "step2": "Wird umgerechnet...",
+      "step3": "USD \u2192 EUR"
+    }
+  },
   "contact": {
     "label": "Kontakt",
     "title": "Schreiben Sie uns",

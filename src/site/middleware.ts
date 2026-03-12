@@ -1,12 +1,19 @@
 import createMiddleware from "next-intl/middleware";
+import { type NextRequest } from "next/server";
 import { locales, defaultLocale } from "@/i18n/config";
 
-export default createMiddleware({
+const intlMiddleware = createMiddleware({
   locales,
   defaultLocale,
   localePrefix: "always",
   alternateLinks: false,
 });
+
+export default function middleware(request: NextRequest) {
+  const response = intlMiddleware(request);
+  response.headers.set("x-pathname", request.nextUrl.pathname);
+  return response;
+}
 
 export const config = {
   matcher: [

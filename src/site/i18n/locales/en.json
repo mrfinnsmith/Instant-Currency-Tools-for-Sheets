@@ -131,6 +131,17 @@
     "title": "Blog",
     "empty": "Nothing here yet."
   },
+  "notFound": {
+    "heading": "This page doesn't exist",
+    "body": "The URL you followed may be outdated or mistyped. Nothing to convert here, but there's plenty on the homepage.",
+    "home": "Back to homepage",
+    "demo": {
+      "sheetTab": "Conversion",
+      "step1": "Select cells",
+      "step2": "Converting...",
+      "step3": "USD \u2192 EUR"
+    }
+  },
   "contact": {
     "label": "Contact",
     "title": "Get in touch",
