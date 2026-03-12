@@ -14,6 +14,7 @@ export async function generateMetadata({
   return {
     title: meta.success.title,
     description: meta.success.description,
+    robots: { index: false, follow: true },
     alternates: {
       canonical: `/${locale}/pricing/success`,
       languages: getLanguageAlternates("/pricing/success"),

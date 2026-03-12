@@ -1,24 +1,24 @@
 {
   "metadata": {
     "home": {
-      "title": "Instant Currency — Currency Conversion for Google Sheets",
-      "description": "Convert currencies in Google Sheets with a single click. No formulas, no copy-pasting, no formatting hassle."
+      "title": "Google Sheets Currency Converter — Instant Currency",
+      "description": "Convert currencies in Google Sheets with a single click. Real-time exchange rates, automatic formatting, and no formulas required. Free to install."
     },
     "pricing": {
-      "title": "Pricing — Instant Currency",
-      "description": "Instant Currency is free forever. Upgrade to Pro for historical rates and premium support."
+      "title": "Plans & Pricing",
+      "description": "Instant Currency is free forever with real-time exchange rates. Upgrade to Pro for $5/month to unlock historical rates and priority support."
     },
     "success": {
-      "title": "Welcome to Pro — Instant Currency",
-      "description": "Your Instant Currency Pro subscription is active."
+      "title": "Welcome to Pro",
+      "description": "Your Instant Currency Pro subscription is active. Open Google Sheets to start using historical exchange rates and priority support."
     },
     "contact": {
-      "title": "Contact — Instant Currency",
-      "description": "Get in touch with the Instant Currency team."
+      "title": "Contact",
+      "description": "Have a question about Instant Currency? Get in touch for help with currency conversion, billing, or feature requests."
     },
     "blog": {
-      "title": "Blog — Instant Currency",
-      "description": "Tips and guides for currency conversion in Google Sheets."
+      "title": "Currency Conversion Tips for Google Sheets",
+      "description": "Step-by-step guides for converting currencies in Google Sheets. Learn formulas, formatting tricks, and faster ways to handle exchange rates."
     }
   },
   "header": {

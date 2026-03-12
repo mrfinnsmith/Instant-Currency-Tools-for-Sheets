@@ -1,24 +1,24 @@
 {
   "metadata": {
     "home": {
-      "title": "Instant Currency — Währungsumrechnung für Google Sheets",
-      "description": "Rechnen Sie Währungen in Google Sheets mit einem Klick um. Keine Formeln, kein Kopieren, keine Formatierungsprobleme."
+      "title": "Währungsrechner für Google Sheets — Instant Currency",
+      "description": "Rechnen Sie Währungen in Google Sheets mit einem Klick um. Wechselkurse in Echtzeit, automatische Formatierung und keine Formeln nötig. Kostenlos installierbar."
     },
     "pricing": {
-      "title": "Preise — Instant Currency",
-      "description": "Instant Currency ist für immer kostenlos. Upgraden Sie auf Pro für historische Kurse und bevorzugten Support."
+      "title": "Tarife und Preise",
+      "description": "Instant Currency ist für immer kostenlos mit Echtzeit-Wechselkursen. Upgraden Sie auf Pro für 5 $/Monat für historische Kurse und bevorzugten Support."
     },
     "success": {
-      "title": "Willkommen bei Pro — Instant Currency",
-      "description": "Ihr Instant Currency Pro-Abonnement ist aktiv."
+      "title": "Willkommen bei Pro",
+      "description": "Ihr Instant Currency Pro-Abonnement ist aktiv. Öffnen Sie Google Sheets, um historische Wechselkurse und bevorzugten Support zu nutzen."
     },
     "contact": {
-      "title": "Kontakt — Instant Currency",
-      "description": "Nehmen Sie Kontakt mit dem Instant Currency Team auf."
+      "title": "Kontakt",
+      "description": "Fragen zu Instant Currency? Schreiben Sie uns bei Fragen zu Währungsumrechnung, Abrechnung oder Funktionswünschen."
     },
     "blog": {
-      "title": "Blog — Instant Currency",
-      "description": "Tipps und Anleitungen zur Währungsumrechnung in Google Sheets."
+      "title": "Währungsumrechnung in Google Sheets",
+      "description": "Schritt-für-Schritt-Anleitungen zur Währungsumrechnung in Google Sheets. Formeln, Formatierungstipps und schnellere Wege, Wechselkurse zu verarbeiten."
     }
   },
   "header": {

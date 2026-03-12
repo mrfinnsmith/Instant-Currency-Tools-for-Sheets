@@ -15,7 +15,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const meta = getMetadata(locale as Locale);
   return {
-    title: meta.home.title,
+    title: { absolute: meta.home.title },
     description: meta.home.description,
     alternates: {
       canonical: `/${locale}`,

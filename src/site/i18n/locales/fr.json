@@ -1,24 +1,24 @@
 {
   "metadata": {
     "home": {
-      "title": "Instant Currency — Conversion de devises pour Google Sheets",
-      "description": "Convertissez des devises dans Google Sheets en un clic. Sans formules, sans copier-coller, sans souci de formatage."
+      "title": "Convertisseur de devises pour Google Sheets — Instant Currency",
+      "description": "Convertissez des devises dans Google Sheets en un clic. Taux de change en temps réel, mise en forme automatique et aucune formule requise. Installation gratuite."
     },
     "pricing": {
-      "title": "Tarifs — Instant Currency",
-      "description": "Instant Currency est gratuit pour toujours. Passez à Pro pour les taux historiques et le support prioritaire."
+      "title": "Forfaits et tarifs",
+      "description": "Instant Currency est gratuit pour toujours avec les taux de change en temps réel. Passez à Pro pour 5 $/mois pour accéder aux taux historiques et au support prioritaire."
     },
     "success": {
-      "title": "Bienvenue dans Pro — Instant Currency",
-      "description": "Votre abonnement Instant Currency Pro est actif."
+      "title": "Bienvenue dans Pro",
+      "description": "Votre abonnement Instant Currency Pro est actif. Ouvrez Google Sheets pour commencer à utiliser les taux historiques et le support prioritaire."
     },
     "contact": {
-      "title": "Contact — Instant Currency",
-      "description": "Contactez l'équipe Instant Currency."
+      "title": "Contact",
+      "description": "Une question sur Instant Currency ? Contactez-nous pour toute aide concernant la conversion de devises, la facturation ou les demandes de fonctionnalités."
     },
     "blog": {
-      "title": "Blog — Instant Currency",
-      "description": "Conseils et guides pour convertir des devises dans Google Sheets."
+      "title": "Conversion de devises dans Google Sheets",
+      "description": "Guides pas à pas pour convertir des devises dans Google Sheets. Découvrez les formules, les astuces de formatage et des méthodes plus rapides pour gérer les taux de change."
     }
   },
   "header": {
