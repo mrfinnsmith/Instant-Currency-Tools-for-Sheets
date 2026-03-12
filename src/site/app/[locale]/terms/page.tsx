@@ -10,15 +10,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   return {
-    title: "Terms of Service",
-    description: "Terms of service for the Instant Currency Google Sheets add-on.",
+    title: "Terms of Service | Instant Currency for Google Sheets",
+    description: "Review the terms of service for Instant Currency, covering subscriptions, billing, exchange rate data, liability, and service availability.",
     alternates: {
       canonical: `/${locale}/terms`,
       languages: getLanguageAlternates("/terms"),
     },
     openGraph: {
-      title: "Terms of Service",
-      description: "Terms of service for the Instant Currency Google Sheets add-on.",
+      title: "Terms of Service | Instant Currency for Google Sheets",
+      description: "Review the terms of service for Instant Currency, covering subscriptions, billing, exchange rate data, liability, and service availability.",
       url: `https://instantcurrency.tools/${locale}/terms`,
       locale: ogLocales[locale as Locale],
     },

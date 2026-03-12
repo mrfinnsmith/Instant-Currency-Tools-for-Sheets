@@ -1,24 +1,24 @@
 {
   "metadata": {
     "home": {
-      "title": "Convertisseur de devises pour Google Sheets — Instant Currency",
+      "title": "Convertisseur de devises pour Google Sheets | Instant Currency",
       "description": "Convertissez des devises dans Google Sheets en un clic. Taux de change en temps réel, mise en forme automatique et aucune formule requise. Installation gratuite."
     },
     "pricing": {
-      "title": "Forfaits et tarifs",
+      "title": "Forfaits et tarifs: conversion de devises pour Google Sheets",
       "description": "Instant Currency est gratuit pour toujours avec les taux de change en temps réel. Passez à Pro pour 5 $/mois pour accéder aux taux historiques et au support prioritaire."
     },
     "success": {
-      "title": "Bienvenue dans Pro",
+      "title": "Bienvenue dans Instant Currency Pro pour Google Sheets",
       "description": "Votre abonnement Instant Currency Pro est actif. Ouvrez Google Sheets pour commencer à utiliser les taux historiques et le support prioritaire."
     },
     "contact": {
-      "title": "Contact",
+      "title": "Contactez l'équipe Instant Currency pour Google Sheets",
       "description": "Une question sur Instant Currency ? Contactez-nous pour toute aide concernant la conversion de devises, la facturation ou les demandes de fonctionnalités."
     },
     "blog": {
-      "title": "Conversion de devises dans Google Sheets",
-      "description": "Guides pas à pas pour convertir des devises dans Google Sheets. Découvrez les formules, les astuces de formatage et des méthodes plus rapides pour gérer les taux de change."
+      "title": "Conversion de devises dans Google Sheets: guides pratiques",
+      "description": "Guides pratiques pour convertir des devises dans Google Sheets. Formules, astuces de formatage et méthodes rapides pour gérer les taux de change."
     }
   },
   "header": {
