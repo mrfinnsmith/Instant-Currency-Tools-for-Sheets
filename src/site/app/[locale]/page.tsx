@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getMetadata } from "@/i18n/metadata";
 import { getLanguageAlternates } from "@/i18n/hreflang";
 import { ogLocales, type Locale } from "@/i18n/config";
+import HomepageDemo from "@/components/homepage-demo";
 
 const MARKETPLACE_URL =
   "https://workspace.google.com/marketplace/app/instant_currency/93228277435";
@@ -137,17 +138,8 @@ export default async function Home({
               </div>
             </div>
 
-            <div className="mt-12 md:mt-0 md:flex-1">
-              <div className="overflow-hidden rounded-xl shadow-2xl shadow-black/20 border border-white/10">
-                <Image
-                  src="/marketing1.png"
-                  alt={t("hero.screenshotAlt")}
-                  width={600}
-                  height={375}
-                  className="w-full"
-                  priority
-                />
-              </div>
+            <div className="mt-12 md:mt-0 md:flex-1 flex items-center justify-center">
+              <HomepageDemo locale={locale} />
             </div>
           </div>
         </div>
