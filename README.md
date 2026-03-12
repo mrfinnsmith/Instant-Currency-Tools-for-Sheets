@@ -2,11 +2,12 @@ Google Sheets add-on that transforms currency handling by eliminating manual con
 
 # Project Structure
 
-This repository contains three separate Google Apps Script projects synced via clasp:
+This repository contains three Google Apps Script projects synced via clasp, a Google Cloud Function, and a Next.js marketing site:
 
 - `src/add-on/`: Main add-on code that runs in Google Sheets
 - `src/event-handlers/`: Background processes for subscription tracking and rate updates
 - `src/marketplace-analytics/`: Marketplace analytics tracking for install and review metrics
+- `src/site/`: Marketing site (Next.js + Tailwind, deployed to Vercel)
 - `cloud-function/`: Google Cloud Function proxy for MongoDB access
 
 ```
@@ -18,12 +19,19 @@ This repository contains three separate Google Apps Script projects synced via c
     ├── add-on/
     │   ├── appsscript.json
     │   └── [.js files]
+    ├── event-handlers/
+    │   ├── appsscript.json
+    │   └── [.js files]
     ├── marketplace-analytics/
     │   ├── appsscript.json
     │   └── [.js files]
-    └── event-handlers/
-        ├── appsscript.json
-        └── [.js files]
+    └── site/                 # Next.js marketing site
+        ├── app/
+        │   ├── [locale]/     # i18n: en, es, it, fr, de, ja
+        │   └── api/          # checkout, contact
+        ├── i18n/             # Locale config, hreflang helpers, translations
+        ├── content/blog/     # MDX blog posts (per locale)
+        └── public/           # Static assets, llms.txt
 ```
 
 **Note**: Google Apps Script files (.gs) are stored as .js files when synced locally with clasp. Each project has its own clasp ID and separate Google Apps Script project.
@@ -31,22 +39,31 @@ This repository contains three separate Google Apps Script projects synced via c
 # Features & Implementation
 
 - **One-click currency conversion**: Converts selected cells and applies proper formatting
-- **Premium feature**: Historical exchange rates ($5 one-time payment)
+- **Premium feature**: Historical exchange rates ($5/month subscription)
 - **MongoDB integration**: Stores currency exchange rates accessed via Google Cloud Function proxy
-- **Stripe integration**: Processes payments via Heroku app
+- **Stripe integration**: Checkout handled by Vercel API route (`/api/checkout`), subscription status checked directly against Stripe API from the add-on
 - **Marketplace analytics tracking**: Daily scraping of install count, reviews, and ratings from Google Workspace Marketplace
+- **Multilingual site**: 6 locales (en, es, it, fr, de, ja) with full SEO infrastructure (hreflang, JSON-LD, sitemap)
 
 # Subscription Flow
 
-1. User clicks upgrade button on [pricing page](https://instantcurrency.tools/pricing)
-2. Request goes to [Heroku app](https://github.com/mrfinnsmith/instant-currency-heroku) for Stripe checkout
-3. Stripe webhook sends event to `src/event-handlers/SubscriptionEventProcessing.js`
-4. User's email and subscription status stored in tracking spreadsheet (spreadsheet ID and sheet ID stored in script properties)
-5. Add-on verifies subscription status when user opens sidebar via:
-   - First checks script cache for cached status
-   - If not cached, checks subscription spreadsheet for user's email
-   - Sets "active" status in cache if found
-   - Function `isUserSubscribed()` in `src/add-on/SubscriptionManager.js` returns boolean result
+1. User clicks upgrade button on [pricing page](https://instantcurrency.tools/en/pricing)
+2. Vercel API route (`/api/checkout`) creates a Stripe checkout session (subscription mode)
+3. Stripe webhook sends events to `src/event-handlers/SubscriptionEventProcessing.js`
+4. Event handler logs to a tracking spreadsheet and MongoDB for record-keeping
+5. Add-on verifies subscription status at runtime by querying Stripe directly:
+   - `isUserSubscribed()` in `src/add-on/SubscriptionManager.js` first checks script cache
+   - On cache miss, searches Stripe for the customer by email, then checks for active subscriptions
+   - Only caches positive results (never caches `false`)
+   - `getUserEmail()` falls back to `ScriptApp.getIdentityToken()` JWT decode for consumer Gmail accounts
+
+# Marketing Site
+
+Next.js app deployed to Vercel. Root directory for Vercel: `src/site`.
+
+**Pages**: Homepage, Pricing, Contact, Blog, Privacy, Terms, 404
+**API routes**: `/api/checkout` (Stripe), `/api/contact` (Resend)
+**i18n**: 6 locales with translated UI via `i18n/locales/{locale}.json`. Privacy and Terms are English-only content (nav/footer still translate).
 
 # Data Storage & Rate Checking Flow
 
@@ -61,40 +78,34 @@ This repository contains three separate Google Apps Script projects synced via c
     3. If not in MongoDB, calls Frankfurter API
     4. Each successful lookup updates both cache and MongoDB via Cloud Function
     5. All lookups tracked in `src/add-on/CurrencyConvertor.js` via `CurrencyRateService` class
-- **Subscriptions**: Tracked in spreadsheet with plans to move to MongoDB
-  - Premium user emails stored with product ID and status
 - **Analytics**: Two types of analytics are collected:
   - **Marketplace analytics**: Daily marketplace metrics stored in spreadsheet with duplicate prevention
-    - Install count, review count, and average rating tracked via `src/analytics/MarketplaceTracker.js`
+    - Install count, review count, and average rating tracked via `src/marketplace-analytics/`
   - **User interaction analytics**: Event tracking via Mixpanel using user-based identities
     - `distinct_id` is MD5 hash of user email (format: `user_[hash]`)
     - `spreadsheet_id` property tracks which spreadsheet (format: `sheet_[hash]`)
     - Events tracked include sidebar opens, conversions, and feature usage
     - Only users with available email addresses are tracked (no fallback/fake data)
-    - Sessions represent individual users, not spreadsheets
 
 # Key Script Properties
 
 Each Apps Script project relies on these script properties:
 
 - `add-on` project:
-  - `STRIPE-INSTANT-CURRENCY-SHEETS-PRODUCT-ID`: Identifier for the product in Stripe
+  - `STRIPE_SECRET_KEY`: Live Stripe secret key for direct subscription verification
   - `CLOUD_FUNCTION_URL`: URL of Google Cloud Function for MongoDB access
   - `MONGO-CLUSTER-NAME`, `MONGO-DB-NAME`: MongoDB connection details
   - `MONGO-RATES-COLLECTION-NAME`: Collection storing currency rates
-  - `MONGO-SUBSCRIPTION-COLLECTION-NAME`: Collection for subscription data
   - `ECB-RATES-DOCUMENT-ID`: MongoDB document ID for rates
   - `MIXPANEL_PROJECT_TOKEN`: Token for Mixpanel analytics tracking
   - `TEST_SPREADSHEET_IDS`: Comma-separated list of test spreadsheet IDs to exclude from analytics
 
 - `event-handlers` project:
-  - `CLOUD_FUNCTION_URL`: URL of Google Cloud Function for MongoDB access
   - `LOG_SPREADSHEET_ID`: ID of the spreadsheet tracking subscriptions
   - `LOG_SHEET_ID`: ID of the log sheet within the spreadsheet
   - `SUBSCRIPTION-SHEET-ID`: ID of the sheet tracking active subscriptions
   - `STRIPE_API_KEY`: For Stripe API calls
-  - `HEROKU_APP_URL`: URL of the Heroku app to keep awake
-  - `mongoDbClusterName`, `mongoDbDatabaseName`, `mongoDbCollectionName`, `ecbDocumentId`: MongoDB configuration
+  - `mongoDbBaseUrl`, `mongoDbApiKey`, `mongoDbClusterName`, `mongoDbDatabaseName`, `mongoDbSubcriptionCollectionName`: MongoDB Data API config
 
 - `marketplace-analytics` project:
   - `MARKETPLACE_ID`: Google Workspace Marketplace listing identifier
@@ -103,7 +114,7 @@ Each Apps Script project relies on these script properties:
 
 # Development Notes
 
-- Each Apps Script project has its own `.clasp.json` file for syncing with Google Apps Script IDE
+- Each Apps Script project has its own `.clasp.json` for syncing with Google Apps Script IDE
 - **GCP Projects**:
   - Add-on and marketplace-analytics: `instant-currency-tools-sheets` (Project #93228277435)
   - Event-handlers: `teak-perigee-458918-t2` (Project #552432511640)
@@ -115,11 +126,7 @@ Each Apps Script project relies on these script properties:
 - MongoDB rates are updated in two ways:
   - Every 15 minutes via time trigger (only updates when new data available from Frankfurter)
   - On-demand when users convert currencies with dates not in the database
-- Marketplace analytics scraped daily via time-triggered execution, logging with "Marketplace Tracker" prefix
-- Analytics track install count, review count, and average rating since no public API exists
-- Heroku app (`https://instant-currency-bc58e484e25e.herokuapp.com`):
-  - Pinged every 30 minutes by `src/event-handlers/keepHerokuAwake.js` to prevent cold starts
-  - Needs to stay awake to handle Stripe checkout sessions quickly
+- Marketplace analytics scraped daily via time-triggered execution
 - Currency conversion offers two methods:
   - "Hardcoded": Permanently changes cell values using current rates
   - "Formula": Inserts GOOGLEFINANCE formulas that update automatically
@@ -157,13 +164,7 @@ After deploying a new version, update the marketplace listing:
 5. Go to **Store Listing** in the same submenu
 6. Click the **Publish** button at the bottom (should be enabled)
 
-# Future Plans
-
-- Switch to $5/month subscription model after reaching 20 paid users
-- Move subscription tracking fully to MongoDB
-- Additional premium features in backlog but won't be developed until product-market fit is validated
-
 # Related Resources
 
-- [Instant Currency Heroku repo](https://github.com/mrfinnsmith/instant-currency-heroku) - Stripe checkout handler
 - [Product website](https://instantcurrency.tools)
+- [Google Workspace Marketplace listing](https://workspace.google.com/marketplace/app/instant_currency/93228277435)
