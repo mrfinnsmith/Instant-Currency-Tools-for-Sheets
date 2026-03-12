@@ -2,7 +2,7 @@
   "metadata": {
     "home": {
       "title": "Google スプレッドシート通貨換算アドオン — Instant Currency",
-      "description": "Google スプレッドシートでワンクリック通貨換算。160以上の通貨に対応し、リアルタイム為替レート、自動書式設定、数式不要で使えます。無料インストール。"
+      "description": "Google スプレッドシートでワンクリック通貨換算。160以上の通貨、リアルタイム為替レート、自動書式設定に対応。数式は不要です。無料でインストール。"
     },
     "pricing": {
       "title": "Instant Currencyの料金プラン | 無料版とProの比較",
@@ -14,10 +14,10 @@
     },
     "contact": {
       "title": "Instant Currencyへのお問い合わせ | サポート・ご質問",
-      "description": "Instant Currencyに関するご質問、不具合の報告、機能リクエストはこちらから。通貨換算やお支払いについてもお気軽にお問い合わせください。"
+      "description": "Instant Currencyに関するご質問やサポートはこちらから。通貨換算の使い方、お支払い、不具合の報告、機能リクエストなどお気軽にお問い合わせください。"
     },
     "blog": {
-      "title": "Google スプレッドシートの通貨換算ガイド",
+      "title": "Google スプレッドシートの通貨換算ガイド | 数式と書式のコツ",
       "description": "Google スプレッドシートで通貨を換算するための実践ガイド。GOOGLEFINANCE数式の使い方、書式設定のコツ、為替レートを効率的に扱う方法を紹介します。"
     }
   },
