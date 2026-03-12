@@ -13,8 +13,8 @@ export async function generateMetadata({
     title: "Privacy Policy | Instant Currency for Google Sheets",
     description: "Learn how the Instant Currency Google Sheets add-on handles your data, including analytics, permissions, and compliance with Google API requirements.",
     alternates: {
-      canonical: `/${locale}/privacy`,
-      languages: getLanguageAlternates("/privacy"),
+      canonical: `/en/privacy`,
+      ...(locale === "en" && { languages: getLanguageAlternates("/privacy") }),
     },
     openGraph: {
       title: "Privacy Policy | Instant Currency for Google Sheets",

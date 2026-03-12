@@ -13,8 +13,8 @@ export async function generateMetadata({
     title: "Terms of Service | Instant Currency for Google Sheets",
     description: "Review the terms of service for Instant Currency, covering subscriptions, billing, exchange rate data, liability, and service availability.",
     alternates: {
-      canonical: `/${locale}/terms`,
-      languages: getLanguageAlternates("/terms"),
+      canonical: `/en/terms`,
+      ...(locale === "en" && { languages: getLanguageAlternates("/terms") }),
     },
     openGraph: {
       title: "Terms of Service | Instant Currency for Google Sheets",
