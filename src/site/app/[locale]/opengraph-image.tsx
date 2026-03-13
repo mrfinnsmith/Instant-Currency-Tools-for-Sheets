@@ -5,6 +5,15 @@ export const alt = "Instant Currency — Google Sheets Currency Converter";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+const badges: Record<string, string> = {
+  en: "Free add-on for Google Sheets",
+  es: "Complemento gratuito para Hojas de cálculo de Google",
+  it: "Componente aggiuntivo gratuito per Fogli Google",
+  fr: "Module complémentaire gratuit pour Google Sheets",
+  de: "Kostenloses Add-on für Google Sheets",
+  ja: "Google スプレッドシート用無料アドオン",
+};
+
 const taglines: Record<string, string> = {
   en: "Convert currencies in Google Sheets with a single click",
   es: "Convierte divisas en Hojas de cálculo de Google con un solo clic",
@@ -14,12 +23,64 @@ const taglines: Record<string, string> = {
   ja: "Google スプレッドシートでワンクリック通貨換算",
 };
 
-const rows = [
-  { label: "Rent", original: "£1,250.00", converted: "$1,587.50" },
-  { label: "Groceries", original: "¥45,000", converted: "$301.50" },
-  { label: "Software", original: "€890.00", converted: "$1,130.40" },
-  { label: "Travel", original: "$150.00", converted: "$150.00" },
-];
+type Row = { label: string; original: string; converted: string };
+
+const sheetTitle: Record<string, string> = {
+  en: "Expenses",
+  es: "Gastos",
+  it: "Spese",
+  fr: "Dépenses",
+  de: "Ausgaben",
+  ja: "経費",
+};
+
+const targetCurrency: Record<string, string> = {
+  en: "USD",
+  es: "EUR",
+  it: "EUR",
+  fr: "EUR",
+  de: "EUR",
+  ja: "JPY",
+};
+
+const localeRows: Record<string, Row[]> = {
+  en: [
+    { label: "Rent", original: "£1,250.00", converted: "$1,587.50" },
+    { label: "Groceries", original: "¥45,000", converted: "$301.50" },
+    { label: "Software", original: "€890.00", converted: "$1,130.40" },
+    { label: "Travel", original: "$150.00", converted: "$150.00" },
+  ],
+  es: [
+    { label: "Alquiler", original: "$1,250.00", converted: "€1,152.50" },
+    { label: "Compras", original: "£320.00", converted: "€372.80" },
+    { label: "Software", original: "¥45,000", converted: "€278.10" },
+    { label: "Viaje", original: "CHF 890", converted: "€890.00" },
+  ],
+  it: [
+    { label: "Affitto", original: "£1,250.00", converted: "€1,455.00" },
+    { label: "Spesa", original: "$320.00", converted: "€295.04" },
+    { label: "Software", original: "CHF 890", converted: "€928.26" },
+    { label: "Viaggio", original: "¥45,000", converted: "€278.10" },
+  ],
+  fr: [
+    { label: "Loyer", original: "£1,250.00", converted: "€1,455.00" },
+    { label: "Courses", original: "$320.00", converted: "€295.04" },
+    { label: "Logiciel", original: "CHF 890", converted: "€928.26" },
+    { label: "Voyage", original: "¥45,000", converted: "€278.10" },
+  ],
+  de: [
+    { label: "Miete", original: "£1,250.00", converted: "€1,455.00" },
+    { label: "Einkauf", original: "$320.00", converted: "€295.04" },
+    { label: "Software", original: "CHF 890", converted: "€928.26" },
+    { label: "Reise", original: "¥45,000", converted: "€278.10" },
+  ],
+  ja: [
+    { label: "家賃", original: "$1,250.00", converted: "¥187,500" },
+    { label: "食料品", original: "€320.00", converted: "¥52,160" },
+    { label: "ソフト", original: "£890.00", converted: "¥169,100" },
+    { label: "旅行", original: "₩150,000", converted: "¥15,750" },
+  ],
+};
 
 function SpreadsheetRow({
   index,
@@ -102,6 +163,15 @@ export default async function OgImage({
 }) {
   const { locale } = await params;
   const tagline = taglines[locale] || taglines.en;
+  const badge = badges[locale] || badges.en;
+  const rows = localeRows[locale] || localeRows.en;
+  const target = targetCurrency[locale] || targetCurrency.en;
+  const sheet = sheetTitle[locale] || sheetTitle.en;
+
+  const logoData = await fetch(
+    new URL("../../public/logo.png", import.meta.url)
+  ).then((res) => res.arrayBuffer());
+  const logoSrc = `data:image/png;base64,${Buffer.from(logoData).toString("base64")}`;
 
   return new ImageResponse(
     (
@@ -150,22 +220,15 @@ export default async function OgImage({
               marginBottom: "32px",
             }}
           >
-            <div
+            <img
+              src={logoSrc}
+              alt=""
+              width={48}
+              height={48}
               style={{
-                width: "48px",
-                height: "48px",
                 borderRadius: "12px",
-                background: "rgba(255,255,255,0.15)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "24px",
-                fontWeight: 700,
-                color: "white",
               }}
-            >
-              ic
-            </div>
+            />
             <span
               style={{
                 fontSize: "22px",
@@ -204,7 +267,7 @@ export default async function OgImage({
               color: "rgba(255,255,255,0.85)",
             }}
           >
-            Free add-on for Google Sheets
+            {badge}
           </div>
         </div>
 
@@ -272,7 +335,7 @@ export default async function OgImage({
                   letterSpacing: "0.04em",
                 }}
               >
-                Expenses
+                {sheet}
               </span>
             </div>
 
@@ -367,7 +430,7 @@ export default async function OgImage({
               }}
             >
               <span style={{ fontSize: "11px", color: "#8b95a1" }}>
-                → USD
+                → {target}
               </span>
               <div style={{ display: "flex", gap: "6px" }}>
                 {rows.map((_, i) => (
