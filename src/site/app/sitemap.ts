@@ -14,15 +14,26 @@ function languageAlternates(path: string) {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPages = ["", "/pricing", "/contact", "/blog", "/privacy", "/terms"];
+  const translatedPages = ["", "/pricing", "/contact", "/blog"];
+  const englishOnlyPages = ["/privacy", "/terms"];
 
-  const staticEntries = staticPages.flatMap((page) =>
+  const translatedEntries = translatedPages.flatMap((page) =>
     locales.map((locale) => ({
       url: `${BASE_URL}/${locale}${page}`,
       lastModified: new Date(),
       alternates: { languages: languageAlternates(page) },
     }))
   );
+
+  const englishOnlyEntries = englishOnlyPages.flatMap((page) =>
+    locales.map((locale) => ({
+      url: `${BASE_URL}/${locale}${page}`,
+      lastModified: new Date(),
+      ...(locale === "en" && { alternates: { languages: languageAlternates(page) } }),
+    }))
+  );
+
+  const staticEntries = [...translatedEntries, ...englishOnlyEntries];
 
   const posts = getAllPosts();
   const blogEntries = posts.flatMap((post) =>
